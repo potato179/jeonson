@@ -53,7 +53,6 @@
       width: 100%;
       height: 100%;
       margin: 0;
-
       overflow: hidden;
 
       background: var(--bg);
@@ -1187,6 +1186,13 @@
     let map = null;
     let clusterer = null;
 
+    /*
+     * records는 항상 날짜 내림차순으로 유지한다.
+     *
+     * 각 데이터에는
+     * originalIndex가 존재하며,
+     * 이것은 list.json의 원래 index이다.
+     */
     let records = [];
     let markers = [];
 
@@ -1672,14 +1678,7 @@
 
     /* =========================================================
        DATE SORT
-       항상 최신 날짜 → 과거 날짜 순
-       예:
-       260919
-       260918
-       260917
-       260901
-       260831
-       ...
+       최신 날짜 → 과거 날짜
     ========================================================= */
 
     function getDateSortValue(
@@ -1705,11 +1704,6 @@
         return -1;
       }
 
-      /*
-       * YYMMDD 형식의 숫자 자체가
-       * 날짜의 시간순과 동일하므로
-       * 큰 값이 최신 날짜이다.
-       */
       return Number(raw);
     }
 
@@ -1718,21 +1712,20 @@
     ) {
       return [...data].sort(
         (a, b) => {
-          const dateA =
+          const aValue =
             getDateSortValue(
               a.date
             );
 
-          const dateB =
+          const bValue =
             getDateSortValue(
               b.date
             );
 
           /*
-           * 반드시 B - A
-           * = 최신 날짜가 먼저
+           * 큰 날짜가 먼저 오도록 한다.
            */
-          return dateB - dateA;
+          return bValue - aValue;
         }
       );
     }
@@ -1767,6 +1760,21 @@
           "'",
           "&#039;"
         );
+    }
+
+    /* =========================================================
+       FIND RECORD
+       originalIndex를 기준으로 정확한 데이터 검색
+    ========================================================= */
+
+    function findRecordByOriginalIndex(
+      originalIndex
+    ) {
+      return records.find(
+        record =>
+          record.originalIndex ===
+          originalIndex
+      );
     }
 
     /* =========================================================
@@ -1821,9 +1829,8 @@
       }
 
       /*
-       * 검색 결과를 포함해
-       * 화면에 표시되는 모든 목록을
-       * 항상 최신 날짜순으로 정렬한다.
+       * 검색 결과 역시 항상
+       * 최신 날짜순으로 정렬한다.
        */
       const sortedData =
         sortRecordsByDate(
@@ -1973,7 +1980,7 @@
     ========================================================= */
 
     function openMarkerInfo(
-      index,
+      originalIndex,
       marker,
       infoWindow
     ) {
@@ -1981,8 +1988,16 @@
         return;
       }
 
+      /*
+       * originalIndex로 정확한 record를 찾는다.
+       *
+       * 날짜 정렬로 records의 배열 순서가
+       * 변경되어도 절대 다른 차량을 가져오지 않는다.
+       */
       const item =
-        records[index];
+        findRecordByOriginalIndex(
+          originalIndex
+        );
 
       if (!item) {
         return;
@@ -1991,7 +2006,7 @@
       closeActiveInfoWindow();
 
       activeRecordIndex =
-        index;
+        originalIndex;
 
       document
         .querySelectorAll(
@@ -2003,7 +2018,7 @@
               "active",
               Number(
                 element.dataset.index
-              ) === index
+              ) === originalIndex
             );
           }
         );
@@ -2061,7 +2076,7 @@
 
       const selectedElement =
         document.querySelector(
-          `.record[data-index="${index}"]`
+          `.record[data-index="${originalIndex}"]`
         );
 
       if (
@@ -2101,8 +2116,7 @@
       markers = [];
 
       /*
-       * 지도 마커 역시 화면 목록과 동일하게
-       * 날짜 최신순 데이터 기준으로 생성한다.
+       * 마커 생성도 날짜순으로 처리한다.
        */
       const sortedData =
         sortRecordsByDate(
@@ -2157,6 +2171,11 @@
               }
             );
 
+          /*
+           * 중요:
+           * 배열 index가 아니라
+           * originalIndex를 전달한다.
+           */
           kakao.maps.event.addListener(
             marker,
             "click",
@@ -2185,15 +2204,24 @@
     ========================================================= */
 
     function selectRecord(
-      index
+      originalIndex
     ) {
+      /*
+       * 날짜 정렬 후에도
+       * originalIndex로 정확한 데이터를 찾는다.
+       */
       const target =
-        records[index];
+        findRecordByOriginalIndex(
+          originalIndex
+        );
 
       if (!target) {
         return;
       }
 
+      /*
+       * 해당 차량의 좌표와 일치하는 마커를 찾는다.
+       */
       const markerIndex =
         markers.findIndex(
           marker => {
@@ -2241,7 +2269,7 @@
         );
 
       openMarkerInfo(
-        index,
+        originalIndex,
         marker,
         infoWindow
       );
@@ -2418,15 +2446,16 @@
         }
 
         /*
-         * 원본 index를 먼저 부여한다.
-         * 이 index는 list.json의 원래 위치를
-         * 추적하기 위한 값이다.
+         * 1.
+         * list.json의 원본 위치를
+         * originalIndex에 저장한다.
          */
         records =
           json
             .map(
               (item, index) => ({
                 ...item,
+
                 originalIndex:
                   index
               })
@@ -2446,14 +2475,13 @@
             );
 
         /*
-         * 핵심:
-         * records 자체를 항상 최신 날짜순으로 정렬한다.
+         * 2.
+         * 날짜 최신순으로 정렬한다.
          *
-         * 날짜 형식:
-         * YYMMDD
-         *
-         * 예:
-         * 260919 → 260918 → 260917
+         * 중요:
+         * originalIndex는 그대로 유지되기 때문에
+         * 정렬 이후에도 원본 데이터와 정확하게
+         * 연결된다.
          */
         records =
           sortRecordsByDate(
