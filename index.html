@@ -2,18 +2,12 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   />
 
   <title>Vehicle Incident Map</title>
-
-  <!-- Kakao Maps -->
-  <script
-    src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7f26ddb0373cd3b598ff54652cbbdc24&libraries=clusterer"
-  ></script>
 
   <style>
     :root {
@@ -41,34 +35,35 @@
       --radius-lg: 18px;
       --radius-md: 14px;
       --radius-sm: 10px;
+
+      --sheet-collapsed: 32dvh;
+      --sheet-middle: 57dvh;
+      --sheet-expanded: 86dvh;
     }
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     html,
     body {
       width: 100%;
       height: 100%;
+      margin: 0;
       overflow: hidden;
-    }
-
-    body {
+      background: var(--bg);
+      color: var(--text);
       font-family:
-        Pretendard,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
+        "Noto Sans KR",
         sans-serif;
+    }
 
-      background: var(--bg);
-      color: var(--text);
-
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
+    body {
+      position: relative;
     }
 
     button,
@@ -78,18 +73,14 @@
 
     button {
       border: 0;
+      outline: 0;
     }
 
-    .app {
-      position: relative;
-
+    #app {
       width: 100%;
-      height: 100vh;
-      height: 100dvh;
-
+      height: 100%;
+      position: relative;
       overflow: hidden;
-
-      background: var(--bg);
     }
 
     /* =========================================================
@@ -98,96 +89,25 @@
 
     #map {
       position: absolute;
-
-      top: 0;
-      right: 0;
-
-      width: calc(100% - var(--sidebar-width));
+      inset: 0;
+      width: 100%;
       height: 100%;
-    }
-
-    .map-edge {
-      position: absolute;
-
-      z-index: 20;
-
-      top: 0;
-      left: var(--sidebar-width);
-
-      width: 24px;
-      height: 100%;
-
-      pointer-events: none;
-
-      background:
-        linear-gradient(
-          90deg,
-          rgba(0, 0, 0, 0.2),
-          transparent
-        );
-    }
-
-    .map-badge {
-      position: absolute;
-
-      z-index: 25;
-
-      top: 18px;
-      right: 18px;
-
-      display: flex;
-      align-items: center;
-
-      gap: 9px;
-
-      padding: 10px 13px;
-
-      border:
-        1px solid rgba(0, 0, 0, 0.12);
-
-      border-radius: 12px;
-
-      background:
-        rgba(255, 255, 255, 0.94);
-
-      color: #171a1f;
-
-      box-shadow:
-        0 7px 24px rgba(0, 0, 0, 0.18);
-
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-
-      font-size: 11px;
-      font-weight: 750;
-    }
-
-    .map-badge-dot {
-      width: 7px;
-      height: 7px;
-
-      border-radius: 50%;
-
-      background: var(--accent);
-
-      box-shadow:
-        0 0 0 4px rgba(240, 90, 61, 0.13);
+      background: #10151b;
     }
 
     /* =========================================================
-       DESKTOP SIDEBAR
+       SIDEBAR
     ========================================================= */
 
     .sidebar {
       position: absolute;
-
       z-index: 30;
 
       top: 0;
       left: 0;
+      bottom: 0;
 
       width: var(--sidebar-width);
-      height: 100%;
 
       display: flex;
       flex-direction: column;
@@ -195,186 +115,72 @@
       background:
         linear-gradient(
           180deg,
-          rgba(15, 19, 25, 0.985),
-          rgba(9, 13, 18, 0.995)
+          rgba(13, 17, 23, 0.98),
+          rgba(8, 11, 15, 0.98)
         );
 
       border-right: 1px solid var(--border);
 
       box-shadow:
-        20px 0 55px rgba(0, 0, 0, 0.28);
+        12px 0 40px rgba(0, 0, 0, 0.28);
+
+      overflow: hidden;
     }
 
-    .sidebar-handle {
-      display: none;
-    }
-
-    /* =========================================================
-       HEADER
-    ========================================================= */
-
-    .header {
+    .sidebar-header {
       flex: 0 0 auto;
-
-      padding: 28px 26px 22px;
-
+      padding: 28px 24px 20px;
       border-bottom: 1px solid var(--border);
     }
 
-    .brand-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-
-      gap: 16px;
-    }
-
-    .brand-copy {
-      min-width: 0;
-    }
-
-    .eyebrow {
+    .brand {
       display: flex;
       align-items: center;
-
-      gap: 8px;
-
-      margin-bottom: 10px;
-
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.18em;
-
-      color: var(--accent);
-    }
-
-    .eyebrow-dot {
-      width: 7px;
-      height: 7px;
-
-      flex: 0 0 auto;
-
-      border-radius: 50%;
-
-      background: var(--accent);
-
-      box-shadow:
-        0 0 16px rgba(240, 90, 61, 0.65);
-    }
-
-    .title {
-      font-size: 27px;
-      line-height: 1.2;
-
-      font-weight: 800;
-      letter-spacing: -0.045em;
-    }
-
-    .subtitle {
-      margin-top: 8px;
-
-      font-size: 13px;
-      line-height: 1.6;
-
-      color: var(--text-muted);
+      gap: 12px;
+      margin-bottom: 22px;
     }
 
     .brand-mark {
-      flex: 0 0 auto;
-
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
 
       display: grid;
       place-items: center;
 
-      border: 1px solid var(--border-strong);
-      border-radius: 13px;
+      border-radius: 11px;
 
       background:
         linear-gradient(
-          145deg,
-          rgba(255, 255, 255, 0.075),
-          rgba(255, 255, 255, 0.02)
+          135deg,
+          #ff704f,
+          #c93622
         );
 
-      color: var(--accent);
+      color: white;
+      font-size: 17px;
+      font-weight: 900;
+
+      box-shadow:
+        0 8px 22px rgba(240, 90, 61, 0.22);
     }
 
-    .brand-mark svg {
-      width: 21px;
-      height: 21px;
+    .brand-text {
+      min-width: 0;
     }
 
-    /* =========================================================
-       STATS
-    ========================================================= */
-
-    .stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-
-      gap: 10px;
-
-      margin-top: 22px;
-    }
-
-    .stat {
-      padding: 14px 15px;
-
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255, 255, 255, 0.045),
-          rgba(255, 255, 255, 0.018)
-        );
-    }
-
-    .stat-label {
-      display: block;
-
-      margin-bottom: 5px;
-
-      font-size: 10px;
-      font-weight: 700;
-
-      letter-spacing: 0.04em;
-
-      color: var(--text-muted);
-    }
-
-    .stat-value {
-      display: flex;
-      align-items: baseline;
-
-      gap: 4px;
-
-      font-size: 21px;
-      line-height: 1;
-
+    .brand-title {
+      font-size: 15px;
       font-weight: 800;
-
-      letter-spacing: -0.035em;
+      letter-spacing: -0.02em;
     }
 
-    .stat-value small {
+    .brand-subtitle {
+      margin-top: 2px;
+      color: var(--text-muted);
       font-size: 11px;
       font-weight: 600;
-
-      color: var(--text-muted);
-    }
-
-    /* =========================================================
-       SEARCH
-    ========================================================= */
-
-    .search-section {
-      flex: 0 0 auto;
-
-      padding: 18px 20px 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .search-wrap {
@@ -383,86 +189,87 @@
 
     .search-icon {
       position: absolute;
-
+      left: 14px;
       top: 50%;
-      left: 15px;
 
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
 
       transform: translateY(-50%);
 
-      pointer-events: none;
-
       color: var(--text-muted);
+      pointer-events: none;
     }
 
-    .search {
+    #search {
       width: 100%;
-      height: 48px;
+      height: 46px;
 
-      padding: 0 44px;
+      padding: 0 14px 0 42px;
+
+      border: 1px solid var(--border);
+      border-radius: 13px;
 
       outline: none;
 
-      border: 1px solid var(--border);
-      border-radius: 14px;
-
-      background: var(--panel-3);
-
+      background: var(--panel-2);
       color: var(--text);
+
+      font-size: 13px;
+      font-weight: 600;
 
       transition:
-        border-color 0.18s ease,
-        box-shadow 0.18s ease;
+        border-color 0.2s ease,
+        background 0.2s ease;
     }
 
-    .search::placeholder {
-      color: #69727f;
+    #search::placeholder {
+      color: #66707c;
     }
 
-    .search:focus {
+    #search:focus {
       border-color: var(--accent-border);
-
-      box-shadow:
-        0 0 0 3px rgba(240, 90, 61, 0.09);
+      background: var(--panel-3);
     }
 
-    .search-clear {
-      position: absolute;
+    /* =========================================================
+       STATS
+    ========================================================= */
 
-      top: 50%;
-      right: 8px;
-
-      width: 34px;
-      height: 34px;
-
-      display: none;
-      place-items: center;
-
-      transform: translateY(-50%);
-
-      border-radius: 9px;
-
-      background: transparent;
-
-      color: var(--text-muted);
-
-      cursor: pointer;
-    }
-
-    .search-clear.visible {
+    .stats {
       display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+
+      padding: 16px 24px;
+
+      border-bottom: 1px solid var(--border);
     }
 
-    .search-clear:hover {
-      background: rgba(255, 255, 255, 0.06);
+    .stat {
+      padding: 14px;
+
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      margin-top: 5px;
+
       color: var(--text);
-    }
-
-    .search-clear svg {
-      width: 17px;
-      height: 17px;
+      font-size: 22px;
+      font-weight: 850;
+      letter-spacing: -0.04em;
     }
 
     /* =========================================================
@@ -476,23 +283,19 @@
       align-items: center;
       justify-content: space-between;
 
-      padding: 0 22px 11px;
+      padding: 15px 24px 11px;
     }
 
     .list-title {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 800;
-
-      letter-spacing: 0.08em;
-
-      color: var(--text-muted);
+      letter-spacing: -0.01em;
     }
 
-    .result-count {
+    .list-count {
+      color: var(--text-muted);
       font-size: 11px;
       font-weight: 700;
-
-      color: var(--text-muted);
     }
 
     /* =========================================================
@@ -504,27 +307,19 @@
 
       min-height: 0;
 
-      padding:
-        0 14px 22px;
+      padding: 0 12px 20px;
 
       overflow-y: auto;
-      overflow-x: hidden;
-
       overscroll-behavior: contain;
-
-      -webkit-overflow-scrolling: touch;
 
       touch-action: pan-y;
 
       scrollbar-width: thin;
-
-      scrollbar-color:
-        rgba(255, 255, 255, 0.15)
-        transparent;
+      scrollbar-color: #2b333d transparent;
     }
 
     .list::-webkit-scrollbar {
-      width: 6px;
+      width: 5px;
     }
 
     .list::-webkit-scrollbar-track {
@@ -532,390 +327,250 @@
     }
 
     .list::-webkit-scrollbar-thumb {
-      background:
-        rgba(255, 255, 255, 0.13);
-
-      border-radius: 999px;
+      background: #2b333d;
+      border-radius: 10px;
     }
 
-    /* =========================================================
-       RECORD
-    ========================================================= */
-
     .record {
-      position: relative;
-
       width: 100%;
 
-      margin-bottom: 8px;
+      display: block;
 
-      padding: 16px;
-
-      text-align: left;
+      margin: 0 0 7px;
+      padding: 15px;
 
       border: 1px solid transparent;
       border-radius: var(--radius-md);
 
-      background: transparent;
+      background: rgba(255, 255, 255, 0.025);
 
-      color: inherit;
+      color: var(--text);
+      text-align: left;
 
       cursor: pointer;
 
-      touch-action: manipulation;
-
       transition:
-        background 0.16s ease,
-        border-color 0.16s ease,
-        transform 0.16s ease;
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
     }
 
     .record:hover {
-      background:
-        rgba(255, 255, 255, 0.045);
-
+      background: rgba(255, 255, 255, 0.045);
       border-color: var(--border);
     }
 
     .record:active {
-      transform: scale(0.993);
+      transform: scale(0.99);
     }
 
     .record.active {
-      background:
-        linear-gradient(
-          135deg,
-          rgba(240, 90, 61, 0.13),
-          rgba(240, 90, 61, 0.055)
-        );
-
-      border-color:
-        var(--accent-border);
-    }
-
-    .record.active::before {
-      content: "";
-
-      position: absolute;
-
-      top: 14px;
-      bottom: 14px;
-      left: 0;
-
-      width: 3px;
-
-      border-radius:
-        0 999px 999px 0;
-
-      background: var(--accent);
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
     }
 
     .record-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-
       gap: 12px;
     }
 
-    .car-number {
-      min-width: 0;
-
-      overflow: hidden;
-
-      text-overflow: ellipsis;
-
-      white-space: nowrap;
-
-      font-size: 16px;
-      line-height: 1.3;
-
-      font-weight: 800;
-
+    .record-car-number {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 850;
       letter-spacing: -0.02em;
     }
 
-    .date {
+    .record-date {
       flex: 0 0 auto;
 
-      padding: 5px 7px;
-
-      border: 1px solid var(--border);
+      padding: 4px 7px;
 
       border-radius: 7px;
 
-      background:
-        rgba(255, 255, 255, 0.035);
+      background: rgba(255, 255, 255, 0.06);
+
+      color: var(--text-muted);
 
       font-size: 10px;
-      line-height: 1;
-
-      font-weight: 750;
-
-      color: var(--text-soft);
-    }
-
-    .date.invalid {
-      border-color:
-        rgba(255, 99, 93, 0.25);
-
-      background:
-        rgba(255, 99, 93, 0.08);
-
-      color: #ff8f8a;
-    }
-
-    .car-name {
-      margin-top: 7px;
-
-      overflow: hidden;
-
-      text-overflow: ellipsis;
-
-      white-space: nowrap;
-
-      font-size: 13px;
-      line-height: 1.45;
-
-      font-weight: 600;
-
-      color: var(--text-soft);
-    }
-
-    .reason {
-      margin-top: 8px;
-
-      display: -webkit-box;
-
-      -webkit-box-orient: vertical;
-
-      -webkit-line-clamp: 2;
-
-      overflow: hidden;
-
-      font-size: 12px;
-
-      line-height: 1.6;
-
-      color: var(--text-muted);
-
-      word-break: keep-all;
-    }
-
-    .empty {
-      padding: 50px 24px;
-
-      text-align: center;
-
-      font-size: 13px;
-      line-height: 1.7;
-
-      color: var(--text-muted);
-    }
-
-    /* =========================================================
-       MOBILE TOP BAR
-    ========================================================= */
-
-    .mobile-map-header {
-      display: none;
-    }
-
-    /* =========================================================
-       INFO WINDOW
-    ========================================================= */
-
-    .info-window {
-      width: 270px;
-
-      padding: 15px 16px 16px;
-
-      font-family:
-        Pretendard,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-      color: #171a1f;
-    }
-
-    .info-title {
-      margin-bottom: 10px;
-
-      font-size: 15px;
-
-      line-height: 1.3;
-
-      font-weight: 800;
-
-      letter-spacing: -0.02em;
-    }
-
-    .info-row {
-      display: grid;
-
-      grid-template-columns: 48px 1fr;
-
-      gap: 8px;
-
-      margin-top: 6px;
-
-      font-size: 11px;
-
-      line-height: 1.5;
-    }
-
-    .info-label {
-      color: #7a8089;
       font-weight: 700;
     }
 
-    .info-value {
-      color: #2d3137;
-      font-weight: 600;
-
-      word-break: break-word;
+    .record-date.invalid {
+      color: #ff8179;
+      background: rgba(255, 105, 98, 0.1);
     }
 
-    .info-reason {
-      margin-top: 11px;
-
-      padding-top: 11px;
-
-      border-top: 1px solid #eceef0;
-
-      font-size: 11px;
-
-      line-height: 1.6;
-
-      color: #555b63;
-
-      word-break: keep-all;
-    }
-
-    /* =========================================================
-       LOADING
-    ========================================================= */
-
-    .loading {
-      position: absolute;
-
-      z-index: 100;
-
-      inset: 0;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      flex-direction: column;
-
-      gap: 14px;
-
-      background:
-        rgba(8, 11, 15, 0.96);
-
-      transition:
-        opacity 0.3s ease,
-        visibility 0.3s ease;
-    }
-
-    .loading.hidden {
-      opacity: 0;
-      visibility: hidden;
-
-      pointer-events: none;
-    }
-
-    .spinner {
-      width: 34px;
-      height: 34px;
-
-      border:
-        3px solid rgba(255, 255, 255, 0.1);
-
-      border-top-color:
-        var(--accent);
-
-      border-radius: 50%;
-
-      animation:
-        spin 0.7s linear infinite;
-    }
-
-    .loading-text {
-      font-size: 12px;
-
-      color: var(--text-muted);
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* =========================================================
-       ERROR
-    ========================================================= */
-
-    .error-screen {
-      position: fixed;
-
-      z-index: 999;
-
-      inset: 0;
-
-      display: none;
-
-      align-items: center;
-      justify-content: center;
-
-      padding: 24px;
-
-      background: var(--bg);
-    }
-
-    .error-screen.visible {
-      display: flex;
-    }
-
-    .error-box {
-      width: min(100%, 520px);
-
-      padding: 26px;
-
-      border:
-        1px solid rgba(255, 99, 93, 0.22);
-
-      border-radius: 18px;
-
-      background: var(--panel);
-
-      box-shadow:
-        0 24px 60px rgba(0, 0, 0, 0.35);
-    }
-
-    .error-title {
-      margin-bottom: 10px;
-
-      font-size: 20px;
-
-      font-weight: 800;
-
-      color: #ff817b;
-    }
-
-    .error-message {
-      font-size: 13px;
-
-      line-height: 1.8;
+    .record-car {
+      margin-top: 5px;
 
       color: var(--text-soft);
 
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .record-reason {
+      margin-top: 8px;
+
+      color: var(--text-muted);
+
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.55;
+
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+
+      overflow: hidden;
+    }
+
+    /* =========================================================
+       EMPTY / LOADING
+    ========================================================= */
+
+    .status {
+      padding: 28px 18px;
+
+      color: var(--text-muted);
+
+      font-size: 12px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    /* =========================================================
+       MAP BUTTONS
+    ========================================================= */
+
+    .map-actions {
+      position: absolute;
+
+      z-index: 10;
+
+      top: 20px;
+      right: 20px;
+
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .map-button {
+      width: 42px;
+      height: 42px;
+
+      display: grid;
+      place-items: center;
+
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 12px;
+
+      background: rgba(255, 255, 255, 0.96);
+
+      color: #252b31;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 5px 18px rgba(0, 0, 0, 0.16);
+    }
+
+    .map-button:hover {
+      background: white;
+    }
+
+    .map-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* =========================================================
+       MOBILE SHEET HANDLE
+    ========================================================= */
+
+    .sidebar-handle-area {
+      display: none;
+    }
+
+    /* =========================================================
+       KAKAO INFO WINDOW
+    ========================================================= */
+
+    .custom-info {
+      min-width: 245px;
+      max-width: 300px;
+
+      padding: 15px 16px;
+
+      color: #16191d;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans KR",
+        sans-serif;
+    }
+
+    .custom-info-title {
+      margin-bottom: 3px;
+
+      font-size: 14px;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+    }
+
+    .custom-info-car {
+      color: #59616b;
+
+      font-size: 11px;
+      font-weight: 650;
+    }
+
+    .custom-info-date {
+      margin-top: 9px;
+
+      color: #777f88;
+
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .custom-info-reason {
+      margin-top: 8px;
+
+      color: #353b42;
+
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.5;
+
       word-break: keep-all;
+    }
+
+    /* =========================================================
+       DESKTOP
+    ========================================================= */
+
+    @media (min-width: 801px) {
+      #map {
+        left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+      }
+
+      .map-actions {
+        top: 20px;
+        right: 20px;
+      }
     }
 
     /* =========================================================
@@ -923,204 +578,25 @@
     ========================================================= */
 
     @media (max-width: 800px) {
-      :root {
-        /*
-         * Bottom Sheet 높이
-         *
-         * collapsed:
-         * 화면 하단 약 32vh
-         *
-         * middle:
-         * 약 57vh
-         *
-         * expanded:
-         * 약 86vh
-         */
-        --sheet-collapsed: 32dvh;
-        --sheet-middle: 57dvh;
-        --sheet-expanded: 86dvh;
-      }
-
-      #map {
-        inset: 0;
-
-        width: 100%;
-        height: 100%;
-      }
-
-      .map-edge,
-      .map-badge {
-        display: none;
-      }
-
-      /* =====================================================
-         MOBILE MAP HEADER
-      ===================================================== */
-
-      .mobile-map-header {
-        position: absolute;
-
-        z-index: 35;
-
-        top: 0;
-        left: 0;
-        right: 0;
-
-        display: flex;
-
-        align-items: flex-start;
-        justify-content: space-between;
-
-        gap: 10px;
-
-        padding:
-          calc(11px + env(safe-area-inset-top))
-          12px
-          10px;
-
-        pointer-events: none;
-      }
-
-      .mobile-brand {
-        min-width: 0;
-
-        padding:
-          10px 12px;
-
-        border:
-          1px solid rgba(255, 255, 255, 0.12);
-
-        border-radius: 13px;
-
-        background:
-          rgba(10, 14, 19, 0.9);
-
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-
-        box-shadow:
-          0 8px 30px rgba(0, 0, 0, 0.28);
-
-        pointer-events: auto;
-      }
-
-      .mobile-brand-label {
-        margin-bottom: 3px;
-
-        font-size: 9px;
-
-        line-height: 1;
-
-        letter-spacing: 0.12em;
-
-        font-weight: 800;
-
-        color: var(--accent);
-      }
-
-      .mobile-brand-title {
-        overflow: hidden;
-
-        white-space: nowrap;
-
-        text-overflow: ellipsis;
-
-        font-size: 13px;
-
-        line-height: 1.25;
-
-        font-weight: 800;
-      }
-
-      .mobile-stats {
-        flex: 0 0 auto;
-
-        display: flex;
-
-        overflow: hidden;
-
-        border:
-          1px solid rgba(255, 255, 255, 0.12);
-
-        border-radius: 13px;
-
-        background:
-          rgba(10, 14, 19, 0.9);
-
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-
-        box-shadow:
-          0 8px 30px rgba(0, 0, 0, 0.28);
-
-        pointer-events: auto;
-      }
-
-      .mobile-stat {
-        min-width: 54px;
-
-        padding:
-          9px 8px;
-
-        text-align: center;
-      }
-
-      .mobile-stat + .mobile-stat {
-        border-left:
-          1px solid rgba(255, 255, 255, 0.1);
-      }
-
-      .mobile-stat strong {
-        display: block;
-
-        font-size: 14px;
-
-        line-height: 1.15;
-
-        font-weight: 800;
-      }
-
-      .mobile-stat span {
-        display: block;
-
-        margin-top: 2px;
-
-        font-size: 8px;
-
-        font-weight: 700;
-
-        color: var(--text-muted);
-      }
-
-      /* =====================================================
-         REAL MOBILE BOTTOM SHEET
-      ===================================================== */
-
       .sidebar {
-        position: absolute;
-
         top: auto;
         right: 0;
         bottom: 0;
         left: 0;
 
         width: 100%;
-
-        /*
-         * Sheet의 전체 최대 높이
-         */
         height: var(--sheet-expanded);
 
-        /*
-         * 처음에는 아래로 내려놓는다.
-         *
-         * expanded 높이가 86vh이고
-         * collapsed 상태에서 보여줄 부분이 32vh이므로
-         *
-         * 86vh - 32vh = 54vh
-         *
-         * 만큼 아래로 이동.
-         */
+        border-top:
+          1px solid rgba(255, 255, 255, 0.09);
+        border-right: 0;
+
+        border-radius:
+          22px 22px 0 0;
+
+        box-shadow:
+          0 -12px 40px rgba(0, 0, 0, 0.38);
+
         transform:
           translate3d(
             0,
@@ -1131,69 +607,24 @@
             0
           );
 
+        transition:
+          transform
+          0.34s
+          cubic-bezier(.22, .8, .24, 1);
+
+        will-change: transform;
+      }
+
+      .sidebar.dragging {
+        transition: none;
+      }
+
+      .sidebar-handle-area {
         display: flex;
 
-        flex-direction: column;
-
-        border:
-          1px solid rgba(255, 255, 255, 0.1);
-
-        border-bottom: 0;
-
-        border-radius:
-          22px 22px 0 0;
-
-        background:
-          linear-gradient(
-            180deg,
-            rgba(15, 19, 25, 0.99),
-            rgba(9, 13, 18, 0.995)
-          );
-
-        box-shadow:
-          0 -18px 60px rgba(0, 0, 0, 0.4);
-
-        /*
-         * JS가 drag 중에 직접 transform을 변경한다.
-         */
-        will-change: transform;
-
-        /*
-         * 초기 snap 이후 transition 활성화
-         */
-        transition:
-          transform 0.34s
-          cubic-bezier(
-            0.22,
-            0.8,
-            0.24,
-            1
-          );
-
-        padding-bottom:
-          env(safe-area-inset-bottom);
-      }
-
-      /*
-       * 드래그 중에는 transition을 제거해서
-       * 손가락과 패널이 1:1로 움직이게 함
-       */
-      .sidebar.is-dragging {
-        transition: none;
-
-        user-select: none;
-      }
-
-      /* =====================================================
-         HANDLE
-      ===================================================== */
-
-      .sidebar-handle {
         flex: 0 0 auto;
 
-        height: 31px;
-
-        display: flex;
+        height: 32px;
 
         align-items: center;
         justify-content: center;
@@ -1201,193 +632,79 @@
         cursor: grab;
 
         touch-action: none;
-
-        user-select: none;
       }
 
-      .sidebar-handle:active {
+      .sidebar-handle-area:active {
         cursor: grabbing;
       }
 
-      .sidebar-handle::before {
-        content: "";
-
+      .sidebar-handle {
         width: 42px;
-        height: 4px;
+        height: 5px;
 
-        border-radius: 999px;
+        border-radius: 99px;
 
-        background:
-          rgba(255, 255, 255, 0.19);
+        background: rgba(255, 255, 255, 0.25);
       }
 
-      /* =====================================================
-         MOBILE HEADER HIDDEN
-      ===================================================== */
-
-      .header {
-        display: none;
-      }
-
-      /* =====================================================
-         MOBILE SEARCH
-      ===================================================== */
-
-      .search-section {
-        flex: 0 0 auto;
-
+      .sidebar-header {
         padding:
-          0 12px 10px;
+          0
+          18px
+          15px;
       }
 
-      .search {
-        height: 46px;
-
-        font-size: 14px;
-
-        border-radius: 13px;
-
-        background:
-          #171d25;
+      .brand {
+        margin-bottom: 14px;
       }
 
-      /* =====================================================
-         MOBILE LIST HEADER
-      ===================================================== */
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+      }
+
+      .stats {
+        padding:
+          12px
+          18px;
+      }
 
       .list-header {
-        flex: 0 0 auto;
-
         padding:
-          0 15px 9px;
+          13px
+          18px
+          9px;
       }
-
-      .list-title {
-        font-size: 10px;
-      }
-
-      .result-count {
-        font-size: 10px;
-      }
-
-      /* =====================================================
-         MOBILE LIST
-      ===================================================== */
 
       .list {
-        flex: 1 1 0;
-
-        min-height: 0;
-
-        overflow-y: auto;
-        overflow-x: hidden;
-
-        /*
-         * 패널 드래그와 분리.
-         *
-         * 목록 안에서는 세로 스크롤이 우선이다.
-         */
-        touch-action: pan-y;
-
-        overscroll-behavior-y: contain;
-
-        -webkit-overflow-scrolling: touch;
-
-        scroll-behavior: smooth;
-
         padding:
-          0 8px
+          0
+          10px
           calc(
-            16px +
+            20px +
             env(safe-area-inset-bottom)
           );
       }
 
-      /* =====================================================
-         MOBILE RECORD
-      ===================================================== */
-
       .record {
-        margin-bottom: 7px;
-
-        padding:
-          13px;
-
-        border-radius: 13px;
-
-        background:
-          rgba(255, 255, 255, 0.025);
-
-        border-color:
-          rgba(255, 255, 255, 0.045);
-
-        touch-action: manipulation;
+        padding: 14px;
       }
 
-      .record:hover {
-        background:
-          rgba(255, 255, 255, 0.025);
+      .map-actions {
+        top: 14px;
+        right: 14px;
       }
 
-      .record.active {
-        background:
-          linear-gradient(
-            135deg,
-            rgba(240, 90, 61, 0.15),
-            rgba(240, 90, 61, 0.06)
-          );
-
-        border-color:
-          rgba(240, 90, 61, 0.43);
+      .map-button {
+        width: 40px;
+        height: 40px;
       }
 
-      .record.active::before {
-        top: 12px;
-        bottom: 12px;
-
-        width: 3px;
-      }
-
-      .car-number {
-        font-size: 16px;
-      }
-
-      .date {
-        padding:
-          5px 7px;
-
-        font-size: 9px;
-      }
-
-      .car-name {
-        margin-top: 5px;
-
-        font-size: 13px;
-
-        color: #b9c0c9;
-      }
-
-      .reason {
-        margin-top: 6px;
-
-        font-size: 12px;
-
-        line-height: 1.55;
-
-        -webkit-line-clamp: 2;
-
-        color: #89929e;
-      }
-
-      .info-window {
-        width: 230px;
-
-        padding:
-          13px 14px;
-      }
-
-      .info-title {
-        font-size: 14px;
+      .custom-info {
+        min-width: 220px;
+        max-width: 270px;
+        padding: 13px 14px;
       }
     }
 
@@ -1395,198 +712,83 @@
        SMALL MOBILE
     ========================================================= */
 
-    @media (max-width: 480px) {
-      .mobile-map-header {
-        padding-left: 9px;
-        padding-right: 9px;
+    @media (max-width: 420px) {
+      .brand-title {
+        font-size: 14px;
       }
 
-      .mobile-brand {
-        max-width:
-          calc(100vw - 145px);
+      .stats {
+        gap: 8px;
       }
 
-      .mobile-brand-title {
-        font-size: 12px;
+      .stat {
+        padding: 12px;
       }
 
-      .mobile-stat {
-        min-width: 52px;
+      .stat-value {
+        font-size: 19px;
       }
 
-      .list {
-        padding-left: 7px;
-        padding-right: 7px;
+      #search {
+        height: 43px;
       }
     }
   </style>
 </head>
 
 <body>
+  <div id="app">
 
-  <div class="app">
+    <div id="map"></div>
 
-    <!-- =====================================================
-         MOBILE MAP HEADER
-    ====================================================== -->
-
-    <div class="mobile-map-header">
-
-      <div class="mobile-brand">
-
-        <div class="mobile-brand-label">
-          INCIDENT MAP
-        </div>
-
-        <div class="mobile-brand-title">
-          Vehicle Incident Records
-        </div>
-
-      </div>
-
-      <div class="mobile-stats">
-
-        <div class="mobile-stat">
-          <strong id="mobileTotalCount">0</strong>
-          <span>사고</span>
-        </div>
-
-        <div class="mobile-stat">
-          <strong id="mobileCarCount">0</strong>
-          <span>차량</span>
-        </div>
-
-      </div>
-
+    <div class="map-actions">
+      <button
+        type="button"
+        class="map-button"
+        id="fitButton"
+        aria-label="전체 보기"
+        title="전체 보기"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+          <path d="M16 3h3a2 2 0 0 1 2 2v3" />
+          <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
+          <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
+        </svg>
+      </button>
     </div>
 
-
-    <!-- =====================================================
-         SIDEBAR / MOBILE BOTTOM SHEET
-    ====================================================== -->
-
-    <aside
-      id="sidebar"
-      class="sidebar"
-    >
-
-      <!-- Mobile drag handle -->
+    <aside class="sidebar" id="sidebar">
 
       <div
-        id="sidebarHandle"
-        class="sidebar-handle"
-        aria-label="목록 패널 이동"
-      ></div>
+        class="sidebar-handle-area"
+        id="sheetHandle"
+      >
+        <div class="sidebar-handle"></div>
+      </div>
 
+      <div class="sidebar-header">
 
-      <!-- ===================================================
-           DESKTOP HEADER
-      ==================================================== -->
+        <div class="brand">
+          <div class="brand-mark">V</div>
 
-      <header class="header">
-
-        <div class="brand-row">
-
-          <div class="brand-copy">
-
-            <div class="eyebrow">
-
-              <span class="eyebrow-dot"></span>
-
-              VEHICLE INCIDENT DATABASE
-
+          <div class="brand-text">
+            <div class="brand-title">
+              Vehicle Incident Map
             </div>
 
-            <h1 class="title">
-              Incident Map
-            </h1>
-
-            <p class="subtitle">
-              차량 사고 및 고장 기록을 지도 기반으로 확인합니다.
-            </p>
-
+            <div class="brand-subtitle">
+              Accident & Breakdown Records
+            </div>
           </div>
-
-
-          <div class="brand-mark">
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-
-              <path
-                d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11z"
-              />
-
-              <circle
-                cx="12"
-                cy="10"
-                r="2.4"
-              />
-
-            </svg>
-
-          </div>
-
         </div>
-
-
-        <!-- DESKTOP STATS -->
-
-        <div class="stats">
-
-          <div class="stat">
-
-            <span class="stat-label">
-              TOTAL RECORDS
-            </span>
-
-            <div class="stat-value">
-
-              <span id="totalCount">
-                0
-              </span>
-
-              <small>건</small>
-
-            </div>
-
-          </div>
-
-
-          <div class="stat">
-
-            <span class="stat-label">
-              VEHICLES
-            </span>
-
-            <div class="stat-value">
-
-              <span id="carCount">
-                0
-              </span>
-
-              <small>대</small>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </header>
-
-
-      <!-- ===================================================
-           SEARCH
-      ==================================================== -->
-
-      <div class="search-section">
 
         <div class="search-wrap">
 
@@ -1596,61 +798,53 @@
             fill="none"
             stroke="currentColor"
             stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           >
-
-            <circle
-              cx="11"
-              cy="11"
-              r="7"
-            />
-
-            <path
-              d="m20 20-3.5-3.5"
-            />
-
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-4-4"></path>
           </svg>
 
-
           <input
-            id="searchInput"
-            class="search"
+            id="search"
             type="search"
-            placeholder="차량번호, 차종, 사고 내용 검색"
+            placeholder="차량번호, 차종, 날짜, 사고내용 검색"
             autocomplete="off"
-            spellcheck="false"
           />
-
-
-          <button
-            id="searchClear"
-            class="search-clear"
-            type="button"
-            aria-label="검색어 지우기"
-          >
-
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-
-              <path d="M6 6l12 12" />
-
-              <path d="M18 6 6 18" />
-
-            </svg>
-
-          </button>
 
         </div>
 
       </div>
 
+      <div class="stats">
 
-      <!-- ===================================================
-           LIST HEADER
-      ==================================================== -->
+        <div class="stat">
+          <div class="stat-label">
+            Records
+          </div>
+
+          <div
+            class="stat-value"
+            id="totalCount"
+          >
+            0
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">
+            Vehicles
+          </div>
+
+          <div
+            class="stat-value"
+            id="vehicleCount"
+          >
+            0
+          </div>
+        </div>
+
+      </div>
 
       <div class="list-header">
 
@@ -1659,89 +853,29 @@
         </div>
 
         <div
-          id="resultCount"
-          class="result-count"
+          class="list-count"
+          id="listCount"
         >
-          0 records
+          0
         </div>
 
       </div>
-
-
-      <!-- ===================================================
-           RECORD LIST
-      ==================================================== -->
 
       <div
-        id="recordList"
         class="list"
-      ></div>
+        id="recordList"
+      >
+        <div class="status">
+          데이터를 불러오는 중...
+        </div>
+      </div>
 
     </aside>
-
-
-    <!-- =====================================================
-         MAP
-    ====================================================== -->
-
-    <div id="map"></div>
-
-    <div class="map-edge"></div>
-
-
-    <div class="map-badge">
-
-      <span class="map-badge-dot"></span>
-
-      LIVE MAP VIEW
-
-    </div>
-
-
-    <!-- =====================================================
-         LOADING
-    ====================================================== -->
-
-    <div
-      id="loading"
-      class="loading"
-    >
-
-      <div class="spinner"></div>
-
-      <div class="loading-text">
-        사고 기록을 불러오는 중입니다.
-      </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         ERROR
-    ====================================================== -->
-
-    <div
-      id="errorScreen"
-      class="error-screen"
-    >
-
-      <div class="error-box">
-
-        <div class="error-title">
-          데이터를 불러오지 못했습니다.
-        </div>
-
-        <div
-          id="errorMessage"
-          class="error-message"
-        ></div>
-
-      </div>
-
-    </div>
-
   </div>
 
+  <script
+    src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7f26ddb0373cd3b598ff54652cbbdc24&libraries=clusterer"
+  ></script>
 
   <script>
     /* =========================================================
@@ -1749,149 +883,80 @@
     ========================================================= */
 
     let map = null;
-
     let clusterer = null;
 
     let records = [];
-
     let markers = [];
 
-    let infoWindows = [];
-
+    let activeRecordIndex = -1;
     let activeInfoWindow = null;
 
-    let activeRecordIndex = null;
+    const sheetState = {
+      current: "collapsed",
+      dragging: false,
 
+      startY: 0,
+      startTranslate: 0,
+
+      currentTranslate: 0,
+
+      lastY: 0,
+      lastTime: 0,
+      velocity: 0
+    };
 
     /* =========================================================
        DOM
     ========================================================= */
 
     const sidebar =
-      document.getElementById(
-        "sidebar"
-      );
+      document.getElementById("sidebar");
 
-    const sidebarHandle =
-      document.getElementById(
-        "sidebarHandle"
-      );
+    const sheetHandle =
+      document.getElementById("sheetHandle");
 
     const recordList =
-      document.getElementById(
-        "recordList"
-      );
+      document.getElementById("recordList");
 
     const searchInput =
-      document.getElementById(
-        "searchInput"
-      );
-
-    const searchClear =
-      document.getElementById(
-        "searchClear"
-      );
+      document.getElementById("search");
 
     const totalCount =
-      document.getElementById(
-        "totalCount"
-      );
+      document.getElementById("totalCount");
 
-    const carCount =
-      document.getElementById(
-        "carCount"
-      );
+    const vehicleCount =
+      document.getElementById("vehicleCount");
 
-    const mobileTotalCount =
-      document.getElementById(
-        "mobileTotalCount"
-      );
+    const listCount =
+      document.getElementById("listCount");
 
-    const mobileCarCount =
-      document.getElementById(
-        "mobileCarCount"
-      );
-
-    const resultCount =
-      document.getElementById(
-        "resultCount"
-      );
-
-    const loading =
-      document.getElementById(
-        "loading"
-      );
-
-    const errorScreen =
-      document.getElementById(
-        "errorScreen"
-      );
-
-    const errorMessage =
-      document.getElementById(
-        "errorMessage"
-      );
-
+    const fitButton =
+      document.getElementById("fitButton");
 
     /* =========================================================
-       MOBILE BOTTOM SHEET STATE
+       MOBILE
     ========================================================= */
 
-    const sheetState = {
-      current: "collapsed",
-
-      dragging: false,
-
-      startY: 0,
-
-      startTranslate: 0,
-
-      currentTranslate: 0,
-
-      lastY: 0,
-
-      lastTime: 0,
-
-      velocity: 0
-    };
-
-
-    /*
-     * 실제 pixel 기준 snap 위치
-     *
-     * expanded:
-     *   panel이 화면 위쪽까지 거의 올라온 상태
-     *
-     * middle:
-     *   중간 상태
-     *
-     * collapsed:
-     *   하단에 일부만 보이는 상태
-     */
+    function isMobile() {
+      return window.innerWidth <= 800;
+    }
 
     function getSheetPositions() {
-      if (
-        window.innerWidth > 800
-      ) {
+      if (!isMobile()) {
         return null;
       }
-
 
       const viewportHeight =
         window.innerHeight;
 
-
       const expanded =
         viewportHeight * 0.14;
-
 
       const middle =
         viewportHeight * 0.43;
 
-
       const collapsed =
         viewportHeight * 0.68;
-
 
       return {
         expanded,
@@ -1900,165 +965,21 @@
       };
     }
 
-
-    function isMobile() {
-      return window.innerWidth <= 800;
-    }
-
-
     function getCurrentSheetTranslate() {
-      const positions =
-        getSheetPositions();
-
-      if (!positions) {
+      if (!isMobile()) {
         return 0;
       }
 
-
-      return sheetState.current ===
-        "expanded"
-        ? positions.expanded
-        : sheetState.current ===
-          "middle"
-          ? positions.middle
-          : positions.collapsed;
+      return sheetState.currentTranslate;
     }
 
-
-    function setSheetPosition(
-      state,
-      animate = true
-    ) {
-      if (!isMobile()) {
-        return;
-      }
-
-
-      const positions =
-        getSheetPositions();
-
-      if (!positions) {
-        return;
-      }
-
-
-      sheetState.current =
-        state;
-
-
-      const translate =
-        state === "expanded"
-          ? positions.expanded
-          : state === "middle"
-            ? positions.middle
-            : positions.collapsed;
-
-
-      sheetState.currentTranslate =
-        translate;
-
-
-      sidebar.classList.toggle(
-        "is-dragging",
-        !animate
-      );
-
-
-      sidebar.style.transform =
-        `translate3d(0, ${translate}px, 0)`;
-
-
-      if (!animate) {
-        requestAnimationFrame(
-          () => {
-            sidebar.classList.remove(
-              "is-dragging"
-            );
-          }
-        );
-      }
-    }
-
-
-    function getNearestSheetState(
-      translate
-    ) {
-      const positions =
-        getSheetPositions();
-
-      if (!positions) {
-        return "collapsed";
-      }
-
-
-      const candidates = [
-        {
-          name: "expanded",
-          value: positions.expanded
-        },
-
-        {
-          name: "middle",
-          value: positions.middle
-        },
-
-        {
-          name: "collapsed",
-          value: positions.collapsed
-        }
-      ];
-
-
-      let nearest =
-        candidates[0];
-
-
-      let minDistance =
-        Math.abs(
-          translate -
-          nearest.value
-        );
-
-
-      for (
-        let i = 1;
-        i < candidates.length;
-        i++
-      ) {
-        const distance =
-          Math.abs(
-            translate -
-            candidates[i].value
-          );
-
-
-        if (
-          distance <
-          minDistance
-        ) {
-          minDistance =
-            distance;
-
-          nearest =
-            candidates[i];
-        }
-      }
-
-
-      return nearest.name;
-    }
-
-
-    function clampSheetTranslate(
-      value
-    ) {
+    function clampSheetTranslate(value) {
       const positions =
         getSheetPositions();
 
       if (!positions) {
         return value;
       }
-
 
       return Math.max(
         positions.expanded,
@@ -2069,26 +990,177 @@
       );
     }
 
+    function getNearestSheetState(
+      translate,
+      velocity = 0
+    ) {
+      const positions =
+        getSheetPositions();
 
-    /* =========================================================
-       BOTTOM SHEET DRAG
-    ========================================================= */
+      if (!positions) {
+        return "collapsed";
+      }
 
-    function startSheetDrag(
-      event
+      const states = [
+        {
+          name: "expanded",
+          value: positions.expanded
+        },
+        {
+          name: "middle",
+          value: positions.middle
+        },
+        {
+          name: "collapsed",
+          value: positions.collapsed
+        }
+      ];
+
+      /*
+       * Swipe velocity gives the sheet a natural
+       * direction rather than simply snapping
+       * to the mathematically nearest point.
+       */
+      if (Math.abs(velocity) > 0.45) {
+        if (velocity < 0) {
+          if (
+            translate >
+            positions.middle
+          ) {
+            return "middle";
+          }
+
+          return "expanded";
+        }
+
+        if (
+          translate <
+          positions.middle
+        ) {
+          return "middle";
+        }
+
+        return "collapsed";
+      }
+
+      let closest =
+        states[0];
+
+      let distance =
+        Math.abs(
+          translate -
+          states[0].value
+        );
+
+      for (
+        let i = 1;
+        i < states.length;
+        i++
+      ) {
+        const currentDistance =
+          Math.abs(
+            translate -
+            states[i].value
+          );
+
+        if (
+          currentDistance <
+          distance
+        ) {
+          closest =
+            states[i];
+
+          distance =
+            currentDistance;
+        }
+      }
+
+      return closest.name;
+    }
+
+    function setSheetPosition(
+      state,
+      animate = true
     ) {
       if (!isMobile()) {
         return;
       }
 
+      const positions =
+        getSheetPositions();
+
+      if (!positions) {
+        return;
+      }
+
+      const translate =
+        positions[state];
+
+      if (
+        typeof translate !==
+        "number"
+      ) {
+        return;
+      }
+
+      sheetState.current =
+        state;
+
+      sheetState.currentTranslate =
+        translate;
+
+      sidebar.classList.toggle(
+        "dragging",
+        !animate
+      );
+
+      sidebar.style.transform =
+        `translate3d(0, ${translate}px, 0)`;
+    }
+
+    function updateSheetForViewport() {
+      if (!isMobile()) {
+        sidebar.style.transform =
+          "";
+        return;
+      }
+
+      setSheetPosition(
+        sheetState.current,
+        false
+      );
+    }
+
+    /* =========================================================
+       SHEET DRAG
+    ========================================================= */
+
+    function getTouchY(event) {
+      if (
+        event.touches &&
+        event.touches.length
+      ) {
+        return event.touches[0].clientY;
+      }
+
+      if (
+        event.changedTouches &&
+        event.changedTouches.length
+      ) {
+        return event.changedTouches[0].clientY;
+      }
+
+      return 0;
+    }
+
+    function startSheetDrag(event) {
+      if (!isMobile()) {
+        return;
+      }
 
       /*
-       * 목록 자체에서 시작한 터치는
-       * Bottom Sheet 드래그로 처리하지 않는다.
-       *
-       * 목록은 독립적으로 스크롤해야 하기 때문.
+       * Do not steal vertical scrolling from the record list.
        */
-
       if (
         event.target.closest(
           ".list"
@@ -2096,11 +1168,6 @@
       ) {
         return;
       }
-
-
-      /*
-       * input에 대한 터치도 제외
-       */
 
       if (
         event.target.closest(
@@ -2110,18 +1177,21 @@
         return;
       }
 
+      const positions =
+        getSheetPositions();
 
-      const touch =
-        event.touches
-          ? event.touches[0]
-          : event;
+      if (!positions) {
+        return;
+      }
 
+      const y =
+        getTouchY(event);
 
       sheetState.dragging =
         true;
 
       sheetState.startY =
-        touch.clientY;
+        y;
 
       sheetState.startTranslate =
         getCurrentSheetTranslate();
@@ -2129,257 +1199,98 @@
       sheetState.currentTranslate =
         sheetState.startTranslate;
 
-      sheetState.lastY =
-        touch.clientY;
-
+      sheetState.lastY = y;
       sheetState.lastTime =
         performance.now();
 
-      sheetState.velocity =
-        0;
-
+      sheetState.velocity = 0;
 
       sidebar.classList.add(
-        "is-dragging"
+        "dragging"
       );
-
-
-      /*
-       * 문서 전체에서 touchmove를 잡기 위해
-       * preventDefault 가능한 상태로 둔다.
-       */
-
-      if (
-        event.cancelable
-      ) {
-        event.preventDefault();
-      }
     }
 
-
-    function moveSheetDrag(
-      event
-    ) {
+    function moveSheetDrag(event) {
       if (
-        !sheetState.dragging ||
-        !isMobile()
-      ) {
-        return;
-      }
-
-
-      const touch =
-        event.touches
-          ? event.touches[0]
-          : event;
-
-
-      const currentY =
-        touch.clientY;
-
-
-      const delta =
-        currentY -
-        sheetState.startY;
-
-
-      let translate =
-        sheetState.startTranslate +
-        delta;
-
-
-      translate =
-        clampSheetTranslate(
-          translate
-        );
-
-
-      const now =
-        performance.now();
-
-
-      const dt =
-        now -
-        sheetState.lastTime;
-
-
-      if (dt > 0) {
-        sheetState.velocity =
-          (currentY -
-            sheetState.lastY) /
-          dt;
-      }
-
-
-      sheetState.lastY =
-        currentY;
-
-      sheetState.lastTime =
-        now;
-
-
-      sheetState.currentTranslate =
-        translate;
-
-
-      sidebar.style.transform =
-        `translate3d(0, ${translate}px, 0)`;
-
-
-      if (
-        event.cancelable
-      ) {
-        event.preventDefault();
-      }
-    }
-
-
-    function endSheetDrag() {
-      if (
+        !isMobile() ||
         !sheetState.dragging
       ) {
         return;
       }
 
+      event.preventDefault();
+
+      const y =
+        getTouchY(event);
+
+      const now =
+        performance.now();
+
+      const deltaY =
+        y -
+        sheetState.startY;
+
+      const nextTranslate =
+        clampSheetTranslate(
+          sheetState.startTranslate +
+          deltaY
+        );
+
+      const dt =
+        Math.max(
+          now -
+          sheetState.lastTime,
+          1
+        );
+
+      sheetState.velocity =
+        (y - sheetState.lastY) /
+        dt *
+        16;
+
+      sheetState.lastY =
+        y;
+
+      sheetState.lastTime =
+        now;
+
+      sheetState.currentTranslate =
+        nextTranslate;
+
+      sidebar.style.transform =
+        `translate3d(0, ${nextTranslate}px, 0)`;
+    }
+
+    function endSheetDrag() {
+      if (
+        !isMobile() ||
+        !sheetState.dragging
+      ) {
+        return;
+      }
 
       sheetState.dragging =
         false;
 
-
-      sidebar.classList.remove(
-        "is-dragging"
-      );
-
-
-      let translate =
-        sheetState.currentTranslate;
-
-
-      /*
-       * 빠르게 스와이프한 경우
-       * 현재 위치보다 한 단계 더 이동
-       */
-
-      const velocity =
-        sheetState.velocity;
-
-
-      const positions =
-        getSheetPositions();
-
-
-      if (!positions) {
-        return;
-      }
-
-
-      /*
-       * 위로 빠르게 스와이프
-       *
-       * velocity < 0
-       */
-
-      if (
-        velocity <
-        -0.65
-      ) {
-        if (
-          translate >
-          positions.middle
-        ) {
-          translate =
-            positions.middle;
-        } else {
-          translate =
-            positions.expanded;
-        }
-      }
-
-      /*
-       * 아래로 빠르게 스와이프
-       *
-       * velocity > 0
-       */
-
-      else if (
-        velocity >
-        0.65
-      ) {
-        if (
-          translate <
-          positions.middle
-        ) {
-          translate =
-            positions.middle;
-        } else {
-          translate =
-            positions.collapsed;
-        }
-      }
-
-
-      const state =
+      const nextState =
         getNearestSheetState(
-          translate
+          sheetState.currentTranslate,
+          sheetState.velocity
         );
 
-
       setSheetPosition(
-        state,
+        nextState,
         true
       );
     }
 
-
-    /*
-     * Handle
-     */
-
-    sidebarHandle.addEventListener(
-      "touchstart",
-      startSheetDrag,
-      {
-        passive: false
-      }
-    );
-
-
-    sidebarHandle.addEventListener(
-      "touchmove",
-      moveSheetDrag,
-      {
-        passive: false
-      }
-    );
-
-
-    sidebarHandle.addEventListener(
-      "touchend",
-      endSheetDrag
-    );
-
-
-    sidebarHandle.addEventListener(
-      "touchcancel",
-      endSheetDrag
-    );
-
-
-    /*
-     * Search / list header 영역에서도
-     * 패널을 잡고 이동할 수 있게 한다.
-     *
-     * 단, 실제 input은 제외된다.
-     */
-
     sidebar.addEventListener(
       "touchstart",
       startSheetDrag,
       {
-        passive: false
+        passive: true
       }
     );
-
 
     sidebar.addEventListener(
       "touchmove",
@@ -2389,195 +1300,436 @@
       }
     );
 
-
     sidebar.addEventListener(
       "touchend",
-      endSheetDrag
+      endSheetDrag,
+      {
+        passive: true
+      }
     );
-
 
     sidebar.addEventListener(
       "touchcancel",
-      endSheetDrag
+      endSheetDrag,
+      {
+        passive: true
+      }
     );
 
-
-    /* =========================================================
-       DESKTOP / MOBILE SWITCH
-    ========================================================= */
-
-    function updateSheetForViewport() {
-      if (!isMobile()) {
-
-        sidebar.style.transform =
-          "";
-
-        sidebar.classList.remove(
-          "is-dragging"
-        );
-
-        return;
+    sheetHandle.addEventListener(
+      "touchstart",
+      startSheetDrag,
+      {
+        passive: true
       }
+    );
 
+    sheetHandle.addEventListener(
+      "touchmove",
+      moveSheetDrag,
+      {
+        passive: false
+      }
+    );
 
-      /*
-       * 모바일 최초 상태
-       */
-
-      const current =
-        sheetState.current;
-
-
-      setSheetPosition(
-        current,
-        false
-      );
-    }
-
+    sheetHandle.addEventListener(
+      "touchend",
+      endSheetDrag,
+      {
+        passive: true
+      }
+    );
 
     /* =========================================================
-       UTILITY
+       DATE
     ========================================================= */
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
 
     function parseRecordDate(
-      rawDate
+      value
     ) {
-      const value =
-        String(
-          rawDate ?? ""
-        ).trim();
-
-
       if (
-        !/^\d{6}$/.test(
-          value
-        )
+        value === null ||
+        value === undefined
       ) {
         return {
           valid: false,
-
-          text:
-            value ||
-            "날짜 미상"
+          text: "날짜 확인 필요"
         };
       }
 
+      const raw =
+        String(value).trim();
 
-      const yy =
-        Number(
-          value.slice(0, 2)
-        );
-
-      const mm =
-        Number(
-          value.slice(2, 4)
-        );
-
-      const dd =
-        Number(
-          value.slice(4, 6)
-        );
-
+      if (
+        !/^\d{6}$/.test(raw)
+      ) {
+        return {
+          valid: false,
+          text: "날짜 확인 필요"
+        };
+      }
 
       const year =
-        2000 + yy;
+        2000 +
+        Number(
+          raw.slice(0, 2)
+        );
 
+      const month =
+        Number(
+          raw.slice(2, 4)
+        );
+
+      const day =
+        Number(
+          raw.slice(4, 6)
+        );
 
       const date =
         new Date(
           year,
-          mm - 1,
-          dd
+          month - 1,
+          day
         );
 
-
       const valid =
-        mm >= 1 &&
-        mm <= 12 &&
-        dd >= 1 &&
-        dd <= 31 &&
-        date.getFullYear() ===
-          year &&
-        date.getMonth() ===
-          mm - 1 &&
-        date.getDate() ===
-          dd;
-
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day;
 
       if (!valid) {
         return {
           valid: false,
-
-          text:
-            "날짜 확인 필요"
+          text: "날짜 확인 필요"
         };
       }
 
-
       return {
         valid: true,
-
         text:
-          String(year).slice(2) +
-          "." +
-          String(mm).padStart(
-            2,
-            "0"
-          ) +
-          "." +
-          String(dd).padStart(
-            2,
-            "0"
-          )
+          `${year}.${String(month).padStart(2, "0")}.${String(day).padStart(2, "0")}`
       };
     }
 
+    /* =========================================================
+       ESCAPE HTML
+    ========================================================= */
 
-    function showError(
-      message
+    function escapeHtml(
+      value
     ) {
-      loading.classList.add(
-        "hidden"
-      );
-
-      errorMessage.innerHTML =
-        escapeHtml(message)
-          .replace(
-            /\n/g,
-            "<br>"
-          );
-
-      errorScreen.classList.add(
-        "visible"
-      );
+      return String(
+        value ??
+        ""
+      )
+        .replaceAll(
+          "&",
+          "&amp;"
+        )
+        .replaceAll(
+          "<",
+          "&lt;"
+        )
+        .replaceAll(
+          ">",
+          "&gt;"
+        )
+        .replaceAll(
+          '"',
+          "&quot;"
+        )
+        .replaceAll(
+          "'",
+          "&#039;"
+        );
     }
 
+    /* =========================================================
+       STATS
+    ========================================================= */
+
+    function updateStats(
+      data
+    ) {
+      totalCount.textContent =
+        data.length;
+
+      const uniqueCars =
+        new Set(
+          data
+            .map(
+              item =>
+                String(
+                  item.carnum ??
+                  ""
+                ).trim()
+            )
+            .filter(Boolean)
+        );
+
+      vehicleCount.textContent =
+        uniqueCars.size;
+
+      listCount.textContent =
+        data.length;
+    }
 
     /* =========================================================
-       INFO WINDOW CONTROL
+       LIST
     ========================================================= */
+
+    function renderList(
+      data
+    ) {
+      if (!data.length) {
+        recordList.innerHTML =
+          `
+            <div class="status">
+              검색 결과가 없습니다.
+            </div>
+          `;
+
+        listCount.textContent =
+          "0";
+
+        return;
+      }
+
+      listCount.textContent =
+        data.length;
+
+      recordList.innerHTML =
+        data
+          .map(
+            item => {
+              const originalIndex =
+                item.originalIndex;
+
+              const date =
+                parseRecordDate(
+                  item.date
+                );
+
+              return `
+                <button
+                  type="button"
+                  class="record ${
+                    activeRecordIndex ===
+                    originalIndex
+                      ? "active"
+                      : ""
+                  }"
+                  data-index="${originalIndex}"
+                >
+
+                  <div class="record-top">
+
+                    <div class="record-car-number">
+                      ${escapeHtml(
+                        item.carnum
+                      )}
+                    </div>
+
+                    <div
+                      class="record-date ${
+                        date.valid
+                          ? ""
+                          : "invalid"
+                      }"
+                    >
+                      ${escapeHtml(
+                        date.text
+                      )}
+                    </div>
+
+                  </div>
+
+                  <div class="record-car">
+                    ${escapeHtml(
+                      item.car
+                    )}
+                  </div>
+
+                  <div class="record-reason">
+                    ${escapeHtml(
+                      item.reason
+                    )}
+                  </div>
+
+                </button>
+              `;
+            }
+          )
+          .join("");
+
+      recordList
+        .querySelectorAll(
+          ".record"
+        )
+        .forEach(
+          element => {
+            element.addEventListener(
+              "click",
+              () => {
+                const index =
+                  Number(
+                    element.dataset.index
+                  );
+
+                selectRecord(
+                  index
+                );
+              }
+            );
+          }
+        );
+    }
+
+    /* =========================================================
+       INFO WINDOW
+    ========================================================= */
+
+    function createInfoWindowContent(
+      item
+    ) {
+      const date =
+        parseRecordDate(
+          item.date
+        );
+
+      return `
+        <div class="custom-info">
+
+          <div class="custom-info-title">
+            ${escapeHtml(
+              item.carnum
+            )}
+          </div>
+
+          <div class="custom-info-car">
+            ${escapeHtml(
+              item.car
+            )}
+          </div>
+
+          <div class="custom-info-date">
+            ${escapeHtml(
+              date.text
+            )}
+          </div>
+
+          <div class="custom-info-reason">
+            ${escapeHtml(
+              item.reason
+            )}
+          </div>
+
+        </div>
+      `;
+    }
 
     function closeActiveInfoWindow() {
       if (
         activeInfoWindow
       ) {
         activeInfoWindow.close();
-
         activeInfoWindow =
           null;
       }
     }
 
+    /* =========================================================
+       MOBILE MAP POSITIONING
+    ========================================================= */
+
+    function panToMarkerForMobile(
+      position
+    ) {
+      if (!map) {
+        return;
+      }
+
+      const mapNode =
+        document.getElementById(
+          "map"
+        );
+
+      if (!mapNode) {
+        map.panTo(position);
+        return;
+      }
+
+      const mapHeight =
+        mapNode.getBoundingClientRect()
+          .height;
+
+      /*
+       * Put the marker around 27% from the
+       * top of the visible map.
+       *
+       * This leaves enough room below the
+       * marker for the Kakao InfoWindow.
+       */
+      const targetRatio =
+        0.27;
+
+      const targetY =
+        mapHeight *
+        targetRatio;
+
+      const centerY =
+        mapHeight / 2;
+
+      const projection =
+        map.getProjection();
+
+      if (!projection) {
+        map.panTo(position);
+        return;
+      }
+
+      const center =
+        map.getCenter();
+
+      const centerPoint =
+        projection.pointFromCoords(
+          center
+        );
+
+      const markerPoint =
+        projection.pointFromCoords(
+          position
+        );
+
+      const markerScreenY =
+        markerPoint.y -
+        centerPoint.y +
+        centerY;
+
+      const deltaY =
+        markerScreenY -
+        targetY;
+
+      const newCenterPoint =
+        new kakao.maps.Point(
+          centerPoint.x,
+          centerPoint.y +
+            deltaY
+        );
+
+      const newCenter =
+        projection.coordsFromPoint(
+          newCenterPoint
+        );
+
+      map.panTo(
+        newCenter
+      );
+    }
+
+    /* =========================================================
+       OPEN MARKER INFO
+    ========================================================= */
 
     function openMarkerInfo(
       index,
@@ -2588,716 +1740,228 @@
         return;
       }
 
-
       const item =
         records[index];
-
 
       if (!item) {
         return;
       }
 
-
       /*
-       * 다른 팝업 닫기
+       * Close previous popup first.
        */
-
       closeActiveInfoWindow();
-
-
-      /*
-       * 현재 기록
-       */
 
       activeRecordIndex =
         index;
 
-
       /*
-       * 목록 active
+       * Highlight corresponding
+       * list item.
        */
-
       document
         .querySelectorAll(
           ".record"
         )
         .forEach(
-          (element) => {
-
+          element => {
             element.classList.toggle(
               "active",
-
               Number(
                 element.dataset.index
               ) === index
             );
-
           }
         );
-
-
-      /*
-       * 지도 이동
-       */
 
       const position =
         new kakao.maps.LatLng(
           Number(
             item.latitude
           ),
-
           Number(
             item.longitude
           )
         );
 
-
-      map.panTo(
-        position
-      );
-
-
       /*
-       * 팝업 열기
-       */
-
-      infoWindow.open(
-        map,
-        marker
-      );
-
-
-      activeInfoWindow =
-        infoWindow;
-
-
-      /*
-       * 모바일에서 팝업을 보기 쉽게
-       * 패널을 살짝 내려서 지도 공간 확보
+       * IMPORTANT:
        *
-       * 단, 이미 collapsed 상태면 그대로 둔다.
+       * On mobile the sidebar is above
+       * the map with a high z-index.
+       *
+       * Collapse it before opening the
+       * InfoWindow so the popup isn't
+       * hidden behind the Bottom Sheet.
        */
-
-      if (
-        isMobile() &&
-        sheetState.current ===
-          "expanded"
-      ) {
+      if (isMobile()) {
         setSheetPosition(
-          "middle",
+          "collapsed",
           true
+        );
+
+        /*
+         * Move marker upward so that the
+         * popup has visible space.
+         */
+        panToMarkerForMobile(
+          position
+        );
+      } else {
+        map.panTo(
+          position
         );
       }
 
+      /*
+       * Wait for the map pan to begin /
+       * finish before opening the popup.
+       *
+       * This is particularly important
+       * on mobile Safari / Chrome.
+       */
+      setTimeout(
+        () => {
+          if (!map) {
+            return;
+          }
+
+          infoWindow.open(
+            map,
+            marker
+          );
+
+          activeInfoWindow =
+            infoWindow;
+        },
+        isMobile()
+          ? 220
+          : 0
+      );
 
       /*
-       * 선택 목록으로 이동
+       * Keep the selected record visible.
        */
-
       const selectedElement =
         document.querySelector(
           `.record[data-index="${index}"]`
         );
-
 
       if (
         selectedElement
       ) {
         selectedElement.scrollIntoView(
           {
-            behavior:
-              "smooth",
-
-            block:
-              "nearest"
+            behavior: "smooth",
+            block: "nearest"
           }
         );
       }
     }
 
-
     /* =========================================================
-       MAP INITIALIZATION
-    ========================================================= */
-
-    function initMap() {
-      const mapContainer =
-        document.getElementById(
-          "map"
-        );
-
-
-      const mapOptions = {
-        center:
-          new kakao.maps.LatLng(
-            37.5665,
-            126.9780
-          ),
-
-        level: 8
-      };
-
-
-      map =
-        new kakao.maps.Map(
-          mapContainer,
-          mapOptions
-        );
-
-
-      /*
-       * Zoom
-       */
-
-      const zoomControl =
-        new kakao.maps.ZoomControl();
-
-
-      map.addControl(
-        zoomControl,
-
-        kakao.maps.ControlPosition.RIGHT
-      );
-
-
-      /*
-       * Clusterer
-       */
-
-      clusterer =
-        new kakao.maps.MarkerClusterer({
-          map: map,
-
-          averageCenter: true,
-
-          minLevel: 6,
-
-          disableClickZoom: false
-        });
-
-
-      /*
-       * 중요
-       *
-       * 지도 전체 click 이벤트로
-       * 팝업을 닫지 않는다.
-       *
-       * 그래야 모바일에서 핀을 터치했을 때
-       * InfoWindow가 바로 닫히지 않는다.
-       */
-
-      loadData();
-    }
-
-
-    /* =========================================================
-       LOAD DATA
-    ========================================================= */
-
-    async function loadData() {
-      try {
-
-        const response =
-          await fetch(
-            "./list.json",
-            {
-              cache:
-                "no-store"
-            }
-          );
-
-
-        if (!response.ok) {
-          throw new Error(
-            `list.json 요청 실패 (${response.status})`
-          );
-        }
-
-
-        const json =
-          await response.json();
-
-
-        if (
-          !Array.isArray(
-            json
-          )
-        ) {
-          throw new Error(
-            "list.json 데이터 형식이 배열이 아닙니다."
-          );
-        }
-
-
-        records =
-          json.filter(
-            (item) => {
-
-              const lat =
-                Number(
-                  item.latitude
-                );
-
-              const lng =
-                Number(
-                  item.longitude
-                );
-
-
-              return (
-                Number.isFinite(
-                  lat
-                ) &&
-                Number.isFinite(
-                  lng
-                )
-              );
-            }
-          );
-
-
-        updateStats();
-
-        renderList(
-          records
-        );
-
-        createMarkers(
-          records
-        );
-
-        fitMap();
-
-
-        loading.classList.add(
-          "hidden"
-        );
-
-
-      } catch (
-        error
-      ) {
-
-        console.error(
-          error
-        );
-
-
-        showError(
-          "list.json 파일을 확인해주세요.\n\n" +
-          error.message
-        );
-      }
-    }
-
-
-    /* =========================================================
-       STATS
-    ========================================================= */
-
-    function updateStats() {
-
-      const uniqueVehicles =
-        new Set(
-          records
-            .map(
-              (item) =>
-                String(
-                  item.carnum ??
-                    ""
-                ).trim()
-            )
-            .filter(
-              Boolean
-            )
-        );
-
-
-      const total =
-        records.length;
-
-
-      const vehicles =
-        uniqueVehicles.size;
-
-
-      totalCount.textContent =
-        total;
-
-      carCount.textContent =
-        vehicles;
-
-      mobileTotalCount.textContent =
-        total;
-
-      mobileCarCount.textContent =
-        vehicles;
-    }
-
-
-    function updateResultCount(
-      count
-    ) {
-      resultCount.textContent =
-        `${count} record${
-          count === 1
-            ? ""
-            : "s"
-        }`;
-    }
-
-
-    /* =========================================================
-       RENDER LIST
-    ========================================================= */
-
-    function renderList(
-      data
-    ) {
-      recordList.innerHTML =
-        "";
-
-
-      updateResultCount(
-        data.length
-      );
-
-
-      if (
-        !data.length
-      ) {
-
-        recordList.innerHTML = `
-          <div class="empty">
-            검색 조건에 해당하는 기록이 없습니다.
-          </div>
-        `;
-
-        return;
-      }
-
-
-      const fragment =
-        document.createDocumentFragment();
-
-
-      data.forEach(
-        (item) => {
-
-          const originalIndex =
-            records.indexOf(
-              item
-            );
-
-
-          const dateInfo =
-            parseRecordDate(
-              item.date
-            );
-
-
-          const button =
-            document.createElement(
-              "button"
-            );
-
-
-          button.type =
-            "button";
-
-
-          button.className =
-            "record";
-
-
-          button.dataset.index =
-            originalIndex;
-
-
-          if (
-            activeRecordIndex ===
-            originalIndex
-          ) {
-            button.classList.add(
-              "active"
-            );
-          }
-
-
-          button.innerHTML = `
-            <div class="record-top">
-
-              <div class="car-number">
-                ${escapeHtml(
-                  item.carnum ||
-                  "차량번호 없음"
-                )}
-              </div>
-
-              <div class="date ${
-                dateInfo.valid
-                  ? ""
-                  : "invalid"
-              }">
-                ${escapeHtml(
-                  dateInfo.text
-                )}
-              </div>
-
-            </div>
-
-            <div class="car-name">
-              ${escapeHtml(
-                item.car ||
-                "차종 정보 없음"
-              )}
-            </div>
-
-            <div class="reason">
-              ${escapeHtml(
-                item.reason ||
-                "사고 내용 없음"
-              )}
-            </div>
-          `;
-
-
-          button.addEventListener(
-            "click",
-            () => {
-
-              selectRecord(
-                originalIndex
-              );
-
-            }
-          );
-
-
-          fragment.appendChild(
-            button
-          );
-
-        }
-      );
-
-
-      recordList.appendChild(
-        fragment
-      );
-    }
-
-
-    /* =========================================================
-       CREATE MARKERS
+       MARKERS
     ========================================================= */
 
     function createMarkers(
       data
     ) {
-
-      /*
-       * 기존 팝업
-       */
-
-      closeActiveInfoWindow();
-
-
-      /*
-       * 기존 cluster
-       */
-
       if (
-        clusterer
+        !map ||
+        !clusterer
       ) {
-        clusterer.clear();
+        return;
       }
 
-
-      /*
-       * 기존 marker
-       */
+      clusterer.clear();
 
       markers.forEach(
-        (marker) => {
-
-          marker.setMap(
-            null
-          );
-
+        marker => {
+          marker.setMap(null);
         }
       );
 
-
-      markers =
-        [];
-
-      infoWindows =
-        [];
-
-
-      /*
-       * marker 생성
-       */
+      markers = [];
 
       data.forEach(
-        (item) => {
-
-          const originalIndex =
-            records.indexOf(
-              item
+        item => {
+          const latitude =
+            Number(
+              item.latitude
             );
 
+          const longitude =
+            Number(
+              item.longitude
+            );
+
+          if (
+            !Number.isFinite(
+              latitude
+            ) ||
+            !Number.isFinite(
+              longitude
+            )
+          ) {
+            return;
+          }
 
           const position =
             new kakao.maps.LatLng(
-              Number(
-                item.latitude
-              ),
-
-              Number(
-                item.longitude
-              )
+              latitude,
+              longitude
             );
 
-
           const marker =
-            new kakao.maps.Marker({
-              position
-            });
-
-
-          marker.__recordIndex =
-            originalIndex;
-
+            new kakao.maps.Marker(
+              {
+                position
+              }
+            );
 
           const infoWindow =
-            new kakao.maps.InfoWindow({
-              removable:
-                false,
+            new kakao.maps.InfoWindow(
+              {
+                content:
+                  createInfoWindowContent(
+                    item
+                  ),
+                removable: false
+              }
+            );
 
-              content:
-                createInfoWindowContent(
-                  item
-                )
-            });
-
+          const originalIndex =
+            item.originalIndex;
 
           /*
-           * Marker click
+           * Do not attach a map-wide click
+           * listener that closes the InfoWindow.
            *
-           * 이 이벤트 안에서 직접 InfoWindow를
-           * 열기 때문에 모바일에서도 유지된다.
+           * On mobile that can interfere with
+           * marker touch/click events.
            */
-
           kakao.maps.event.addListener(
             marker,
             "click",
             () => {
-
               openMarkerInfo(
                 originalIndex,
-
                 marker,
-
                 infoWindow
               );
-
             }
           );
-
 
           markers.push(
             marker
           );
-
-
-          infoWindows.push({
-            marker,
-
-            infoWindow,
-
-            originalIndex
-          });
-
         }
       );
 
-
-      if (
-        clusterer
-      ) {
-        clusterer.addMarkers(
-          markers
-        );
-      }
+      clusterer.addMarkers(
+        markers
+      );
     }
-
-
-    /* =========================================================
-       INFO WINDOW
-    ========================================================= */
-
-    function createInfoWindowContent(
-      item
-    ) {
-
-      const dateInfo =
-        parseRecordDate(
-          item.date
-        );
-
-
-      return `
-        <div class="info-window">
-
-          <div class="info-title">
-            ${escapeHtml(
-              item.carnum ||
-              "차량번호 없음"
-            )}
-          </div>
-
-          <div class="info-row">
-
-            <div class="info-label">
-              차종
-            </div>
-
-            <div class="info-value">
-              ${escapeHtml(
-                item.car ||
-                "-"
-              )}
-            </div>
-
-          </div>
-
-          <div class="info-row">
-
-            <div class="info-label">
-              일자
-            </div>
-
-            <div class="info-value">
-              ${escapeHtml(
-                dateInfo.text
-              )}
-            </div>
-
-          </div>
-
-          <div class="info-reason">
-            ${escapeHtml(
-              item.reason ||
-              "사고 내용 없음"
-            )}
-          </div>
-
-        </div>
-      `;
-    }
-
 
     /* =========================================================
        SELECT RECORD
@@ -3306,125 +1970,268 @@
     function selectRecord(
       index
     ) {
-
-      const item =
+      const target =
         records[index];
 
-
-      if (!item) {
+      if (!target) {
         return;
       }
 
+      const markerIndex =
+        markers.findIndex(
+          marker => {
+            const position =
+              marker.getPosition();
 
-      const pair =
-        infoWindows.find(
-          (entry) =>
-            entry.originalIndex ===
-            index
+            return (
+              Math.abs(
+                position.getLat() -
+                Number(
+                  target.latitude
+                )
+              ) <
+                0.000000001 &&
+              Math.abs(
+                position.getLng() -
+                Number(
+                  target.longitude
+                )
+              ) <
+                0.000000001
+            );
+          }
         );
 
-
-      if (!pair) {
+      /*
+       * The marker array corresponds
+       * to valid geographic records.
+       */
+      if (
+        markerIndex < 0
+      ) {
         return;
       }
 
+      const marker =
+        markers[markerIndex];
+
+      /*
+       * InfoWindow is recreated here
+       * specifically for list selection.
+       */
+      const infoWindow =
+        new kakao.maps.InfoWindow(
+          {
+            content:
+              createInfoWindowContent(
+                target
+              ),
+            removable: false
+          }
+        );
 
       openMarkerInfo(
         index,
-
-        pair.marker,
-
-        pair.infoWindow
+        marker,
+        infoWindow
       );
     }
-
 
     /* =========================================================
        FIT MAP
     ========================================================= */
 
     function fitMap() {
-
       if (
         !map ||
-        !markers.length
+        !records.length
       ) {
         return;
       }
-
-
-      if (
-        markers.length === 1
-      ) {
-
-        map.setCenter(
-          markers[0].getPosition()
-        );
-
-        map.setLevel(
-          4
-        );
-
-        return;
-      }
-
 
       const bounds =
         new kakao.maps.LatLngBounds();
 
+      let validCount = 0;
 
-      markers.forEach(
-        (marker) => {
+      records.forEach(
+        item => {
+          const latitude =
+            Number(
+              item.latitude
+            );
 
-          bounds.extend(
-            marker.getPosition()
-          );
+          const longitude =
+            Number(
+              item.longitude
+            );
 
+          if (
+            Number.isFinite(
+              latitude
+            ) &&
+            Number.isFinite(
+              longitude
+            )
+          ) {
+            bounds.extend(
+              new kakao.maps.LatLng(
+                latitude,
+                longitude
+              )
+            );
+
+            validCount++;
+          }
         }
       );
 
-
-      map.setBounds(
-        bounds
-      );
+      if (validCount) {
+        map.setBounds(
+          bounds,
+          50,
+          50,
+          50,
+          50
+        );
+      }
     }
 
+    fitButton.addEventListener(
+      "click",
+      () => {
+        closeActiveInfoWindow();
+        fitMap();
+      }
+    );
 
     /* =========================================================
        SEARCH
     ========================================================= */
 
-    function runSearch() {
-
-      const keyword =
-        searchInput.value
+    function filterRecords(
+      keyword
+    ) {
+      const normalized =
+        String(
+          keyword ?? ""
+        )
           .trim()
           .toLowerCase();
 
+      if (!normalized) {
+        return records;
+      }
 
-      searchClear.classList.toggle(
-        "visible",
+      return records.filter(
+        item => {
+          const values = [
+            item.carnum,
+            item.car,
+            item.date,
+            item.reason
+          ];
 
-        Boolean(
-          keyword
-        )
+          return values.some(
+            value =>
+              String(
+                value ?? ""
+              )
+                .toLowerCase()
+                .includes(
+                  normalized
+                )
+          );
+        }
       );
+    }
 
+    searchInput.addEventListener(
+      "input",
+      event => {
+        const filtered =
+          filterRecords(
+            event.target.value
+          );
 
-      activeRecordIndex =
-        null;
+        activeRecordIndex =
+          -1;
 
+        closeActiveInfoWindow();
 
-      closeActiveInfoWindow();
+        renderList(
+          filtered
+        );
 
+        /*
+         * Only show filtered markers.
+         */
+        createMarkers(
+          filtered
+        );
+      }
+    );
 
-      /*
-       * 검색어 없음
-       */
+    /* =========================================================
+       LOAD DATA
+    ========================================================= */
 
-      if (
-        !keyword
-      ) {
+    async function loadData() {
+      try {
+        const response =
+          await fetch(
+            "./list.json"
+          );
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP ${response.status}`
+          );
+        }
+
+        const json =
+          await response.json();
+
+        if (
+          !Array.isArray(json)
+        ) {
+          throw new Error(
+            "list.json 형식이 배열이 아닙니다."
+          );
+        }
+
+        records =
+          json.map(
+            (item, index) => ({
+              ...item,
+              originalIndex:
+                index
+            })
+          );
+
+        /*
+         * Only records with valid
+         * geographic coordinates are
+         * displayed on the map.
+         */
+        records =
+          records.filter(
+            item =>
+              Number.isFinite(
+                Number(
+                  item.latitude
+                )
+              ) &&
+              Number.isFinite(
+                Number(
+                  item.longitude
+                )
+              )
+          );
+
+        updateStats(
+          records
+        );
 
         renderList(
           records
@@ -3436,219 +2243,123 @@
 
         fitMap();
 
-        return;
-      }
-
-
-      /*
-       * 검색
-       */
-
-      const filtered =
-        records.filter(
-          (item) => {
-
-            const target =
-              [
-                item.carnum,
-                item.car,
-                item.date,
-                item.reason
-              ]
-                .join(" ")
-                .toLowerCase();
-
-
-            return target.includes(
-              keyword
-            );
-          }
+      } catch (error) {
+        console.error(
+          error
         );
 
-
-      renderList(
-        filtered
-      );
-
-
-      createMarkers(
-        filtered
-      );
-
-
-      if (
-        filtered.length
-      ) {
-        fitMap();
+        recordList.innerHTML =
+          `
+            <div class="status error">
+              데이터를 불러오지 못했습니다.<br>
+              list.json 파일을 확인해주세요.
+            </div>
+          `;
       }
     }
 
-
-    searchInput.addEventListener(
-      "input",
-      runSearch
-    );
-
-
-    searchClear.addEventListener(
-      "click",
-      () => {
-
-        searchInput.value =
-          "";
-
-        searchInput.focus();
-
-        runSearch();
-
-      }
-    );
-
-
     /* =========================================================
-       RESIZE
+       MAP INIT
     ========================================================= */
 
-    let resizeTimer;
+    function initMap() {
+      const container =
+        document.getElementById(
+          "map"
+        );
 
+      map =
+        new kakao.maps.Map(
+          container,
+          {
+            center:
+              new kakao.maps.LatLng(
+                37.5665,
+                126.978
+              ),
+            level: 8
+          }
+        );
+
+      /*
+       * Zoom controls
+       */
+      const zoomControl =
+        new kakao.maps.ZoomControl();
+
+      map.addControl(
+        zoomControl,
+        kakao.maps.ControlPosition
+          .RIGHT
+      );
+
+      /*
+       * Marker clusterer
+       */
+      clusterer =
+        new kakao.maps.MarkerClusterer(
+          {
+            map,
+            averageCenter: true,
+            minLevel: 6,
+            disableClickZoom: false
+          }
+        );
+
+      loadData();
+    }
+
+    /* =========================================================
+       WINDOW EVENTS
+    ========================================================= */
 
     window.addEventListener(
       "resize",
       () => {
+        updateSheetForViewport();
 
-        clearTimeout(
-          resizeTimer
-        );
-
-
-        resizeTimer =
-          setTimeout(
-            () => {
-
-              if (
-                !map
-              ) {
-                return;
-              }
-
-
-              map.relayout();
-
-
-              if (
-                isMobile()
-              ) {
-
-                /*
-                 * 현재 Bottom Sheet 위치 유지
-                 */
-
-                setSheetPosition(
-                  sheetState.current,
-                  false
-                );
-
-              }
-
-
-              if (
-                activeRecordIndex !==
-                null
-              ) {
-
-                const item =
-                  records[
-                    activeRecordIndex
-                  ];
-
-
-                if (
-                  item
-                ) {
-
-                  map.setCenter(
-                    new kakao.maps.LatLng(
-                      Number(
-                        item.latitude
-                      ),
-
-                      Number(
-                        item.longitude
-                      )
-                    )
-                  );
-
-                }
-
-              } else {
-
-                fitMap();
-
-              }
-
-            },
-
-            160
-          );
-
+        if (map) {
+          map.relayout();
+        }
       }
     );
 
-
     /* =========================================================
-       INIT
+       START
     ========================================================= */
 
     window.addEventListener(
       "load",
       () => {
-
-        /*
-         * 모바일 Bottom Sheet 초기 위치
-         */
-
-        if (
-          isMobile()
-        ) {
-
+        if (isMobile()) {
           setSheetPosition(
             "collapsed",
             false
           );
-
         }
-
-
-        /*
-         * Kakao SDK 확인
-         */
 
         if (
           typeof kakao ===
             "undefined" ||
           !kakao.maps
         ) {
-
-          showError(
-            "Kakao Maps SDK를 불러오지 못했습니다.\n" +
-            "JavaScript 키와 등록된 사이트 도메인을 확인해주세요."
-          );
+          recordList.innerHTML =
+            `
+              <div class="status error">
+                Kakao Maps SDK를 불러오지 못했습니다.
+              </div>
+            `;
 
           return;
         }
 
-
         kakao.maps.load(
           () => {
-
             initMap();
-
           }
         );
-
       }
     );
   </script>
-
 </body>
 </html>
