@@ -526,184 +526,209 @@
        MOBILE
     ========================================================= */
 
-    @media (max-width: 720px) {
-      #map {
-        inset: 0;
-      }
+@media (max-width: 720px) {
+  #map {
+    inset: 0;
+  }
 
-      .mobile-top-brand {
-        position: fixed;
-        z-index: 30;
+  .mobile-top-brand {
+    position: fixed;
+    z-index: 30;
 
-        top: 14px;
-        left: 16px;
+    top: 14px;
+    left: 16px;
 
-        display: block;
+    display: block;
+    pointer-events: none;
 
-        pointer-events: none;
+    padding: 10px 13px;
 
-        padding: 10px 13px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
 
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
+    background: rgba(8, 11, 15, 0.82);
 
-        background: rgba(8, 11, 15, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+  }
 
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
-      }
+  .mobile-top-brand-title {
+    font-size: 13px;
+    font-weight: 850;
+    letter-spacing: -0.03em;
+  }
 
-      .mobile-top-brand-title {
-        font-size: 13px;
-        font-weight: 850;
-        letter-spacing: -0.03em;
-      }
+  .mobile-top-brand-subtitle {
+    margin-top: 2px;
 
-      .mobile-top-brand-subtitle {
-        margin-top: 2px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
 
-        font-size: 8px;
-        font-weight: 700;
-        letter-spacing: 0.07em;
+    color: var(--text-muted);
+  }
 
-        color: var(--text-muted);
-      }
+  .sidebar {
+    position: fixed;
 
-      .sidebar {
-        top: auto;
-        right: 0;
-        bottom: 0;
-        left: 0;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
 
-        width: 100%;
-        height: var(--sheet-expanded);
+    width: 100%;
+    height: var(--sheet-expanded);
 
-        border-top: 1px solid var(--border-strong);
-        border-right: 0;
+    border-top: 1px solid var(--border-strong);
+    border-right: 0;
 
-        border-radius: 22px 22px 0 0;
+    border-radius: 22px 22px 0 0;
 
-        box-shadow:
-          0 -16px 45px rgba(0, 0, 0, 0.34);
+    box-shadow:
+      0 -16px 45px rgba(0, 0, 0, 0.34);
 
-        transform: translateY(
-          calc(
-            var(--sheet-expanded) - var(--sheet-collapsed)
-          )
-        );
+    /*
+     * 기본 상태 = collapsed
+     * 화면 아래쪽에 32dvh만 보이게 한다.
+     */
+    transform: translateY(
+      calc(var(--sheet-expanded) - var(--sheet-collapsed))
+    );
 
-        transition: transform 0.28s cubic-bezier(.22, .61, .36, 1);
+    transition:
+      transform 0.28s cubic-bezier(.22, .61, .36, 1);
 
-        pointer-events: none;
-      }
+    pointer-events: none;
 
-      .sidebar.sheet-middle {
-        transform: translateY(
-          calc(
-            var(--sheet-expanded) - var(--sheet-middle)
-          )
-        );
-      }
+    /*
+     * 시트 전체가 터치 이벤트를 먹지 않도록 한다.
+     */
+    touch-action: none;
+  }
 
-      .sidebar.sheet-expanded {
-        transform: translateY(0);
-      }
+  .sidebar.sheet-middle {
+    transform: translateY(
+      calc(var(--sheet-expanded) - var(--sheet-middle))
+    );
+  }
 
-      .sidebar.sheet-dragging {
-        transition: none;
-      }
+  .sidebar.sheet-expanded {
+    transform: translateY(0);
+  }
 
-      .brand {
-        display: none;
-      }
+  .sidebar.sheet-dragging {
+    transition: none;
+  }
 
-      .sidebar-handle-area {
-        position: absolute;
-        z-index: 5;
+  .brand {
+    display: none;
+  }
 
-        top: 0;
-        left: 0;
-        right: 0;
+  /*
+   * 핸들만 Sheet 이동용 터치 영역
+   */
+  .sidebar-handle-area {
+    position: absolute;
+    z-index: 10;
 
-        height: 34px;
+    top: 0;
+    left: 0;
+    right: 0;
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    height: 34px;
 
-        pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        touch-action: none;
-      }
+    pointer-events: auto;
 
-      .sidebar-handle {
-        width: 40px;
-        height: 4px;
+    touch-action: none;
+  }
 
-        border-radius: 999px;
+  .sidebar-handle {
+    width: 40px;
+    height: 4px;
 
-        background: rgba(255, 255, 255, 0.2);
-      }
+    border-radius: 999px;
 
-      .search-wrap {
-        padding-top: 38px;
-      }
+    background: rgba(255, 255, 255, 0.2);
+  }
 
-      .stats {
-        padding: 8px 14px 9px;
-        gap: 6px;
-      }
+  /*
+   * 실제 콘텐츠 영역만 터치 가능
+   */
+  .search-wrap,
+  .stats,
+  .list-header,
+  .list {
+    pointer-events: auto;
+    touch-action: auto;
+  }
 
-      .stat-card {
-        min-height: 38px;
-        padding: 6px 10px;
-      }
+  .search-wrap {
+    padding-top: 38px;
+  }
 
-      .stat-label {
-        font-size: 8px;
-      }
+  .stats {
+    padding: 8px 14px 9px;
+    gap: 6px;
+  }
 
-      .stat-value {
-        font-size: 14px;
-      }
+  .stat-card {
+    min-height: 38px;
+    padding: 6px 10px;
+  }
 
-      .list-header {
-        height: 39px;
-        padding: 0 15px;
-      }
+  .stat-label {
+    font-size: 8px;
+  }
 
-      .list {
-        padding: 5px 9px 22px;
-      }
+  .stat-value {
+    font-size: 14px;
+  }
 
-      .record {
-        padding: 12px 11px;
-        margin-bottom: 4px;
-      }
+  .list-header {
+    height: 39px;
+    padding: 0 15px;
+  }
 
-      .record-car-number {
-        font-size: 13px;
-      }
+  .list {
+    padding: 5px 9px 22px;
 
-      .record-car {
-        font-size: 10px;
-      }
+    /*
+     * 목록은 자체적으로만 스크롤
+     */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 
-      .record-reason {
-        font-size: 10px;
-      }
+  .record {
+    padding: 12px 11px;
+    margin-bottom: 4px;
 
-      .incident-info {
-        width: min(280px, calc(100vw - 32px));
-      }
+    touch-action: manipulation;
+  }
 
-      .kakao-map-control {
-        transform: scale(0.92);
-        transform-origin: right top;
-      }
-    }
+  .record-car-number {
+    font-size: 13px;
+  }
+
+  .record-car {
+    font-size: 10px;
+  }
+
+  .record-reason {
+    font-size: 10px;
+  }
+
+  .incident-info {
+    width: min(280px, calc(100vw - 32px));
+  }
+}
   </style>
 </head>
 
@@ -1439,191 +1464,185 @@
        MOBILE SHEET DRAG
     ========================================================= */
 
-    let dragStartY = 0;
-    let dragStartTranslate = 0;
-    let isDraggingSheet = false;
+let dragStartY = 0;
+let dragStartTranslate = 0;
+let isDraggingSheet = false;
 
-    function getCurrentTranslateY() {
-      const style =
-        window.getComputedStyle(sidebar);
+function getSheetTranslateValues() {
+  const positions = getSheetPositions();
 
-      const matrix =
-        new DOMMatrixReadOnly(
-          style.transform
-        );
+  if (!positions) {
+    return null;
+  }
 
-      return matrix.m42;
+  return {
+    expanded: 0,
+    middle:
+      positions.expanded - positions.middle,
+    collapsed:
+      positions.expanded - positions.collapsed
+  };
+}
+
+function getCurrentSheetTranslate() {
+  const style =
+    window.getComputedStyle(sidebar);
+
+  const transform = style.transform;
+
+  if (!transform || transform === "none") {
+    return 0;
+  }
+
+  const matrix =
+    new DOMMatrixReadOnly(transform);
+
+  return matrix.m42;
+}
+
+function applySheetDrag(translateY) {
+  sidebar.style.transform =
+    `translateY(${translateY}px)`;
+}
+
+function finishSheetDrag() {
+  if (!isDraggingSheet) {
+    return;
+  }
+
+  isDraggingSheet = false;
+
+  sidebar.classList.remove(
+    "sheet-dragging"
+  );
+
+  const positions =
+    getSheetTranslateValues();
+
+  if (!positions) {
+    sidebar.style.transform = "";
+    return;
+  }
+
+  const current =
+    getCurrentSheetTranslate();
+
+  const candidates = [
+    {
+      name: "expanded",
+      value: positions.expanded
+    },
+    {
+      name: "middle",
+      value: positions.middle
+    },
+    {
+      name: "collapsed",
+      value: positions.collapsed
+    }
+  ];
+
+  candidates.sort(
+    (a, b) =>
+      Math.abs(current - a.value) -
+      Math.abs(current - b.value)
+  );
+
+  /*
+   * inline transform 제거
+   * → CSS 클래스가 최종 위치를 담당
+   */
+  sidebar.style.transform = "";
+
+  setSheetPosition(
+    candidates[0].name
+  );
+}
+
+sheetHandle.addEventListener(
+  "touchstart",
+  event => {
+    if (!isMobile()) {
+      return;
     }
 
-    function getSheetTranslateValues() {
-      const positions = getSheetPositions();
+    isDraggingSheet = true;
 
-      if (!positions) {
-        return null;
-      }
+    dragStartY =
+      event.touches[0].clientY;
 
-      const expanded =
-        positions.expanded -
-        positions.expanded;
+    dragStartTranslate =
+      getCurrentSheetTranslate();
 
-      const middle =
-        positions.expanded -
-        positions.middle;
+    sidebar.classList.add(
+      "sheet-dragging"
+    );
+  },
+  {
+    passive: true
+  }
+);
 
-      const collapsed =
-        positions.expanded -
-        positions.collapsed;
-
-      return {
-        expanded,
-        middle,
-        collapsed
-      };
+sheetHandle.addEventListener(
+  "touchmove",
+  event => {
+    if (
+      !isDraggingSheet ||
+      !isMobile()
+    ) {
+      return;
     }
 
-    function applySheetDrag(translateY) {
-      sidebar.style.transform =
-        `translateY(${translateY}px)`;
+    const currentY =
+      event.touches[0].clientY;
+
+    const delta =
+      currentY - dragStartY;
+
+    const positions =
+      getSheetTranslateValues();
+
+    if (!positions) {
+      return;
     }
 
-    function finishSheetDrag() {
-      if (!isDraggingSheet) {
-        return;
-      }
+    const min =
+      positions.expanded;
 
-      isDraggingSheet = false;
+    const max =
+      positions.collapsed;
 
-      sidebar.classList.remove(
-        "sheet-dragging"
+    const next =
+      Math.min(
+        max,
+        Math.max(
+          min,
+          dragStartTranslate + delta
+        )
       );
 
-      sidebar.style.transform = "";
+    applySheetDrag(next);
+  },
+  {
+    passive: true
+  }
+);
 
-      const positions =
-        getSheetTranslateValues();
+sheetHandle.addEventListener(
+  "touchend",
+  finishSheetDrag,
+  {
+    passive: true
+  }
+);
 
-      if (!positions) {
-        return;
-      }
-
-      const current =
-        getCurrentTranslateY();
-
-      const candidates = [
-        {
-          name: "expanded",
-          value: positions.expanded
-        },
-        {
-          name: "middle",
-          value: positions.middle
-        },
-        {
-          name: "collapsed",
-          value: positions.collapsed
-        }
-      ];
-
-      candidates.sort(
-        (a, b) =>
-          Math.abs(current - a.value) -
-          Math.abs(current - b.value)
-      );
-
-      setSheetPosition(
-        candidates[0].name
-      );
-    }
-
-    const sheetHandle =
-      document.getElementById(
-        "sheetHandle"
-      );
-
-    sheetHandle.addEventListener(
-      "touchstart",
-      event => {
-        if (!isMobile()) {
-          return;
-        }
-
-        isDraggingSheet = true;
-
-        dragStartY =
-          event.touches[0].clientY;
-
-        dragStartTranslate =
-          getCurrentTranslateY();
-
-        sidebar.classList.add(
-          "sheet-dragging"
-        );
-      },
-      {
-        passive: true
-      }
-    );
-
-    sheetHandle.addEventListener(
-      "touchmove",
-      event => {
-        if (
-          !isDraggingSheet ||
-          !isMobile()
-        ) {
-          return;
-        }
-
-        const currentY =
-          event.touches[0].clientY;
-
-        const delta =
-          currentY - dragStartY;
-
-        const positions =
-          getSheetTranslateValues();
-
-        if (!positions) {
-          return;
-        }
-
-        const min =
-          positions.expanded;
-
-        const max =
-          positions.collapsed;
-
-        const next =
-          Math.min(
-            max,
-            Math.max(
-              min,
-              dragStartTranslate + delta
-            )
-          );
-
-        applySheetDrag(next);
-      },
-      {
-        passive: true
-      }
-    );
-
-    sheetHandle.addEventListener(
-      "touchend",
-      finishSheetDrag,
-      {
-        passive: true
-      }
-    );
-
-    sheetHandle.addEventListener(
-      "touchcancel",
-      finishSheetDrag,
-      {
-        passive: true
-      }
-    );
+sheetHandle.addEventListener(
+  "touchcancel",
+  finishSheetDrag,
+  {
+    passive: true
+  }
+);
 
     /* =========================================================
        RESIZE
