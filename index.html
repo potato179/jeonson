@@ -622,10 +622,6 @@
 
     @media (max-width: 800px) {
       :root {
-        /*
-          시트 전체 높이.
-          collapsed가 높을수록 화면 아래로 더 많이 내려감.
-        */
         --sheet-height: 82vh;
       }
 
@@ -738,16 +734,8 @@
           0 -15px 45px
           rgba(0, 0, 0, 0.32);
 
-        /*
-          중요:
-          기존 코드의 pointer-events:none 제거.
-          iPhone Safari에서 터치 이벤트가 막히는 것을 방지.
-        */
         pointer-events: auto;
 
-        /*
-          JS가 직접 transform을 제어한다.
-        */
         transform:
           translateY(
             calc(
@@ -769,10 +757,6 @@
 
         overflow: hidden;
 
-        /*
-          리스트는 내부에서 직접 처리하므로
-          sidebar 전체를 브라우저 기본 스크롤로 만들지 않는다.
-        */
         touch-action: none;
       }
 
@@ -789,9 +773,6 @@
         align-items: center;
         justify-content: center;
 
-        /*
-          핸들에서만 시트 드래그.
-        */
         touch-action: none;
 
         -webkit-user-select: none;
@@ -839,7 +820,7 @@
       }
 
       /* -------------------------------------------------------
-         REMOVE RECORDS / VEHICLES ON MOBILE
+         STATS
       ------------------------------------------------------- */
 
       .stats {
@@ -890,22 +871,11 @@
         overscroll-behavior-y: contain;
         overscroll-behavior-x: none;
 
-        /*
-          핵심:
-          리스트는 세로 스크롤만 담당.
-          부모 시트 드래그와 분리.
-        */
         touch-action: pan-y;
 
-        /*
-          iOS 렌더링 안정화.
-        */
         transform: translateZ(0);
         -webkit-transform: translateZ(0);
 
-        /*
-          반드시 클릭/스크롤 가능.
-        */
         pointer-events: auto;
       }
 
@@ -1028,7 +998,7 @@
     </div>
 
     <!-- =======================================================
-         SIDEBAR / BOTTOM SHEET
+         SIDEBAR
     ======================================================== -->
 
     <aside
@@ -1069,8 +1039,6 @@
 
         </div>
 
-        <!-- SEARCH -->
-
         <div class="search-wrap">
 
           <svg
@@ -1105,11 +1073,7 @@
 
       </div>
 
-      <!-- =====================================================
-           STATS
-           PC에서는 표시.
-           모바일에서는 display:none.
-      ====================================================== -->
+      <!-- STATS -->
 
       <div class="stats">
 
@@ -1145,9 +1109,7 @@
 
       </div>
 
-      <!-- =====================================================
-           LIST HEADER
-      ====================================================== -->
+      <!-- LIST HEADER -->
 
       <div class="list-header">
 
@@ -1164,9 +1126,7 @@
 
       </div>
 
-      <!-- =====================================================
-           RECORD LIST
-      ====================================================== -->
+      <!-- RECORD LIST -->
 
       <div
         class="list"
@@ -1191,28 +1151,15 @@
     ========================================================= */
 
     let map = null;
-
     let clusterer = null;
 
     let records = [];
-
     let markers = [];
 
-    /*
-      원본 recordId → record
-    */
     let recordById = new Map();
-
-    /*
-      recordId → {
-        marker,
-        infoWindow
-      }
-    */
     let markerByRecordId = new Map();
 
     let activeRecordId = null;
-
     let activeInfoWindow = null;
 
 
@@ -1221,23 +1168,14 @@
     ========================================================= */
 
     const sheetState = {
-
       current: "collapsed",
-
       dragging: false,
-
       startY: 0,
-
       startTranslate: 0,
-
       currentTranslate: 0,
-
       lastY: 0,
-
       lastTime: 0,
-
       velocity: 0
-
     };
 
 
@@ -1246,44 +1184,28 @@
     ========================================================= */
 
     const sidebar =
-      document.getElementById(
-        "sidebar"
-      );
+      document.getElementById("sidebar");
 
     const sheetHandle =
-      document.getElementById(
-        "sheetHandle"
-      );
+      document.getElementById("sheetHandle");
 
     const recordList =
-      document.getElementById(
-        "recordList"
-      );
+      document.getElementById("recordList");
 
     const searchInput =
-      document.getElementById(
-        "searchInput"
-      );
+      document.getElementById("searchInput");
 
     const totalCount =
-      document.getElementById(
-        "totalCount"
-      );
+      document.getElementById("totalCount");
 
     const vehicleCount =
-      document.getElementById(
-        "vehicleCount"
-      );
+      document.getElementById("vehicleCount");
 
     const listCount =
-      document.getElementById(
-        "listCount"
-      );
+      document.getElementById("listCount");
 
     const fitButton =
-      document.getElementById(
-        "fitButton"
-      );
+      document.getElementById("fitButton");
 
 
     /* =========================================================
@@ -1297,35 +1219,15 @@
     }
 
 
-    /*
-      실제 화면에서 시트의 위치.
-
-      expanded:
-        화면 위쪽까지 거의 올라온 상태.
-
-      middle:
-        중간 상태.
-
-      collapsed:
-        지도 대부분을 보여주는 상태.
-    */
-
     function getSheetPositions() {
 
       const height =
         window.innerHeight;
 
       return {
-
-        expanded:
-          height * 0.14,
-
-        middle:
-          height * 0.43,
-
-        collapsed:
-          height * 0.79
-
+        expanded: height * 0.14,
+        middle: height * 0.43,
+        collapsed: height * 0.79
       };
     }
 
@@ -1354,15 +1256,12 @@
       const positions =
         getSheetPositions();
 
-      const min =
-        positions.expanded;
-
-      const max =
-        positions.collapsed;
-
       return Math.max(
-        min,
-        Math.min(max, value)
+        positions.expanded,
+        Math.min(
+          positions.collapsed,
+          value
+        )
       );
     }
 
@@ -1374,16 +1273,6 @@
 
       const positions =
         getSheetPositions();
-
-      /*
-        velocity는 px/ms.
-
-        위쪽으로 빠르게 이동:
-        velocity < 0
-
-        아래쪽으로 빠르게 이동:
-        velocity > 0
-      */
 
       if (
         Math.abs(velocity) > 0.45
@@ -1431,18 +1320,6 @@
     }
 
 
-    /*
-      실제 transform 적용.
-
-      중요:
-      getSheetPositions()는
-      화면 기준의 위치이고,
-
-      transform에는
-      expanded 위치를 기준으로 한
-      상대적인 translate를 넣는다.
-    */
-
     function applySheetTranslate(
       translate,
       animate = false
@@ -1455,20 +1332,18 @@
       const positions =
         getSheetPositions();
 
-      const min =
-        positions.expanded;
-
-      const max =
-        positions.collapsed;
-
       const value =
         Math.max(
-          min,
-          Math.min(max, translate)
+          positions.expanded,
+          Math.min(
+            positions.collapsed,
+            translate
+          )
         );
 
       const relative =
-        value - min;
+        value -
+        positions.expanded;
 
       sidebar.style.transition =
         animate
@@ -1520,8 +1395,7 @@
 
 
     /* =========================================================
-       POINTER EVENTS
-       iPhone / Safari 대응
+       SHEET DRAG
     ========================================================= */
 
     function startSheetDrag(
@@ -1532,9 +1406,6 @@
         return;
       }
 
-      /*
-        마우스라면 왼쪽 버튼만.
-      */
       if (
         event.pointerType === "mouse" &&
         event.button !== 0
@@ -1542,8 +1413,7 @@
         return;
       }
 
-      sheetState.dragging =
-        true;
+      sheetState.dragging = true;
 
       sheetState.startY =
         event.clientY;
@@ -1565,10 +1435,6 @@
       sidebar.style.transition =
         "none";
 
-      /*
-        iOS Safari에서도
-        핸들이 pointer를 계속 잡도록 한다.
-      */
       try {
         sheetHandle.setPointerCapture(
           event.pointerId
@@ -1641,8 +1507,7 @@
         return;
       }
 
-      sheetState.dragging =
-        false;
+      sheetState.dragging = false;
 
       try {
         sheetHandle.releasePointerCapture(
@@ -1662,11 +1527,6 @@
       );
     }
 
-
-    /*
-      기존 touch 이벤트가 아니라
-      Pointer Events만 사용.
-    */
 
     sheetHandle.addEventListener(
       "pointerdown",
@@ -1691,7 +1551,6 @@
 
     /* =========================================================
        LIST TOUCH
-       리스트 스크롤과 시트 드래그 분리
     ========================================================= */
 
     [
@@ -1704,9 +1563,7 @@
       recordList.addEventListener(
         type,
         event => {
-
           event.stopPropagation();
-
         },
         {
           passive: true
@@ -1736,19 +1593,13 @@
       }
 
       const yy =
-        Number(
-          text.slice(0, 2)
-        );
+        Number(text.slice(0, 2));
 
       const mm =
-        Number(
-          text.slice(2, 4)
-        );
+        Number(text.slice(2, 4));
 
       const dd =
-        Number(
-          text.slice(4, 6)
-        );
+        Number(text.slice(4, 6));
 
       const year =
         2000 + yy;
@@ -1761,12 +1612,9 @@
         );
 
       if (
-        date.getFullYear() !==
-          year ||
-        date.getMonth() !==
-          mm - 1 ||
-        date.getDate() !==
-          dd
+        date.getFullYear() !== year ||
+        date.getMonth() !== mm - 1 ||
+        date.getDate() !== dd
       ) {
         return "날짜 확인 필요";
       }
@@ -1794,42 +1642,6 @@
         return -1;
       }
 
-      const yy =
-        Number(
-          text.slice(0, 2)
-        );
-
-      const mm =
-        Number(
-          text.slice(2, 4)
-        );
-
-      const dd =
-        Number(
-          text.slice(4, 6)
-        );
-
-      const year =
-        2000 + yy;
-
-      const date =
-        new Date(
-          year,
-          mm - 1,
-          dd
-        );
-
-      if (
-        date.getFullYear() !==
-          year ||
-        date.getMonth() !==
-          mm - 1 ||
-        date.getDate() !==
-          dd
-      ) {
-        return -1;
-      }
-
       return Number(text);
     }
 
@@ -1841,27 +1653,9 @@
       return [
         ...data
       ].sort(
-        (a, b) => {
-
-          const aValue =
-            getDateSortValue(
-              a.date
-            );
-
-          const bValue =
-            getDateSortValue(
-              b.date
-            );
-
-          /*
-            최신 날짜 → 가장 위.
-          */
-
-          return (
-            bValue -
-            aValue
-          );
-        }
+        (a, b) =>
+          getDateSortValue(b.date) -
+          getDateSortValue(a.date)
       );
     }
 
@@ -1877,26 +1671,11 @@
       return String(
         value ?? ""
       )
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
 
@@ -1966,95 +1745,77 @@
         return;
       }
 
-      /*
-        절대 여기서 다시 정렬하지 않는다.
-
-        records는 이미 날짜 내림차순이고
-        filter()도 그 순서를 유지한다.
-      */
-
       recordList.innerHTML =
-        data
-          .map(item => {
+        data.map(item => {
 
-            const recordId =
-              Number(
-                item.recordId
-              );
+          const recordId =
+            Number(item.recordId);
 
-            const carnum =
-              escapeHtml(
-                item.carnum ||
-                "차량번호 없음"
-              );
+          const carnum =
+            escapeHtml(
+              item.carnum ||
+              "차량번호 없음"
+            );
 
-            const car =
-              escapeHtml(
-                item.car ||
-                "차종 정보 없음"
-              );
+          const car =
+            escapeHtml(
+              item.car ||
+              "차종 정보 없음"
+            );
 
-            const reason =
-              escapeHtml(
-                item.reason ||
-                "사고사유 정보 없음"
-              );
+          const reason =
+            escapeHtml(
+              item.reason ||
+              "사고사유 정보 없음"
+            );
 
-            const date =
-              escapeHtml(
-                parseRecordDate(
-                  item.date
-                )
-              );
+          const date =
+            escapeHtml(
+              parseRecordDate(
+                item.date
+              )
+            );
 
-            const active =
-              activeRecordId ===
-              recordId
-                ? "active"
-                : "";
+          const active =
+            activeRecordId === recordId
+              ? "active"
+              : "";
 
-            return `
-              <button
-                type="button"
-                class="record ${active}"
-                data-record-id="${recordId}"
-              >
+          return `
+            <button
+              type="button"
+              class="record ${active}"
+              data-record-id="${recordId}"
+            >
 
-                <div class="record-top">
+              <div class="record-top">
 
-                  <div
-                    class="record-car-number"
-                  >
-                    ${carnum}
-                  </div>
-
-                  <div
-                    class="record-date"
-                  >
-                    ${date}
-                  </div>
-
+                <div class="record-car-number">
+                  ${carnum}
                 </div>
 
-                <div class="record-car">
-                  ${car}
+                <div class="record-date">
+                  ${date}
                 </div>
 
-                <div class="record-reason">
-                  ${reason}
-                </div>
+              </div>
 
-              </button>
-            `;
+              <div class="record-car">
+                ${car}
+              </div>
 
-          })
-          .join("");
+              <div class="record-reason">
+                ${reason}
+              </div>
+
+            </button>
+          `;
+
+        }).join("");
 
 
       recordList
-        .querySelectorAll(
-          ".record"
-        )
+        .querySelectorAll(".record")
         .forEach(element => {
 
           element.addEventListener(
@@ -2111,49 +1872,33 @@
       return `
         <div class="custom-info">
 
-          <div
-            class="custom-info-title"
-          >
+          <div class="custom-info-title">
             ${carnum}
           </div>
 
-          <div
-            class="custom-info-car"
-          >
+          <div class="custom-info-car">
             ${car}
           </div>
 
-          <div
-            class="custom-info-row"
-          >
+          <div class="custom-info-row">
 
-            <span
-              class="custom-info-label"
-            >
+            <span class="custom-info-label">
               DATE
             </span>
 
-            <span
-              class="custom-info-value"
-            >
+            <span class="custom-info-value">
               ${date}
             </span>
 
           </div>
 
-          <div
-            class="custom-info-row"
-          >
+          <div class="custom-info-row">
 
-            <span
-              class="custom-info-label"
-            >
+            <span class="custom-info-label">
               REASON
             </span>
 
-            <span
-              class="custom-info-value"
-            >
+            <span class="custom-info-value">
               ${reason}
             </span>
 
@@ -2166,14 +1911,11 @@
 
     function closeActiveInfoWindow() {
 
-      if (
-        activeInfoWindow
-      ) {
+      if (activeInfoWindow) {
 
         activeInfoWindow.close();
 
-        activeInfoWindow =
-          null;
+        activeInfoWindow = null;
       }
     }
 
@@ -2183,7 +1925,8 @@
     ========================================================= */
 
     function openMarkerInfo(
-      recordId
+      recordId,
+      fromList = false
     ) {
 
       if (!map) {
@@ -2208,18 +1951,15 @@
 
       closeActiveInfoWindow();
 
-      activeRecordId =
-        id;
+      activeRecordId = id;
 
 
-      /*
-        리스트 active 처리.
-      */
+      /* -------------------------------------------------------
+         ACTIVE RECORD
+      ------------------------------------------------------- */
 
       document
-        .querySelectorAll(
-          ".record"
-        )
+        .querySelectorAll(".record")
         .forEach(element => {
 
           element.classList.toggle(
@@ -2243,11 +1983,21 @@
         marker.getPosition();
 
 
-      /*
-        모바일에서 팝업이
-        시트에 가리지 않도록
-        시트를 아래로 내린다.
-      */
+      /* -------------------------------------------------------
+         MOBILE
+         
+         리스트에서 항목을 눌렀다면
+         시트를 즉시 collapsed 상태로 내린다.
+         
+         즉:
+         리스트 클릭
+           ↓
+         리스트 아래로 내려감
+           ↓
+         지도 표시
+           ↓
+         마커 팝업
+      ------------------------------------------------------- */
 
       if (isMobile()) {
 
@@ -2259,15 +2009,18 @@
       }
 
 
+      /* -------------------------------------------------------
+         MAP MOVE
+      ------------------------------------------------------- */
+
       map.setLevel(4);
 
       map.panTo(position);
 
 
-      /*
-        시트 애니메이션 후
-        팝업을 연다.
-      */
+      /* -------------------------------------------------------
+         INFO WINDOW
+      ------------------------------------------------------- */
 
       setTimeout(
         () => {
@@ -2288,29 +2041,34 @@
 
         },
         isMobile()
-          ? 350
+          ? 320
           : 150
       );
 
 
-      /*
-        리스트에서도
-        해당 차량을 찾는다.
-      */
+      /* -------------------------------------------------------
+         리스트에서 마커 클릭으로 들어온 경우에는
+         해당 항목이 보이도록 유지.
+         
+         단, 리스트 자체를 클릭한 경우에는
+         시트를 닫으므로 scrollIntoView는 실행하지 않는다.
+      ------------------------------------------------------- */
 
-      const selectedElement =
-        document.querySelector(
-          `.record[data-record-id="${id}"]`
-        );
+      if (!fromList) {
 
-      if (
-        selectedElement
-      ) {
+        const selectedElement =
+          document.querySelector(
+            `.record[data-record-id="${id}"]`
+          );
 
-        selectedElement.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest"
-        });
+        if (selectedElement) {
+
+          selectedElement.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+          });
+
+        }
 
       }
 
@@ -2332,25 +2090,11 @@
         return;
       }
 
-
-      /*
-        기존 cluster 제거.
-      */
-
       clusterer.clear();
-
-
-      /*
-        기존 marker 제거.
-      */
 
       markers.forEach(
         marker => {
-
-          marker.setMap(
-            null
-          );
-
+          marker.setMap(null);
         }
       );
 
@@ -2358,10 +2102,6 @@
 
       markerByRecordId.clear();
 
-
-      /*
-        새 marker 생성.
-      */
 
       data.forEach(
         item => {
@@ -2381,12 +2121,10 @@
               )
             );
 
-
           const marker =
             new kakao.maps.Marker({
               position
             });
-
 
           const infoWindow =
             new kakao.maps.InfoWindow({
@@ -2407,20 +2145,13 @@
             () => {
 
               openMarkerInfo(
-                recordId
+                recordId,
+                false
               );
 
             }
           );
 
-
-          /*
-            좌표가 아니라
-            recordId로 marker를 찾는다.
-
-            같은 좌표에 여러 차량이 있어도
-            리스트 ↔ 마커 연결이 깨지지 않는다.
-          */
 
           markerByRecordId.set(
             recordId,
@@ -2429,7 +2160,6 @@
               infoWindow
             }
           );
-
 
           markers.push(
             marker
@@ -2469,7 +2199,16 @@
         return;
       }
 
-      openMarkerInfo(id);
+      /*
+        핵심 변경:
+        리스트에서 클릭한 경우임을
+        fromList=true로 전달.
+      */
+
+      openMarkerInfo(
+        id,
+        true
+      );
     }
 
 
@@ -2488,14 +2227,10 @@
 
       closeActiveInfoWindow();
 
-      activeRecordId =
-        null;
-
+      activeRecordId = null;
 
       document
-        .querySelectorAll(
-          ".record"
-        )
+        .querySelectorAll(".record")
         .forEach(element => {
 
           element.classList.remove(
@@ -2564,11 +2299,6 @@
       }
 
 
-      /*
-        records가 이미 날짜 내림차순이므로
-        filter() 후에도 날짜순 유지.
-      */
-
       return records.filter(
         item => {
 
@@ -2578,7 +2308,6 @@
             item.reason,
             item.date
           ];
-
 
           return values.some(
             value =>
@@ -2604,8 +2333,7 @@
           );
 
 
-        activeRecordId =
-          null;
+        activeRecordId = null;
 
         closeActiveInfoWindow();
 
@@ -2666,16 +2394,14 @@
 
         /*
           JSON 원본 순서를 기준으로
-          절대 변하지 않는 ID 생성.
+          고유 recordId 생성.
         */
 
         const normalized =
           json.map(
             (item, index) => ({
               ...item,
-
-              recordId:
-                index
+              recordId: index
             })
           );
 
@@ -2698,7 +2424,6 @@
                   item.longitude
                 );
 
-
               return (
                 Number.isFinite(lat) &&
                 Number.isFinite(lng)
@@ -2709,7 +2434,7 @@
 
 
         /*
-          최신 날짜가 위.
+          최신 날짜 → 가장 위.
         */
 
         records =
@@ -2717,10 +2442,6 @@
             valid
           );
 
-
-        /*
-          recordId → record.
-        */
 
         recordById =
           new Map(
@@ -2735,10 +2456,6 @@
           );
 
 
-        /*
-          초기 목록.
-        */
-
         updateStats(
           records
         );
@@ -2747,25 +2464,14 @@
           records
         );
 
-
-        /*
-          초기 marker.
-        */
-
         createMarkers(
           records
         );
 
 
-        /*
-          전체 차량 표시.
-        */
-
         setTimeout(
           () => {
-
             fitMap();
-
           },
           100
         );
@@ -2823,24 +2529,15 @@
         );
 
 
-      /*
-        줌 컨트롤.
-      */
-
       const zoomControl =
         new kakao.maps.ZoomControl();
 
 
       map.addControl(
         zoomControl,
-
         kakao.maps.ControlPosition.RIGHT
       );
 
-
-      /*
-        Marker Clusterer.
-      */
 
       clusterer =
         new kakao.maps.MarkerClusterer({
@@ -2876,11 +2573,6 @@
 
         if (isMobile()) {
 
-          /*
-            현재 시트 상태를
-            새 화면 높이에 맞춰 재계산.
-          */
-
           setSheetPosition(
             sheetState.current,
             false
@@ -2888,15 +2580,9 @@
 
         } else {
 
-          /*
-            PC에서는 transform 제거.
-          */
+          sidebar.style.transform = "";
 
-          sidebar.style.transform =
-            "";
-
-          sidebar.style.transition =
-            "";
+          sidebar.style.transition = "";
 
         }
 
@@ -2916,8 +2602,7 @@
       () => {
 
         if (
-          typeof kakao ===
-            "undefined" ||
+          typeof kakao === "undefined" ||
           !kakao.maps
         ) {
 
@@ -2931,7 +2616,7 @@
 
         /*
           모바일 최초 상태:
-          아래로 내려간 상태.
+          리스트가 아래로 내려가 있는 상태.
         */
 
         if (isMobile()) {
