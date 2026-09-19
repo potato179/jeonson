@@ -35,10 +35,6 @@
       --radius-sm: 10px;
       --radius-md: 14px;
       --radius-lg: 18px;
-
-      --sheet-expanded: 82vh;
-      --sheet-middle: 52vh;
-      --sheet-collapsed: 22vh;
     }
 
     * {
@@ -52,8 +48,10 @@
       height: 100%;
       margin: 0;
       overflow: hidden;
+
       background: var(--bg);
       color: var(--text);
+
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -78,39 +76,45 @@
 
     #app {
       position: relative;
+
       width: 100%;
       height: 100%;
+
       overflow: hidden;
+
       background: var(--bg);
     }
 
-    /* =========================
+    /* =========================================================
        MAP
-    ========================= */
+    ========================================================= */
 
     #map {
       position: absolute;
       inset: 0;
+
       width: 100%;
       height: 100%;
+
       background: #10151b;
     }
 
-    /* =========================
-       MOBILE TOP BRAND
-    ========================= */
+    /* =========================================================
+       MOBILE BRAND
+    ========================================================= */
 
     .mobile-top-brand {
       display: none;
     }
 
-    /* =========================
-       MAP ACTIONS
-    ========================= */
+    /* =========================================================
+       MAP ACTION
+    ========================================================= */
 
     .map-actions {
       position: absolute;
       z-index: 20;
+
       top: 18px;
       right: calc(var(--sidebar-width) + 18px);
     }
@@ -122,6 +126,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
+
+      padding: 0;
 
       border: 1px solid var(--border-strong);
       border-radius: 12px;
@@ -154,12 +160,13 @@
     .map-button svg {
       width: 20px;
       height: 20px;
+
       stroke: currentColor;
     }
 
-    /* =========================
+    /* =========================================================
        SIDEBAR
-    ========================= */
+    ========================================================= */
 
     .sidebar {
       position: absolute;
@@ -183,7 +190,8 @@
 
       border-left: 1px solid var(--border);
 
-      box-shadow: -15px 0 40px rgba(0, 0, 0, 0.22);
+      box-shadow:
+        -15px 0 40px rgba(0, 0, 0, 0.22);
 
       overflow: hidden;
     }
@@ -192,12 +200,13 @@
       display: none;
     }
 
-    /* =========================
+    /* =========================================================
        SIDEBAR HEADER
-    ========================= */
+    ========================================================= */
 
     .sidebar-header {
       flex: 0 0 auto;
+
       padding: 28px 24px 20px;
 
       border-bottom: 1px solid var(--border);
@@ -210,10 +219,12 @@
     .brand-title {
       display: flex;
       align-items: center;
+
       gap: 9px;
 
       font-size: 25px;
       font-weight: 800;
+
       letter-spacing: -0.055em;
     }
 
@@ -229,7 +240,7 @@
 
       font-size: 11px;
       font-weight: 500;
-      letter-spacing: 0.01em;
+
       line-height: 1.5;
     }
 
@@ -239,6 +250,7 @@
 
     .search-icon {
       position: absolute;
+
       left: 13px;
       top: 50%;
 
@@ -248,6 +260,7 @@
       transform: translateY(-50%);
 
       color: var(--text-muted);
+
       pointer-events: none;
     }
 
@@ -281,15 +294,17 @@
       background: var(--panel-3);
     }
 
-    /* =========================
+    /* =========================================================
        STATS
-    ========================= */
+       PC ONLY
+    ========================================================= */
 
     .stats {
       flex: 0 0 auto;
 
       display: grid;
       grid-template-columns: repeat(2, 1fr);
+
       gap: 8px;
 
       padding: 13px 18px;
@@ -311,6 +326,7 @@
 
       font-size: 9px;
       font-weight: 700;
+
       letter-spacing: 0.1em;
     }
 
@@ -321,12 +337,13 @@
 
       font-size: 22px;
       font-weight: 750;
+
       letter-spacing: -0.04em;
     }
 
-    /* =========================
+    /* =========================================================
        LIST HEADER
-    ========================= */
+    ========================================================= */
 
     .list-header {
       flex: 0 0 auto;
@@ -345,6 +362,7 @@
 
       font-size: 9px;
       font-weight: 800;
+
       letter-spacing: 0.12em;
     }
 
@@ -362,15 +380,16 @@
       border-radius: 999px;
 
       color: var(--text-soft);
+
       background: rgba(255, 255, 255, 0.025);
 
       font-size: 10px;
       font-weight: 700;
     }
 
-    /* =========================
+    /* =========================================================
        LIST
-    ========================= */
+    ========================================================= */
 
     .list {
       flex: 1 1 auto;
@@ -389,7 +408,9 @@
       -webkit-overflow-scrolling: touch;
 
       scrollbar-width: thin;
-      scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+      scrollbar-color:
+        rgba(255, 255, 255, 0.12)
+        transparent;
     }
 
     .list::-webkit-scrollbar {
@@ -402,12 +423,14 @@
 
     .list::-webkit-scrollbar-thumb {
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.12);
+
+      background:
+        rgba(255, 255, 255, 0.12);
     }
 
-    /* =========================
+    /* =========================================================
        RECORD
-    ========================= */
+    ========================================================= */
 
     .record {
       width: 100%;
@@ -420,7 +443,8 @@
       border: 1px solid transparent;
       border-radius: 13px;
 
-      background: rgba(255, 255, 255, 0.025);
+      background:
+        rgba(255, 255, 255, 0.025);
 
       color: var(--text);
 
@@ -437,7 +461,9 @@
     }
 
     .record:hover {
-      background: rgba(255, 255, 255, 0.045);
+      background:
+        rgba(255, 255, 255, 0.045);
+
       border-color: var(--border);
     }
 
@@ -454,6 +480,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       gap: 10px;
     }
 
@@ -462,6 +489,7 @@
 
       font-size: 14px;
       font-weight: 750;
+
       letter-spacing: -0.025em;
     }
 
@@ -472,6 +500,7 @@
 
       font-size: 10px;
       font-weight: 600;
+
       white-space: nowrap;
     }
 
@@ -482,6 +511,7 @@
 
       font-size: 12px;
       font-weight: 550;
+
       line-height: 1.4;
     }
 
@@ -491,12 +521,13 @@
       color: var(--text-muted);
 
       font-size: 11px;
+
       line-height: 1.45;
     }
 
-    /* =========================
+    /* =========================================================
        EMPTY
-    ========================= */
+    ========================================================= */
 
     .empty {
       padding: 40px 20px;
@@ -504,13 +535,15 @@
       color: var(--text-muted);
 
       font-size: 12px;
+
       line-height: 1.6;
+
       text-align: center;
     }
 
-    /* =========================
-       CUSTOM INFO WINDOW
-    ========================= */
+    /* =========================================================
+       INFO WINDOW
+    ========================================================= */
 
     .custom-info {
       min-width: 235px;
@@ -521,12 +554,15 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 14px;
 
-      background: rgba(13, 17, 23, 0.97);
+      background:
+        rgba(13, 17, 23, 0.97);
+
       color: var(--text);
 
       box-shadow:
         0 12px 35px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+        inset 0 1px 0
+          rgba(255, 255, 255, 0.025);
 
       font-family:
         -apple-system,
@@ -541,6 +577,7 @@
     .custom-info-title {
       font-size: 14px;
       font-weight: 800;
+
       letter-spacing: -0.02em;
     }
 
@@ -556,6 +593,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       gap: 15px;
 
       margin-top: 9px;
@@ -572,30 +610,42 @@
 
     .custom-info-value {
       color: var(--text-soft);
+
       font-weight: 600;
+
       text-align: right;
     }
 
-    /* =========================
+    /* =========================================================
        MOBILE
-    ========================= */
+    ========================================================= */
 
     @media (max-width: 800px) {
       :root {
-        --sheet-expanded: 82vh;
-        --sheet-middle: 51vh;
-        --sheet-collapsed: 21vh;
+        /*
+          시트 전체 높이.
+          collapsed가 높을수록 화면 아래로 더 많이 내려감.
+        */
+        --sheet-height: 82vh;
       }
 
       #map {
         inset: 0;
       }
 
+      /* -------------------------------------------------------
+         MOBILE BRAND
+      ------------------------------------------------------- */
+
       .mobile-top-brand {
         position: absolute;
         z-index: 15;
 
-        top: max(14px, env(safe-area-inset-top));
+        top: max(
+          14px,
+          env(safe-area-inset-top)
+        );
+
         left: 16px;
 
         display: block;
@@ -609,10 +659,12 @@
       .mobile-top-brand-title {
         display: flex;
         align-items: center;
+
         gap: 7px;
 
         font-size: 17px;
         font-weight: 800;
+
         letter-spacing: -0.045em;
       }
 
@@ -623,14 +675,23 @@
       .mobile-top-brand-subtitle {
         margin-top: 3px;
 
-        color: rgba(255, 255, 255, 0.72);
+        color:
+          rgba(255, 255, 255, 0.72);
 
         font-size: 8px;
         font-weight: 500;
       }
 
+      /* -------------------------------------------------------
+         MAP BUTTON
+      ------------------------------------------------------- */
+
       .map-actions {
-        top: max(14px, env(safe-area-inset-top));
+        top: max(
+          14px,
+          env(safe-area-inset-top)
+        );
+
         right: 14px;
       }
 
@@ -639,51 +700,85 @@
         height: 40px;
       }
 
-      /* =========================
-         MOBILE SIDEBAR / SHEET
-      ========================= */
+      /* -------------------------------------------------------
+         SIDEBAR
+      ------------------------------------------------------- */
 
       .sidebar {
+        position: absolute;
+
         top: auto;
         right: 0;
         bottom: 0;
         left: 0;
 
         width: 100%;
-        height: var(--sheet-expanded);
+        height: var(--sheet-height);
+
+        display: flex;
+        flex-direction: column;
 
         border-top: 1px solid var(--border);
         border-left: 0;
 
-        border-radius: 20px 20px 0 0;
+        border-radius:
+          20px
+          20px
+          0
+          0;
 
-        transform: translateY(calc(var(--sheet-expanded) - var(--sheet-collapsed)));
-
-        transition: transform 0.28s cubic-bezier(0.22, 0.75, 0.2, 1);
+        background:
+          linear-gradient(
+            180deg,
+            rgba(13, 17, 23, 0.99),
+            rgba(9, 12, 16, 0.99)
+          );
 
         box-shadow:
-          0 -15px 45px rgba(0, 0, 0, 0.32);
+          0 -15px 45px
+          rgba(0, 0, 0, 0.32);
 
-        pointer-events: none;
+        /*
+          중요:
+          기존 코드의 pointer-events:none 제거.
+          iPhone Safari에서 터치 이벤트가 막히는 것을 방지.
+        */
+        pointer-events: auto;
 
-        touch-action: pan-y;
+        /*
+          JS가 직접 transform을 제어한다.
+        */
+        transform:
+          translateY(
+            calc(
+              var(--sheet-height)
+              -
+              21vh
+            )
+          );
+
+        transition:
+          transform
+          0.28s
+          cubic-bezier(
+            0.22,
+            0.75,
+            0.2,
+            1
+          );
+
+        overflow: hidden;
+
+        /*
+          리스트는 내부에서 직접 처리하므로
+          sidebar 전체를 브라우저 기본 스크롤로 만들지 않는다.
+        */
+        touch-action: none;
       }
 
-      .sidebar.sheet-expanded {
-        transform: translateY(0);
-      }
-
-      .sidebar.sheet-middle {
-        transform: translateY(
-          calc(var(--sheet-expanded) - var(--sheet-middle))
-        );
-      }
-
-      .sidebar.sheet-collapsed {
-        transform: translateY(
-          calc(var(--sheet-expanded) - var(--sheet-collapsed))
-        );
-      }
+      /* -------------------------------------------------------
+         SHEET HANDLE
+      ------------------------------------------------------- */
 
       .sidebar-handle-area {
         flex: 0 0 auto;
@@ -694,9 +789,19 @@
         align-items: center;
         justify-content: center;
 
+        /*
+          핸들에서만 시트 드래그.
+        */
         touch-action: none;
 
-        pointer-events: auto;
+        -webkit-user-select: none;
+        user-select: none;
+
+        cursor: grab;
+      }
+
+      .sidebar-handle-area:active {
+        cursor: grabbing;
       }
 
       .sidebar-handle {
@@ -705,18 +810,24 @@
 
         border-radius: 999px;
 
-        background: rgba(255, 255, 255, 0.22);
+        background:
+          rgba(255, 255, 255, 0.22);
       }
 
+      /* -------------------------------------------------------
+         HEADER
+      ------------------------------------------------------- */
+
       .sidebar-header {
+        flex: 0 0 auto;
+
         padding:
           0
           18px
           12px;
 
-        border-bottom: 1px solid var(--border);
-
-        pointer-events: auto;
+        border-bottom:
+          1px solid var(--border);
       }
 
       .brand {
@@ -727,15 +838,32 @@
         height: 41px;
       }
 
-      /* 모바일에서는 통계 영역 제거 */
+      /* -------------------------------------------------------
+         REMOVE RECORDS / VEHICLES ON MOBILE
+      ------------------------------------------------------- */
+
       .stats {
         display: none;
       }
 
+      /* -------------------------------------------------------
+         LIST HEADER
+      ------------------------------------------------------- */
+
       .list-header {
-        padding: 10px 18px 7px;
+        flex: 0 0 auto;
+
+        padding:
+          10px
+          18px
+          7px;
+
         border-top: 0;
       }
+
+      /* -------------------------------------------------------
+         LIST
+      ------------------------------------------------------- */
 
       .list {
         position: relative;
@@ -748,7 +876,11 @@
         padding:
           0
           10px
-          calc(40px + env(safe-area-inset-bottom));
+          calc(
+            40px
+            +
+            env(safe-area-inset-bottom)
+          );
 
         overflow-y: scroll;
         overflow-x: hidden;
@@ -756,17 +888,31 @@
         -webkit-overflow-scrolling: touch;
 
         overscroll-behavior-y: contain;
+        overscroll-behavior-x: none;
 
+        /*
+          핵심:
+          리스트는 세로 스크롤만 담당.
+          부모 시트 드래그와 분리.
+        */
         touch-action: pan-y;
 
+        /*
+          iOS 렌더링 안정화.
+        */
         transform: translateZ(0);
         -webkit-transform: translateZ(0);
 
+        /*
+          반드시 클릭/스크롤 가능.
+        */
         pointer-events: auto;
       }
 
       .record {
         padding: 14px;
+
+        touch-action: manipulation;
       }
 
       .custom-info {
@@ -781,9 +927,9 @@
       }
     }
 
-    /* =========================
+    /* =========================================================
        SMALL MOBILE
-    ========================= */
+    ========================================================= */
 
     @media (max-width: 420px) {
       .mobile-top-brand {
@@ -819,25 +965,43 @@
 </head>
 
 <body>
+
   <div id="app">
 
-    <!-- MAP -->
+    <!-- =======================================================
+         MAP
+    ======================================================== -->
+
     <div id="map"></div>
 
-    <!-- MOBILE BRAND -->
+    <!-- =======================================================
+         MOBILE BRAND
+    ======================================================== -->
+
     <div class="mobile-top-brand">
+
       <div class="mobile-top-brand-title">
-        <span class="mobile-top-brand-icon">🤪</span>
-        <span>전손맵</span>
+        <span class="mobile-top-brand-icon">
+          🤪
+        </span>
+
+        <span>
+          전손맵
+        </span>
       </div>
 
       <div class="mobile-top-brand-subtitle">
         다음은 너다!!! -사고차주 일동-
       </div>
+
     </div>
 
-    <!-- MAP ACTION -->
+    <!-- =======================================================
+         MAP ACTION
+    ======================================================== -->
+
     <div class="map-actions">
+
       <button
         type="button"
         class="map-button"
@@ -845,6 +1009,7 @@
         aria-label="전체 보기"
         title="전체 보기"
       >
+
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -857,32 +1022,57 @@
           <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
           <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
         </svg>
+
       </button>
+
     </div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar sheet-collapsed" id="sidebar">
+    <!-- =======================================================
+         SIDEBAR / BOTTOM SHEET
+    ======================================================== -->
+
+    <aside
+      class="sidebar"
+      id="sidebar"
+    >
 
       <!-- MOBILE HANDLE -->
-      <div class="sidebar-handle-area" id="sheetHandle">
+
+      <div
+        class="sidebar-handle-area"
+        id="sheetHandle"
+      >
         <div class="sidebar-handle"></div>
       </div>
 
       <!-- HEADER -->
+
       <div class="sidebar-header">
 
         <div class="brand">
+
           <div class="brand-title">
-            <span class="brand-icon">🤪</span>
-            <span>전손맵</span>
+
+            <span class="brand-icon">
+              🤪
+            </span>
+
+            <span>
+              전손맵
+            </span>
+
           </div>
 
           <div class="brand-subtitle">
             다음은 너다!!! -사고차주 일동-
           </div>
+
         </div>
 
+        <!-- SEARCH -->
+
         <div class="search-wrap">
+
           <svg
             class="search-icon"
             viewBox="0 0 24 24"
@@ -892,8 +1082,15 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="m20 20-3.5-3.5"></path>
+            <circle
+              cx="11"
+              cy="11"
+              r="7"
+            ></circle>
+
+            <path
+              d="m20 20-3.5-3.5"
+            ></path>
           </svg>
 
           <input
@@ -903,299 +1100,555 @@
             autocomplete="off"
             spellcheck="false"
           />
+
         </div>
+
       </div>
 
-      <!-- STATS
-           PC에서는 표시
-           모바일에서는 CSS로 완전히 숨김 -->
+      <!-- =====================================================
+           STATS
+           PC에서는 표시.
+           모바일에서는 display:none.
+      ====================================================== -->
+
       <div class="stats">
+
         <div class="stat">
-          <div class="stat-label">RECORDS</div>
-          <div class="stat-value" id="totalCount">0</div>
+
+          <div class="stat-label">
+            RECORDS
+          </div>
+
+          <div
+            class="stat-value"
+            id="totalCount"
+          >
+            0
+          </div>
+
         </div>
 
         <div class="stat">
-          <div class="stat-label">VEHICLES</div>
-          <div class="stat-value" id="vehicleCount">0</div>
+
+          <div class="stat-label">
+            VEHICLES
+          </div>
+
+          <div
+            class="stat-value"
+            id="vehicleCount"
+          >
+            0
+          </div>
+
         </div>
+
       </div>
 
-      <!-- LIST HEADER -->
+      <!-- =====================================================
+           LIST HEADER
+      ====================================================== -->
+
       <div class="list-header">
+
         <div class="list-title">
           INCIDENT RECORDS
         </div>
 
-        <div class="list-count" id="listCount">
+        <div
+          class="list-count"
+          id="listCount"
+        >
           0
         </div>
+
       </div>
 
-      <!-- RECORD LIST -->
-      <div class="list" id="recordList"></div>
+      <!-- =====================================================
+           RECORD LIST
+      ====================================================== -->
+
+      <div
+        class="list"
+        id="recordList"
+      ></div>
 
     </aside>
+
   </div>
 
-  <!-- KAKAO MAP -->
+  <!-- =========================================================
+       KAKAO MAP SDK
+  ========================================================== -->
+
   <script
     src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7f26ddb0373cd3b598ff54652cbbdc24&libraries=clusterer"
   ></script>
 
   <script>
+    /* =========================================================
+       GLOBAL
+    ========================================================= */
+
     let map = null;
+
     let clusterer = null;
 
     let records = [];
+
     let markers = [];
 
     /*
-      recordId:
-      JSON 원본의 index를 고유 ID로 사용.
-      날짜 정렬 후에도 ID가 변하지 않기 때문에
-      리스트와 마커의 연결이 깨지지 않는다.
+      원본 recordId → record
     */
     let recordById = new Map();
+
+    /*
+      recordId → {
+        marker,
+        infoWindow
+      }
+    */
     let markerByRecordId = new Map();
 
     let activeRecordId = null;
+
     let activeInfoWindow = null;
 
+
+    /* =========================================================
+       SHEET STATE
+    ========================================================= */
+
     const sheetState = {
+
       current: "collapsed",
+
       dragging: false,
 
       startY: 0,
+
       startTranslate: 0,
 
       currentTranslate: 0,
 
       lastY: 0,
+
       lastTime: 0,
+
       velocity: 0
+
     };
 
-    /* =========================
+
+    /* =========================================================
        DOM
-    ========================= */
+    ========================================================= */
 
-    const sidebar = document.getElementById("sidebar");
-    const sheetHandle = document.getElementById("sheetHandle");
+    const sidebar =
+      document.getElementById(
+        "sidebar"
+      );
 
-    const recordList = document.getElementById("recordList");
-    const searchInput = document.getElementById("searchInput");
+    const sheetHandle =
+      document.getElementById(
+        "sheetHandle"
+      );
 
-    const totalCount = document.getElementById("totalCount");
-    const vehicleCount = document.getElementById("vehicleCount");
-    const listCount = document.getElementById("listCount");
+    const recordList =
+      document.getElementById(
+        "recordList"
+      );
 
-    const fitButton = document.getElementById("fitButton");
+    const searchInput =
+      document.getElementById(
+        "searchInput"
+      );
 
-    /* =========================
-       MOBILE SHEET
-    ========================= */
+    const totalCount =
+      document.getElementById(
+        "totalCount"
+      );
+
+    const vehicleCount =
+      document.getElementById(
+        "vehicleCount"
+      );
+
+    const listCount =
+      document.getElementById(
+        "listCount"
+      );
+
+    const fitButton =
+      document.getElementById(
+        "fitButton"
+      );
+
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
 
     function isMobile() {
-      return window.matchMedia("(max-width: 800px)").matches;
+      return window.matchMedia(
+        "(max-width: 800px)"
+      ).matches;
     }
 
+
+    /*
+      실제 화면에서 시트의 위치.
+
+      expanded:
+        화면 위쪽까지 거의 올라온 상태.
+
+      middle:
+        중간 상태.
+
+      collapsed:
+        지도 대부분을 보여주는 상태.
+    */
+
     function getSheetPositions() {
-      const height = window.innerHeight;
+
+      const height =
+        window.innerHeight;
 
       return {
-        expanded: height * 0.14,
-        middle: height * 0.43,
-        collapsed: height * 0.68
+
+        expanded:
+          height * 0.14,
+
+        middle:
+          height * 0.43,
+
+        collapsed:
+          height * 0.79
+
       };
     }
 
+
     function getCurrentSheetTranslate() {
-      return sheetState.currentTranslate || 0;
+
+      if (
+        Number.isFinite(
+          sheetState.currentTranslate
+        ) &&
+        sheetState.currentTranslate !== 0
+      ) {
+        return sheetState.currentTranslate;
+      }
+
+      return getSheetPositions()[
+        sheetState.current
+      ];
     }
 
-    function clampSheetTranslate(value) {
-      const positions = getSheetPositions();
 
-      const min = positions.expanded;
-      const max = positions.collapsed;
+    function clampSheetTranslate(
+      value
+    ) {
 
-      return Math.max(min, Math.min(max, value));
+      const positions =
+        getSheetPositions();
+
+      const min =
+        positions.expanded;
+
+      const max =
+        positions.collapsed;
+
+      return Math.max(
+        min,
+        Math.min(max, value)
+      );
     }
 
-    function getNearestSheetState(translate, velocity = 0) {
-      const positions = getSheetPositions();
+
+    function getNearestSheetState(
+      translate,
+      velocity = 0
+    ) {
+
+      const positions =
+        getSheetPositions();
 
       /*
-        빠르게 위/아래로 스와이프하면
-        다음 단계로 자연스럽게 이동.
+        velocity는 px/ms.
+
+        위쪽으로 빠르게 이동:
+        velocity < 0
+
+        아래쪽으로 빠르게 이동:
+        velocity > 0
       */
-      if (Math.abs(velocity) > 0.45) {
+
+      if (
+        Math.abs(velocity) > 0.45
+      ) {
+
         if (velocity < 0) {
-          if (translate > positions.middle) {
+
+          if (
+            translate >
+            positions.middle
+          ) {
             return "middle";
           }
 
           return "expanded";
         }
 
-        if (translate < positions.middle) {
+        if (
+          translate <
+          positions.middle
+        ) {
           return "middle";
         }
 
         return "collapsed";
       }
 
-      const entries = Object.entries(positions);
+
+      const entries =
+        Object.entries(
+          positions
+        );
 
       entries.sort(
         (a, b) =>
-          Math.abs(a[1] - translate) -
-          Math.abs(b[1] - translate)
+          Math.abs(
+            a[1] - translate
+          ) -
+          Math.abs(
+            b[1] - translate
+          )
       );
 
       return entries[0][0];
     }
 
-    function setSheetPosition(state, animate = true) {
-      if (!isMobile()) return;
 
-      const positions = getSheetPositions();
+    /*
+      실제 transform 적용.
 
-      const translate = positions[state];
+      중요:
+      getSheetPositions()는
+      화면 기준의 위치이고,
 
-      sheetState.current = state;
-      sheetState.currentTranslate = translate;
+      transform에는
+      expanded 위치를 기준으로 한
+      상대적인 translate를 넣는다.
+    */
 
-      sidebar.classList.remove(
-        "sheet-expanded",
-        "sheet-middle",
-        "sheet-collapsed"
-      );
+    function applySheetTranslate(
+      translate,
+      animate = false
+    ) {
 
-      sidebar.classList.add(`sheet-${state}`);
-
-      if (!animate) {
-        sidebar.style.transition = "none";
-
-        requestAnimationFrame(() => {
-          sidebar.style.transition = "";
-        });
-      }
-    }
-
-    function getTouchY(event) {
-      if (event.touches && event.touches.length) {
-        return event.touches[0].clientY;
-      }
-
-      if (event.changedTouches && event.changedTouches.length) {
-        return event.changedTouches[0].clientY;
-      }
-
-      return 0;
-    }
-
-    function startSheetDrag(event) {
-      if (!isMobile()) return;
-
-      /*
-        리스트에서 시작한 터치는 절대로
-        하단 시트 드래그로 처리하지 않는다.
-      */
-      if (event.target.closest(".list")) {
+      if (!isMobile()) {
         return;
       }
 
-      if (event.target.closest("input")) {
-        return;
-      }
+      const positions =
+        getSheetPositions();
 
-      if (event.target.closest("button")) {
-        return;
-      }
+      const min =
+        positions.expanded;
 
-      /*
-        실제 시트 드래그는 핸들 영역에서만 시작.
-      */
-      if (!event.target.closest("#sheetHandle")) {
-        return;
-      }
+      const max =
+        positions.collapsed;
 
-      const y = getTouchY(event);
-
-      const currentTranslate =
-        getCurrentSheetTranslate();
-
-      sheetState.dragging = true;
-      sheetState.startY = y;
-      sheetState.startTranslate = currentTranslate;
-
-      sheetState.currentTranslate = currentTranslate;
-
-      sheetState.lastY = y;
-      sheetState.lastTime = performance.now();
-      sheetState.velocity = 0;
-
-      sidebar.style.transition = "none";
-    }
-
-    function moveSheetDrag(event) {
-      if (!sheetState.dragging || !isMobile()) {
-        return;
-      }
-
-      const y = getTouchY(event);
-
-      const delta =
-        y - sheetState.startY;
-
-      const nextTranslate =
-        clampSheetTranslate(
-          sheetState.startTranslate + delta
+      const value =
+        Math.max(
+          min,
+          Math.min(max, translate)
         );
 
-      const now = performance.now();
+      const relative =
+        value - min;
 
-      const dt =
-        Math.max(1, now - sheetState.lastTime);
+      sidebar.style.transition =
+        animate
+          ? "transform 0.28s cubic-bezier(0.22, 0.75, 0.2, 1)"
+          : "none";
 
-      sheetState.velocity =
-        (y - sheetState.lastY) / dt;
-
-      sheetState.lastY = y;
-      sheetState.lastTime = now;
+      sidebar.style.transform =
+        `translateY(${relative}px)`;
 
       sheetState.currentTranslate =
-        nextTranslate;
+        value;
+    }
 
-      const positions = getSheetPositions();
 
-      const expanded = positions.expanded;
-      const collapsed = positions.collapsed;
+    function setSheetPosition(
+      state,
+      animate = true
+    ) {
 
-      const progress =
-        (nextTranslate - expanded) /
-        (collapsed - expanded);
+      if (!isMobile()) {
+        return;
+      }
+
+      const positions =
+        getSheetPositions();
+
+      const translate =
+        positions[state];
+
+      if (
+        !Number.isFinite(
+          translate
+        )
+      ) {
+        return;
+      }
+
+      sheetState.current =
+        state;
+
+      sheetState.currentTranslate =
+        translate;
+
+      applySheetTranslate(
+        translate,
+        animate
+      );
+    }
+
+
+    /* =========================================================
+       POINTER EVENTS
+       iPhone / Safari 대응
+    ========================================================= */
+
+    function startSheetDrag(
+      event
+    ) {
+
+      if (!isMobile()) {
+        return;
+      }
 
       /*
-        CSS class 대신 직접 transform을 적용해
-        드래그 중에는 부드럽게 따라오게 한다.
+        마우스라면 왼쪽 버튼만.
       */
-      sidebar.style.transform =
-        `translateY(${Math.max(0, progress * (collapsed - expanded))}px)`;
+      if (
+        event.pointerType === "mouse" &&
+        event.button !== 0
+      ) {
+        return;
+      }
+
+      sheetState.dragging =
+        true;
+
+      sheetState.startY =
+        event.clientY;
+
+      sheetState.startTranslate =
+        getCurrentSheetTranslate();
+
+      sheetState.currentTranslate =
+        sheetState.startTranslate;
+
+      sheetState.lastY =
+        event.clientY;
+
+      sheetState.lastTime =
+        performance.now();
+
+      sheetState.velocity = 0;
+
+      sidebar.style.transition =
+        "none";
+
+      /*
+        iOS Safari에서도
+        핸들이 pointer를 계속 잡도록 한다.
+      */
+      try {
+        sheetHandle.setPointerCapture(
+          event.pointerId
+        );
+      } catch (_) {}
 
       event.preventDefault();
     }
 
-    function endSheetDrag() {
-      if (!sheetState.dragging) {
+
+    function moveSheetDrag(
+      event
+    ) {
+
+      if (
+        !sheetState.dragging ||
+        !isMobile()
+      ) {
         return;
       }
 
-      sheetState.dragging = false;
+      const now =
+        performance.now();
 
-      sidebar.style.transition = "";
+      const delta =
+        event.clientY -
+        sheetState.startY;
+
+      const next =
+        clampSheetTranslate(
+          sheetState.startTranslate +
+          delta
+        );
+
+      const dt =
+        Math.max(
+          1,
+          now -
+          sheetState.lastTime
+        );
+
+      sheetState.velocity =
+        (
+          event.clientY -
+          sheetState.lastY
+        ) / dt;
+
+      sheetState.lastY =
+        event.clientY;
+
+      sheetState.lastTime =
+        now;
+
+      applySheetTranslate(
+        next,
+        false
+      );
+
+      event.preventDefault();
+    }
+
+
+    function endSheetDrag(
+      event
+    ) {
+
+      if (
+        !sheetState.dragging
+      ) {
+        return;
+      }
+
+      sheetState.dragging =
+        false;
+
+      try {
+        sheetHandle.releasePointerCapture(
+          event.pointerId
+        );
+      } catch (_) {}
 
       const state =
         getNearestSheetState(
@@ -1203,79 +1656,117 @@
           sheetState.velocity
         );
 
-      setSheetPosition(state, true);
+      setSheetPosition(
+        state,
+        true
+      );
     }
 
-    sheetHandle.addEventListener(
-      "touchstart",
-      startSheetDrag,
-      { passive: true }
-    );
-
-    sheetHandle.addEventListener(
-      "touchmove",
-      moveSheetDrag,
-      { passive: false }
-    );
-
-    sheetHandle.addEventListener(
-      "touchend",
-      endSheetDrag,
-      { passive: true }
-    );
-
-    sheetHandle.addEventListener(
-      "touchcancel",
-      endSheetDrag,
-      { passive: true }
-    );
 
     /*
-      리스트 터치 이벤트가
-      부모 sheet로 전달되지 않게 한다.
+      기존 touch 이벤트가 아니라
+      Pointer Events만 사용.
     */
+
+    sheetHandle.addEventListener(
+      "pointerdown",
+      startSheetDrag
+    );
+
+    sheetHandle.addEventListener(
+      "pointermove",
+      moveSheetDrag
+    );
+
+    sheetHandle.addEventListener(
+      "pointerup",
+      endSheetDrag
+    );
+
+    sheetHandle.addEventListener(
+      "pointercancel",
+      endSheetDrag
+    );
+
+
+    /* =========================================================
+       LIST TOUCH
+       리스트 스크롤과 시트 드래그 분리
+    ========================================================= */
+
     [
       "touchstart",
       "touchmove",
       "touchend",
       "touchcancel"
     ].forEach(type => {
+
       recordList.addEventListener(
         type,
         event => {
+
           event.stopPropagation();
+
         },
-        { passive: true }
+        {
+          passive: true
+        }
       );
+
     });
 
-    /* =========================
+
+    /* =========================================================
        DATE
-    ========================= */
+    ========================================================= */
 
-    function parseRecordDate(value) {
-      const text = String(value ?? "").trim();
+    function parseRecordDate(
+      value
+    ) {
 
-      if (!/^\d{6}$/.test(text)) {
+      const text =
+        String(
+          value ?? ""
+        ).trim();
+
+      if (
+        !/^\d{6}$/.test(text)
+      ) {
         return "날짜 확인 필요";
       }
 
-      const yy = Number(text.slice(0, 2));
-      const mm = Number(text.slice(2, 4));
-      const dd = Number(text.slice(4, 6));
+      const yy =
+        Number(
+          text.slice(0, 2)
+        );
 
-      const year = 2000 + yy;
+      const mm =
+        Number(
+          text.slice(2, 4)
+        );
 
-      const date = new Date(
-        year,
-        mm - 1,
-        dd
-      );
+      const dd =
+        Number(
+          text.slice(4, 6)
+        );
+
+      const year =
+        2000 + yy;
+
+      const date =
+        new Date(
+          year,
+          mm - 1,
+          dd
+        );
 
       if (
-        date.getFullYear() !== year ||
-        date.getMonth() !== mm - 1 ||
-        date.getDate() !== dd
+        date.getFullYear() !==
+          year ||
+        date.getMonth() !==
+          mm - 1 ||
+        date.getDate() !==
+          dd
       ) {
         return "날짜 확인 필요";
       }
@@ -1287,29 +1778,54 @@
       );
     }
 
-    function getDateSortValue(value) {
-      const text = String(value ?? "").trim();
 
-      if (!/^\d{6}$/.test(text)) {
+    function getDateSortValue(
+      value
+    ) {
+
+      const text =
+        String(
+          value ?? ""
+        ).trim();
+
+      if (
+        !/^\d{6}$/.test(text)
+      ) {
         return -1;
       }
 
-      const yy = Number(text.slice(0, 2));
-      const mm = Number(text.slice(2, 4));
-      const dd = Number(text.slice(4, 6));
+      const yy =
+        Number(
+          text.slice(0, 2)
+        );
 
-      const year = 2000 + yy;
+      const mm =
+        Number(
+          text.slice(2, 4)
+        );
 
-      const date = new Date(
-        year,
-        mm - 1,
-        dd
-      );
+      const dd =
+        Number(
+          text.slice(4, 6)
+        );
+
+      const year =
+        2000 + yy;
+
+      const date =
+        new Date(
+          year,
+          mm - 1,
+          dd
+        );
 
       if (
-        date.getFullYear() !== year ||
-        date.getMonth() !== mm - 1 ||
-        date.getDate() !== dd
+        date.getFullYear() !==
+          year ||
+        date.getMonth() !==
+          mm - 1 ||
+        date.getDate() !==
+          dd
       ) {
         return -1;
       }
@@ -1317,57 +1833,106 @@
       return Number(text);
     }
 
-    function sortRecordsByDate(data) {
-      return [...data].sort((a, b) => {
-        const aValue =
-          getDateSortValue(a.date);
 
-        const bValue =
-          getDateSortValue(b.date);
+    function sortRecordsByDate(
+      data
+    ) {
 
-        /*
-          최신 날짜가 위.
-        */
-        return bValue - aValue;
-      });
+      return [
+        ...data
+      ].sort(
+        (a, b) => {
+
+          const aValue =
+            getDateSortValue(
+              a.date
+            );
+
+          const bValue =
+            getDateSortValue(
+              b.date
+            );
+
+          /*
+            최신 날짜 → 가장 위.
+          */
+
+          return (
+            bValue -
+            aValue
+          );
+        }
+      );
     }
 
-    /* =========================
+
+    /* =========================================================
        ESCAPE
-    ========================= */
+    ========================================================= */
 
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    function escapeHtml(
+      value
+    ) {
+
+      return String(
+        value ?? ""
+      )
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
     }
 
-    /* =========================
-       RECORD
-    ========================= */
 
-    function findRecordById(recordId) {
+    /* =========================================================
+       FIND RECORD
+    ========================================================= */
+
+    function findRecordById(
+      recordId
+    ) {
+
       return recordById.get(
         Number(recordId)
       );
     }
 
-    /* =========================
-       STATS
-    ========================= */
 
-    function updateStats(data) {
+    /* =========================================================
+       STATS
+    ========================================================= */
+
+    function updateStats(
+      data
+    ) {
+
       totalCount.textContent =
         data.length;
 
       const uniqueVehicles =
         new Set(
           data
-            .map(item =>
-              String(item.carnum ?? "").trim()
+            .map(
+              item =>
+                String(
+                  item.carnum ?? ""
+                ).trim()
             )
             .filter(Boolean)
         );
@@ -1379,14 +1944,19 @@
         data.length;
     }
 
-    /* =========================
-       LIST
-    ========================= */
 
-    function renderList(data) {
+    /* =========================================================
+       RENDER LIST
+    ========================================================= */
+
+    function renderList(
+      data
+    ) {
+
       updateStats(data);
 
       if (!data.length) {
+
         recordList.innerHTML = `
           <div class="empty">
             검색 결과가 없습니다.
@@ -1397,154 +1967,231 @@
       }
 
       /*
-        여기서 다시 sort하지 않는다.
+        절대 여기서 다시 정렬하지 않는다.
 
-        records 자체가 이미
-        날짜 내림차순으로 정렬되어 있고,
-        filter()도 기존 순서를 유지한다.
+        records는 이미 날짜 내림차순이고
+        filter()도 그 순서를 유지한다.
       */
 
       recordList.innerHTML =
-        data.map(item => {
-          const recordId =
-            Number(item.recordId);
+        data
+          .map(item => {
 
-          const carnum =
-            escapeHtml(item.carnum || "차량번호 없음");
+            const recordId =
+              Number(
+                item.recordId
+              );
 
-          const car =
-            escapeHtml(item.car || "차종 정보 없음");
+            const carnum =
+              escapeHtml(
+                item.carnum ||
+                "차량번호 없음"
+              );
 
-          const reason =
-            escapeHtml(item.reason || "사고사유 정보 없음");
+            const car =
+              escapeHtml(
+                item.car ||
+                "차종 정보 없음"
+              );
 
-          const date =
-            escapeHtml(
-              parseRecordDate(item.date)
-            );
+            const reason =
+              escapeHtml(
+                item.reason ||
+                "사고사유 정보 없음"
+              );
 
-          const active =
-            activeRecordId === recordId
-              ? "active"
-              : "";
+            const date =
+              escapeHtml(
+                parseRecordDate(
+                  item.date
+                )
+              );
 
-          return `
-            <button
-              type="button"
-              class="record ${active}"
-              data-record-id="${recordId}"
-            >
-              <div class="record-top">
-                <div class="record-car-number">
-                  ${carnum}
+            const active =
+              activeRecordId ===
+              recordId
+                ? "active"
+                : "";
+
+            return `
+              <button
+                type="button"
+                class="record ${active}"
+                data-record-id="${recordId}"
+              >
+
+                <div class="record-top">
+
+                  <div
+                    class="record-car-number"
+                  >
+                    ${carnum}
+                  </div>
+
+                  <div
+                    class="record-date"
+                  >
+                    ${date}
+                  </div>
+
                 </div>
 
-                <div class="record-date">
-                  ${date}
+                <div class="record-car">
+                  ${car}
                 </div>
-              </div>
 
-              <div class="record-car">
-                ${car}
-              </div>
+                <div class="record-reason">
+                  ${reason}
+                </div>
 
-              <div class="record-reason">
-                ${reason}
-              </div>
-            </button>
-          `;
-        }).join("");
+              </button>
+            `;
+
+          })
+          .join("");
+
 
       recordList
-        .querySelectorAll(".record")
+        .querySelectorAll(
+          ".record"
+        )
         .forEach(element => {
+
           element.addEventListener(
             "click",
             () => {
+
               const id =
                 Number(
                   element.dataset.recordId
                 );
 
               selectRecord(id);
+
             }
           );
+
         });
     }
 
-    /* =========================
-       INFO WINDOW
-    ========================= */
 
-    function createInfoWindowContent(item) {
+    /* =========================================================
+       INFO WINDOW
+    ========================================================= */
+
+    function createInfoWindowContent(
+      item
+    ) {
+
       const carnum =
         escapeHtml(
-          item.carnum || "차량번호 없음"
+          item.carnum ||
+          "차량번호 없음"
         );
 
       const car =
         escapeHtml(
-          item.car || "차종 정보 없음"
+          item.car ||
+          "차종 정보 없음"
         );
 
       const date =
         escapeHtml(
-          parseRecordDate(item.date)
+          parseRecordDate(
+            item.date
+          )
         );
 
       const reason =
         escapeHtml(
-          item.reason || "사고사유 정보 없음"
+          item.reason ||
+          "사고사유 정보 없음"
         );
 
       return `
         <div class="custom-info">
-          <div class="custom-info-title">
+
+          <div
+            class="custom-info-title"
+          >
             ${carnum}
           </div>
 
-          <div class="custom-info-car">
+          <div
+            class="custom-info-car"
+          >
             ${car}
           </div>
 
-          <div class="custom-info-row">
-            <span class="custom-info-label">
+          <div
+            class="custom-info-row"
+          >
+
+            <span
+              class="custom-info-label"
+            >
               DATE
             </span>
 
-            <span class="custom-info-value">
+            <span
+              class="custom-info-value"
+            >
               ${date}
             </span>
+
           </div>
 
-          <div class="custom-info-row">
-            <span class="custom-info-label">
+          <div
+            class="custom-info-row"
+          >
+
+            <span
+              class="custom-info-label"
+            >
               REASON
             </span>
 
-            <span class="custom-info-value">
+            <span
+              class="custom-info-value"
+            >
               ${reason}
             </span>
+
           </div>
+
         </div>
       `;
     }
 
+
     function closeActiveInfoWindow() {
-      if (activeInfoWindow) {
+
+      if (
+        activeInfoWindow
+      ) {
+
         activeInfoWindow.close();
-        activeInfoWindow = null;
+
+        activeInfoWindow =
+          null;
       }
     }
 
-    /* =========================
+
+    /* =========================================================
        OPEN MARKER INFO
-    ========================= */
+    ========================================================= */
 
-    function openMarkerInfo(recordId) {
-      if (!map) return;
+    function openMarkerInfo(
+      recordId
+    ) {
 
-      const id = Number(recordId);
+      if (!map) {
+        return;
+      }
+
+      const id =
+        Number(recordId);
 
       const item =
         findRecordById(id);
@@ -1552,22 +2199,39 @@
       const markerEntry =
         markerByRecordId.get(id);
 
-      if (!item || !markerEntry) {
+      if (
+        !item ||
+        !markerEntry
+      ) {
         return;
       }
 
       closeActiveInfoWindow();
 
-      activeRecordId = id;
+      activeRecordId =
+        id;
+
+
+      /*
+        리스트 active 처리.
+      */
 
       document
-        .querySelectorAll(".record")
+        .querySelectorAll(
+          ".record"
+        )
         .forEach(element => {
+
           element.classList.toggle(
             "active",
-            Number(element.dataset.recordId) === id
+
+            Number(
+              element.dataset.recordId
+            ) === id
           );
+
         });
+
 
       const marker =
         markerEntry.marker;
@@ -1578,24 +2242,39 @@
       const position =
         marker.getPosition();
 
+
       /*
-        모바일에서는 팝업을 보기 위해
-        리스트를 아래로 내려준다.
+        모바일에서 팝업이
+        시트에 가리지 않도록
+        시트를 아래로 내린다.
       */
+
       if (isMobile()) {
+
         setSheetPosition(
           "collapsed",
           true
         );
+
       }
+
 
       map.setLevel(4);
 
       map.panTo(position);
 
+
+      /*
+        시트 애니메이션 후
+        팝업을 연다.
+      */
+
       setTimeout(
         () => {
-          if (!map) return;
+
+          if (!map) {
+            return;
+          }
 
           map.panTo(position);
 
@@ -1606,97 +2285,176 @@
 
           activeInfoWindow =
             infoWindow;
+
         },
-        isMobile() ? 350 : 150
+        isMobile()
+          ? 350
+          : 150
       );
 
+
       /*
-        선택된 차량을 리스트에서도
-        가능한 경우 화면에 위치시킨다.
+        리스트에서도
+        해당 차량을 찾는다.
       */
+
       const selectedElement =
         document.querySelector(
           `.record[data-record-id="${id}"]`
         );
 
-      if (selectedElement) {
+      if (
+        selectedElement
+      ) {
+
         selectedElement.scrollIntoView({
           behavior: "smooth",
           block: "nearest"
         });
+
       }
+
     }
 
-    /* =========================
-       MARKERS
-    ========================= */
 
-    function createMarkers(data) {
-      if (!map || !clusterer) {
+    /* =========================================================
+       MARKERS
+    ========================================================= */
+
+    function createMarkers(
+      data
+    ) {
+
+      if (
+        !map ||
+        !clusterer
+      ) {
         return;
       }
 
+
+      /*
+        기존 cluster 제거.
+      */
+
       clusterer.clear();
 
-      markers.forEach(marker => {
-        marker.setMap(null);
-      });
+
+      /*
+        기존 marker 제거.
+      */
+
+      markers.forEach(
+        marker => {
+
+          marker.setMap(
+            null
+          );
+
+        }
+      );
 
       markers = [];
 
       markerByRecordId.clear();
 
-      data.forEach(item => {
-        const recordId =
-          Number(item.recordId);
 
-        const position =
-          new kakao.maps.LatLng(
-            Number(item.latitude),
-            Number(item.longitude)
+      /*
+        새 marker 생성.
+      */
+
+      data.forEach(
+        item => {
+
+          const recordId =
+            Number(
+              item.recordId
+            );
+
+          const position =
+            new kakao.maps.LatLng(
+              Number(
+                item.latitude
+              ),
+              Number(
+                item.longitude
+              )
+            );
+
+
+          const marker =
+            new kakao.maps.Marker({
+              position
+            });
+
+
+          const infoWindow =
+            new kakao.maps.InfoWindow({
+              content:
+                createInfoWindowContent(
+                  item
+                ),
+
+              removable: false,
+
+              zIndex: 10
+            });
+
+
+          kakao.maps.event.addListener(
+            marker,
+            "click",
+            () => {
+
+              openMarkerInfo(
+                recordId
+              );
+
+            }
           );
 
-        const marker =
-          new kakao.maps.Marker({
-            position
-          });
 
-        const infoWindow =
-          new kakao.maps.InfoWindow({
-            content:
-              createInfoWindowContent(item),
-            removable: false,
-            zIndex: 10
-          });
+          /*
+            좌표가 아니라
+            recordId로 marker를 찾는다.
 
-        kakao.maps.event.addListener(
-          marker,
-          "click",
-          () => {
-            openMarkerInfo(recordId);
-          }
-        );
+            같은 좌표에 여러 차량이 있어도
+            리스트 ↔ 마커 연결이 깨지지 않는다.
+          */
 
-        markerByRecordId.set(
-          recordId,
-          {
-            marker,
-            infoWindow
-          }
-        );
+          markerByRecordId.set(
+            recordId,
+            {
+              marker,
+              infoWindow
+            }
+          );
 
-        markers.push(marker);
-      });
 
-      clusterer.addMarkers(markers);
+          markers.push(
+            marker
+          );
+
+        }
+      );
+
+
+      clusterer.addMarkers(
+        markers
+      );
     }
 
-    /* =========================
-       SELECT RECORD
-    ========================= */
 
-    function selectRecord(recordId) {
-      const id = Number(recordId);
+    /* =========================================================
+       SELECT RECORD
+    ========================================================= */
+
+    function selectRecord(
+      recordId
+    ) {
+
+      const id =
+        Number(recordId);
 
       const item =
         findRecordById(id);
@@ -1704,43 +2462,70 @@
       const markerEntry =
         markerByRecordId.get(id);
 
-      if (!item || !markerEntry) {
+      if (
+        !item ||
+        !markerEntry
+      ) {
         return;
       }
 
       openMarkerInfo(id);
     }
 
-    /* =========================
+
+    /* =========================================================
        FIT MAP
-    ========================= */
+    ========================================================= */
 
     function fitMap() {
-      if (!map || !records.length) {
+
+      if (
+        !map ||
+        !records.length
+      ) {
         return;
       }
 
       closeActiveInfoWindow();
 
-      activeRecordId = null;
+      activeRecordId =
+        null;
+
 
       document
-        .querySelectorAll(".record")
+        .querySelectorAll(
+          ".record"
+        )
         .forEach(element => {
-          element.classList.remove("active");
+
+          element.classList.remove(
+            "active"
+          );
+
         });
+
 
       const bounds =
         new kakao.maps.LatLngBounds();
 
-      records.forEach(item => {
-        bounds.extend(
-          new kakao.maps.LatLng(
-            Number(item.latitude),
-            Number(item.longitude)
-          )
-        );
-      });
+
+      records.forEach(
+        item => {
+
+          bounds.extend(
+            new kakao.maps.LatLng(
+              Number(
+                item.latitude
+              ),
+              Number(
+                item.longitude
+              )
+            )
+          );
+
+        }
+      );
+
 
       map.setBounds(
         bounds,
@@ -1751,147 +2536,248 @@
       );
     }
 
+
     fitButton.addEventListener(
       "click",
       fitMap
     );
 
-    /* =========================
-       SEARCH
-    ========================= */
 
-    function filterRecords(keyword) {
+    /* =========================================================
+       SEARCH
+    ========================================================= */
+
+    function filterRecords(
+      keyword
+    ) {
+
       const query =
-        String(keyword ?? "")
+        String(
+          keyword ?? ""
+        )
           .trim()
           .toLowerCase();
+
 
       if (!query) {
         return records;
       }
 
-      return records.filter(item => {
-        const values = [
-          item.carnum,
-          item.car,
-          item.reason,
-          item.date
-        ];
 
-        return values.some(value =>
-          String(value ?? "")
-            .toLowerCase()
-            .includes(query)
-        );
-      });
+      /*
+        records가 이미 날짜 내림차순이므로
+        filter() 후에도 날짜순 유지.
+      */
+
+      return records.filter(
+        item => {
+
+          const values = [
+            item.carnum,
+            item.car,
+            item.reason,
+            item.date
+          ];
+
+
+          return values.some(
+            value =>
+              String(
+                value ?? ""
+              )
+                .toLowerCase()
+                .includes(query)
+          );
+
+        }
+      );
     }
+
 
     searchInput.addEventListener(
       "input",
       event => {
+
         const filtered =
           filterRecords(
             event.target.value
           );
 
-        activeRecordId = null;
+
+        activeRecordId =
+          null;
 
         closeActiveInfoWindow();
 
-        renderList(filtered);
 
-        createMarkers(filtered);
+        renderList(
+          filtered
+        );
+
+
+        createMarkers(
+          filtered
+        );
+
       }
     );
 
-    /* =========================
-       LOAD DATA
-    ========================= */
+
+    /* =========================================================
+       LOAD JSON
+    ========================================================= */
 
     async function loadData() {
+
       try {
+
         const response =
-          await fetch("./list.json", {
-            cache: "no-store"
-          });
+          await fetch(
+            "./list.json",
+            {
+              cache: "no-store"
+            }
+          );
+
 
         if (!response.ok) {
+
           throw new Error(
             `list.json HTTP ${response.status}`
           );
+
         }
+
 
         const json =
           await response.json();
 
-        if (!Array.isArray(json)) {
+
+        if (
+          !Array.isArray(json)
+        ) {
+
           throw new Error(
             "list.json 형식이 배열이 아닙니다."
           );
+
         }
 
+
         /*
-          원본 index를 recordId로 고정.
+          JSON 원본 순서를 기준으로
+          절대 변하지 않는 ID 생성.
         */
+
         const normalized =
-          json.map((item, index) => ({
-            ...item,
-            recordId: index
-          }));
+          json.map(
+            (item, index) => ({
+              ...item,
+
+              recordId:
+                index
+            })
+          );
+
 
         /*
           좌표가 정상인 데이터만 사용.
         */
+
         const valid =
-          normalized.filter(item => {
-            const lat =
-              Number(item.latitude);
+          normalized.filter(
+            item => {
 
-            const lng =
-              Number(item.longitude);
+              const lat =
+                Number(
+                  item.latitude
+                );
 
-            return (
-              Number.isFinite(lat) &&
-              Number.isFinite(lng)
-            );
-          });
+              const lng =
+                Number(
+                  item.longitude
+                );
 
-        /*
-          최신 날짜가 위로 오도록
-          한 번만 정렬.
-        */
-        records =
-          sortRecordsByDate(valid);
 
-        /*
-          recordId 기반으로 빠른 조회.
-        */
-        recordById =
-          new Map(
-            records.map(item => [
-              Number(item.recordId),
-              item
-            ])
+              return (
+                Number.isFinite(lat) &&
+                Number.isFinite(lng)
+              );
+
+            }
           );
 
-        updateStats(records);
-
-        renderList(records);
-
-        createMarkers(records);
 
         /*
-          전체 차량이 들어오는 범위로 지도 맞춤.
+          최신 날짜가 위.
         */
-        setTimeout(() => {
-          fitMap();
-        }, 100);
+
+        records =
+          sortRecordsByDate(
+            valid
+          );
+
+
+        /*
+          recordId → record.
+        */
+
+        recordById =
+          new Map(
+            records.map(
+              item => [
+                Number(
+                  item.recordId
+                ),
+                item
+              ]
+            )
+          );
+
+
+        /*
+          초기 목록.
+        */
+
+        updateStats(
+          records
+        );
+
+        renderList(
+          records
+        );
+
+
+        /*
+          초기 marker.
+        */
+
+        createMarkers(
+          records
+        );
+
+
+        /*
+          전체 차량 표시.
+        */
+
+        setTimeout(
+          () => {
+
+            fitMap();
+
+          },
+          100
+        );
+
 
       } catch (error) {
+
         console.error(
           "데이터 로드 실패:",
           error
         );
+
 
         recordList.innerHTML = `
           <div class="empty">
@@ -1899,25 +2785,36 @@
             list.json 파일을 확인해주세요.
           </div>
         `;
+
       }
+
     }
 
-    /* =========================
+
+    /* =========================================================
        MAP INIT
-    ========================= */
+    ========================================================= */
 
     function initMap() {
+
       const container =
-        document.getElementById("map");
+        document.getElementById(
+          "map"
+        );
+
 
       const options = {
+
         center:
           new kakao.maps.LatLng(
             37.5665,
             126.9780
           ),
+
         level: 8
+
       };
+
 
       map =
         new kakao.maps.Map(
@@ -1925,64 +2822,105 @@
           options
         );
 
+
+      /*
+        줌 컨트롤.
+      */
+
       const zoomControl =
         new kakao.maps.ZoomControl();
 
+
       map.addControl(
         zoomControl,
+
         kakao.maps.ControlPosition.RIGHT
       );
 
+
+      /*
+        Marker Clusterer.
+      */
+
       clusterer =
         new kakao.maps.MarkerClusterer({
+
           map,
+
           averageCenter: true,
+
           minLevel: 6,
+
           disableClickZoom: false
+
         });
 
+
       loadData();
+
     }
 
-    /* =========================
+
+    /* =========================================================
        RESIZE
-    ========================= */
+    ========================================================= */
 
     window.addEventListener(
       "resize",
       () => {
-        if (!map) return;
+
+        if (!map) {
+          return;
+        }
+
 
         if (isMobile()) {
+
+          /*
+            현재 시트 상태를
+            새 화면 높이에 맞춰 재계산.
+          */
+
           setSheetPosition(
             sheetState.current,
             false
           );
-        } else {
-          sidebar.classList.remove(
-            "sheet-expanded",
-            "sheet-middle",
-            "sheet-collapsed"
-          );
 
-          sidebar.style.transform = "";
+        } else {
+
+          /*
+            PC에서는 transform 제거.
+          */
+
+          sidebar.style.transform =
+            "";
+
+          sidebar.style.transition =
+            "";
+
         }
 
+
         map.relayout();
+
       }
     );
 
-    /* =========================
-       KAKAO LOAD
-    ========================= */
+
+    /* =========================================================
+       WINDOW LOAD
+    ========================================================= */
 
     window.addEventListener(
       "load",
       () => {
+
         if (
-          typeof kakao === "undefined" ||
+          typeof kakao ===
+            "undefined" ||
           !kakao.maps
         ) {
+
           console.error(
             "Kakao Maps SDK를 불러오지 못했습니다."
           );
@@ -1990,18 +2928,34 @@
           return;
         }
 
+
+        /*
+          모바일 최초 상태:
+          아래로 내려간 상태.
+        */
+
         if (isMobile()) {
+
           setSheetPosition(
             "collapsed",
             false
           );
+
         }
 
-        kakao.maps.load(() => {
-          initMap();
-        });
+
+        kakao.maps.load(
+          () => {
+
+            initMap();
+
+          }
+        );
+
       }
     );
+
   </script>
+
 </body>
 </html>
