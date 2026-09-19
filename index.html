@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
+<meta
+ name="viewport"
+ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+/>
 
   <title>전손맵</title>
 
@@ -954,23 +955,99 @@
       }
     }
   </style>
+
 </head>
 
 <body>
 
   <div id="app">
 
-    <!-- =====================================================
-         MAP
-    ====================================================== -->
+```
+<!-- =====================================================
+     MAP
+====================================================== -->
 
-    <div id="map"></div>
+<div id="map"></div>
 
-    <!-- =====================================================
-         MOBILE TOP BRAND
-    ====================================================== -->
+<!-- =====================================================
+     MOBILE TOP BRAND
+====================================================== -->
 
-    <div class="mobile-top-brand">
+<div class="mobile-top-brand">
+
+  <div class="brand-mark">
+    🤪
+  </div>
+
+  <div class="brand-text">
+
+    <div class="brand-title">
+      전손맵
+    </div>
+
+    <div class="brand-subtitle">
+      다음은 너다!!! -사고차주 일동-
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =====================================================
+     MAP ACTIONS
+====================================================== -->
+
+<div class="map-actions">
+
+  <button
+    type="button"
+    class="map-button"
+    id="fitButton"
+    aria-label="전체 보기"
+    title="전체 보기"
+  >
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+      <path d="M16 3h3a2 2 0 0 1 2 2v3" />
+      <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
+      <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
+    </svg>
+  </button>
+
+</div>
+
+<!-- =====================================================
+     SIDEBAR / BOTTOM SHEET
+====================================================== -->
+
+<aside
+  class="sidebar"
+  id="sidebar"
+>
+
+  <!-- MOBILE HANDLE -->
+
+  <div
+    class="sidebar-handle-area"
+    id="sheetHandle"
+  >
+    <div class="sidebar-handle"></div>
+  </div>
+
+  <!-- HEADER -->
+
+  <div class="sidebar-header">
+
+    <!-- DESKTOP ONLY BRAND -->
+
+    <div class="brand desktop-brand">
 
       <div class="brand-mark">
         🤪
@@ -990,180 +1067,107 @@
 
     </div>
 
-    <!-- =====================================================
-         MAP ACTIONS
-    ====================================================== -->
+    <!-- SEARCH -->
 
-    <div class="map-actions">
+    <div class="search-wrap">
 
-      <button
-        type="button"
-        class="map-button"
-        id="fitButton"
-        aria-label="전체 보기"
-        title="전체 보기"
+      <svg
+        class="search-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
       >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-          <path d="M16 3h3a2 2 0 0 1 2 2v3" />
-          <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
-          <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
-        </svg>
-      </button>
+        <circle
+          cx="11"
+          cy="11"
+          r="7"
+        ></circle>
+
+        <path
+          d="m20 20-4-4"
+        ></path>
+      </svg>
+
+      <input
+        id="search"
+        type="search"
+        placeholder="차량번호, 차종, 날짜, 사고내용 검색"
+        autocomplete="off"
+      />
 
     </div>
 
-    <!-- =====================================================
-         SIDEBAR / BOTTOM SHEET
-    ====================================================== -->
+  </div>
 
-    <aside
-      class="sidebar"
-      id="sidebar"
+  <!-- STATS -->
+
+  <div class="stats">
+
+    <div class="stat">
+
+      <div class="stat-label">
+        Records
+      </div>
+
+      <div
+        class="stat-value"
+        id="totalCount"
+      >
+        0
+      </div>
+
+    </div>
+
+    <div class="stat">
+
+      <div class="stat-label">
+        Vehicles
+      </div>
+
+      <div
+        class="stat-value"
+        id="vehicleCount"
+      >
+        0
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- LIST HEADER -->
+
+  <div class="list-header">
+
+    <div class="list-title">
+      INCIDENT RECORDS
+    </div>
+
+    <div
+      class="list-count"
+      id="listCount"
     >
+      0
+    </div>
 
-      <!-- MOBILE HANDLE -->
+  </div>
 
-      <div
-        class="sidebar-handle-area"
-        id="sheetHandle"
-      >
-        <div class="sidebar-handle"></div>
-      </div>
+  <!-- LIST -->
 
-      <!-- HEADER -->
+  <div
+    class="list"
+    id="recordList"
+  >
+    <div class="status">
+      데이터를 불러오는 중...
+    </div>
+  </div>
 
-      <div class="sidebar-header">
-
-        <!-- DESKTOP ONLY BRAND -->
-
-        <div class="brand desktop-brand">
-
-          <div class="brand-mark">
-            🤪
-          </div>
-
-          <div class="brand-text">
-
-            <div class="brand-title">
-              전손맵
-            </div>
-
-            <div class="brand-subtitle">
-              다음은 너다!!! -사고차주 일동-
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- SEARCH -->
-
-        <div class="search-wrap">
-
-          <svg
-            class="search-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle
-              cx="11"
-              cy="11"
-              r="7"
-            ></circle>
-
-            <path
-              d="m20 20-4-4"
-            ></path>
-          </svg>
-
-          <input
-            id="search"
-            type="search"
-            placeholder="차량번호, 차종, 날짜, 사고내용 검색"
-            autocomplete="off"
-          />
-
-        </div>
-
-      </div>
-
-      <!-- STATS -->
-
-      <div class="stats">
-
-        <div class="stat">
-
-          <div class="stat-label">
-            Records
-          </div>
-
-          <div
-            class="stat-value"
-            id="totalCount"
-          >
-            0
-          </div>
-
-        </div>
-
-        <div class="stat">
-
-          <div class="stat-label">
-            Vehicles
-          </div>
-
-          <div
-            class="stat-value"
-            id="vehicleCount"
-          >
-            0
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- LIST HEADER -->
-
-      <div class="list-header">
-
-        <div class="list-title">
-          INCIDENT RECORDS
-        </div>
-
-        <div
-          class="list-count"
-          id="listCount"
-        >
-          0
-        </div>
-
-      </div>
-
-      <!-- LIST -->
-
-      <div
-        class="list"
-        id="recordList"
-      >
-        <div class="status">
-          데이터를 불러오는 중...
-        </div>
-      </div>
-
-    </aside>
+</aside>
+```
 
   </div>
 
@@ -1668,6 +1672,14 @@
 
     /* =========================================================
        DATE SORT
+       항상 최신 날짜 → 과거 날짜 순
+       예:
+       260919
+       260918
+       260917
+       260901
+       260831
+       ...
     ========================================================= */
 
     function getDateSortValue(
@@ -1693,6 +1705,11 @@
         return -1;
       }
 
+      /*
+       * YYMMDD 형식의 숫자 자체가
+       * 날짜의 시간순과 동일하므로
+       * 큰 값이 최신 날짜이다.
+       */
       return Number(raw);
     }
 
@@ -1701,14 +1718,21 @@
     ) {
       return [...data].sort(
         (a, b) => {
-          return (
-            getDateSortValue(
-              b.date
-            ) -
+          const dateA =
             getDateSortValue(
               a.date
-            )
-          );
+            );
+
+          const dateB =
+            getDateSortValue(
+              b.date
+            );
+
+          /*
+           * 반드시 B - A
+           * = 최신 날짜가 먼저
+           */
+          return dateB - dateA;
         }
       );
     }
@@ -1797,7 +1821,9 @@
       }
 
       /*
-       * 항상 날짜 최신순으로 정렬
+       * 검색 결과를 포함해
+       * 화면에 표시되는 모든 목록을
+       * 항상 최신 날짜순으로 정렬한다.
        */
       const sortedData =
         sortRecordsByDate(
@@ -2074,7 +2100,16 @@
 
       markers = [];
 
-      data.forEach(
+      /*
+       * 지도 마커 역시 화면 목록과 동일하게
+       * 날짜 최신순 데이터 기준으로 생성한다.
+       */
+      const sortedData =
+        sortRecordsByDate(
+          data
+        );
+
+      sortedData.forEach(
         item => {
           const latitude =
             Number(
@@ -2383,13 +2418,9 @@
         }
 
         /*
-         * 원본 index를 먼저 부여한 뒤
-         * 날짜 기준 최신순으로 정렬한다.
-         *
-         * originalIndex는
-         * list.json 내부의 원래 위치이므로
-         * 정렬 후에도 마커와 리스트를
-         * 정확하게 연결할 수 있다.
+         * 원본 index를 먼저 부여한다.
+         * 이 index는 list.json의 원래 위치를
+         * 추적하기 위한 값이다.
          */
         records =
           json
@@ -2415,8 +2446,14 @@
             );
 
         /*
-         * 전체 records 자체를
-         * 날짜 최신순으로 정렬한다.
+         * 핵심:
+         * records 자체를 항상 최신 날짜순으로 정렬한다.
+         *
+         * 날짜 형식:
+         * YYMMDD
+         *
+         * 예:
+         * 260919 → 260918 → 260917
          */
         records =
           sortRecordsByDate(
