@@ -1,1095 +1,1003 @@
 <!DOCTYPE html>
-
 <html lang="ko">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
-<meta charset="UTF-8">
+    <title>차량 사고·고장 기록</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<meta
-    name="theme-color"
-    content="#11161d"
->
-
-<title>차량 사고 · 고장 지도</title>
-
-<!-- Kakao Map API -->
-<script
-    type="text/javascript"
-    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=aed0fb826e3d944ba916474d2e999452&libraries=clusterer">
-</script>
-
-<style>
-
-    * {
-        box-sizing: border-box;
-    }
-
-    html,
-    body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        overflow: hidden;
-
-        font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            "Pretendard",
-            "Noto Sans KR",
-            sans-serif;
-
-        background: #11161d;
-        color: #ffffff;
-    }
-
-    button,
-    input {
-        font: inherit;
-    }
-
-    /* ==============================
-       전체 레이아웃
-    ============================== */
-
-    .app {
-        width: 100%;
-        height: 100%;
-
-        display: flex;
-    }
-
-    /* ==============================
-       사이드바
-    ============================== */
-
-    .sidebar {
-        width: 390px;
-        height: 100%;
-
-        flex-shrink: 0;
-
-        display: flex;
-        flex-direction: column;
-
-        background: #11161d;
-        border-right: 1px solid #252c35;
-
-        z-index: 10;
-    }
-
-    .header {
-        padding: 24px 22px 18px;
-
-        border-bottom: 1px solid #252c35;
-    }
-
-    .title {
-        display: flex;
-        align-items: center;
-
-        gap: 11px;
-    }
-
-    .title-icon {
-        width: 40px;
-        height: 40px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        border-radius: 11px;
-
-        background: #e6ff3f;
-        color: #11161d;
-
-        font-size: 20px;
-        font-weight: 900;
-    }
-
-    .title h1 {
-        margin: 0;
-
-        font-size: 19px;
-        font-weight: 800;
-
-        letter-spacing: -0.7px;
-    }
-
-    .subtitle {
-        margin-top: 5px;
-
-        color: #707b88;
-
-        font-size: 11px;
-    }
-
-    /* ==============================
-       통계
-    ============================== */
-
-    .stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-
-        gap: 8px;
-
-        margin-top: 18px;
-    }
-
-    .stat {
-        padding: 12px 14px;
-
-        border: 1px solid #252c35;
-        border-radius: 10px;
-
-        background: #151b23;
-    }
-
-    .stat-label {
-        margin-bottom: 4px;
-
-        color: #737e8b;
-
-        font-size: 10px;
-    }
-
-    .stat-value {
-        font-size: 19px;
-        font-weight: 800;
-    }
-
-    /* ==============================
-       검색
-    ============================== */
-
-    .search-area {
-        padding: 13px 15px;
-
-        border-bottom: 1px solid #252c35;
-    }
-
-    .search {
-        position: relative;
-    }
-
-    .search input {
-        width: 100%;
-        height: 42px;
-
-        padding: 0 14px 0 39px;
-
-        border: 1px solid #2b333d;
-        border-radius: 10px;
-
-        outline: none;
-
-        background: #171d25;
-        color: #ffffff;
-
-        font-size: 12px;
-    }
-
-    .search input::placeholder {
-        color: #606b78;
-    }
-
-    .search input:focus {
-        border-color: #e6ff3f;
-    }
-
-    .search-icon {
-        position: absolute;
-
-        left: 14px;
-        top: 50%;
-
-        transform: translateY(-50%);
-
-        color: #697481;
-
-        font-size: 16px;
-    }
-
-    /* ==============================
-       목록 헤더
-    ============================== */
-
-    .list-header {
-        height: 40px;
-
-        padding: 0 16px;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .list-title {
-        color: #858f9b;
-
-        font-size: 11px;
-    }
-
-    .list-count {
-        color: #e6ff3f;
-
-        font-size: 11px;
-        font-weight: 700;
-    }
-
-    /* ==============================
-       차량 목록
-    ============================== */
-
-    .vehicle-list {
-        flex: 1;
-
-        overflow-y: auto;
-
-        padding: 0 10px 20px;
-    }
-
-    .vehicle-list::-webkit-scrollbar {
-        width: 5px;
-    }
-
-    .vehicle-list::-webkit-scrollbar-thumb {
-        background: #303944;
-        border-radius: 10px;
-    }
-
-    .vehicle-item {
-        margin-bottom: 6px;
-        padding: 13px;
-
-        border: 1px solid transparent;
-        border-radius: 10px;
-
-        background: #151b23;
-
-        cursor: pointer;
-
-        transition:
-            background 0.15s,
-            border 0.15s;
-    }
-
-    .vehicle-item:hover {
-        background: #1a222c;
-        border-color: #313b47;
-    }
-
-    .vehicle-item.active {
-        border-color: #e6ff3f;
-        background: #1b222b;
-    }
-
-    .item-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        gap: 10px;
-    }
-
-    .car-number {
-        font-size: 14px;
-        font-weight: 800;
-    }
-
-    .date {
-        color: #7c8794;
-
-        font-size: 10px;
-        white-space: nowrap;
-    }
-
-    .car-name {
-        margin-top: 5px;
-
-        color: #b8c0c9;
-
-        font-size: 11px;
-    }
-
-    .reason {
-        margin-top: 8px;
-
-        color: #7e8995;
-
-        font-size: 11px;
-        line-height: 1.5;
-
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-
-        overflow: hidden;
-    }
-
-    /* ==============================
-       지도
-    ============================== */
-
-    .map-wrap {
-        position: relative;
-
-        flex: 1;
-        height: 100%;
-    }
-
-    #map {
-        width: 100%;
-        height: 100%;
-    }
-
-    /* ==============================
-       지도 컨트롤
-    ============================== */
-
-    .map-control {
-        position: absolute;
-
-        right: 16px;
-        top: 16px;
-
-        z-index: 5;
-
-        display: flex;
-        flex-direction: column;
-
-        gap: 6px;
-    }
-
-    .map-btn {
-        width: 40px;
-        height: 40px;
-
-        border: 1px solid #d5d9de;
-        border-radius: 9px;
-
-        background: rgba(255,255,255,0.96);
-        color: #20252b;
-
-        cursor: pointer;
-
-        font-size: 17px;
-        font-weight: 700;
-
-        box-shadow:
-            0 2px 8px rgba(0,0,0,0.13);
-    }
-
-    .map-btn:hover {
-        background: #f2f3f4;
-    }
-
-    /* ==============================
-       정보창
-    ============================== */
-
-    .info-window {
-        width: 285px;
-
-        padding: 15px;
-
-        color: #171b20;
-    }
-
-    .info-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        gap: 10px;
-
-        margin-bottom: 8px;
-    }
-
-    .info-number {
-        font-size: 15px;
-        font-weight: 800;
-    }
-
-    .info-date {
-        color: #7d858e;
-
-        font-size: 10px;
-    }
-
-    .info-car {
-        margin-bottom: 9px;
-
-        color: #555e67;
-
-        font-size: 11px;
-    }
-
-    .info-reason {
-        padding-top: 9px;
-
-        border-top: 1px solid #eceff1;
-
-        color: #333940;
-
-        font-size: 11px;
-        line-height: 1.55;
-
-        word-break: keep-all;
-    }
-
-    /* ==============================
-       모바일
-    ============================== */
-
-    @media (max-width: 800px) {
-
-        .sidebar {
-            position: absolute;
-
-            left: 0;
-            bottom: 0;
-
-            width: 100%;
-            height: 42%;
-
-            border-top: 1px solid #252c35;
-            border-right: 0;
+    <style>
+        * {
+            box-sizing: border-box;
         }
 
-        .map-wrap {
+        html,
+        body {
+            margin: 0;
             width: 100%;
             height: 100%;
+            overflow: hidden;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                "Noto Sans KR",
+                sans-serif;
+            background: #0b0d10;
+            color: #f3f4f6;
+        }
+
+        body {
+            display: flex;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: relative;
+            z-index: 10;
+
+            width: 390px;
+            min-width: 390px;
+            height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #111419 0%,
+                    #0c0f13 100%
+                );
+
+            border-right: 1px solid #252a31;
+
+            box-shadow:
+                10px 0 40px rgba(0, 0, 0, 0.25);
         }
 
         .header {
-            padding: 13px 15px 11px;
+            padding: 26px 26px 22px;
+
+            border-bottom: 1px solid #252a31;
         }
 
-        .title-icon {
-            width: 34px;
-            height: 34px;
+        .eyebrow {
+            margin-bottom: 7px;
 
-            font-size: 17px;
+            color: #8d96a3;
+
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
         }
 
-        .title h1 {
-            font-size: 16px;
+        .title {
+            margin: 0;
+
+            color: #ffffff;
+
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.05em;
         }
 
         .subtitle {
-            display: none;
+            margin-top: 8px;
+
+            color: #7e8794;
+
+            font-size: 13px;
+            line-height: 1.5;
         }
+
+        /* =========================
+           STATS
+        ========================= */
 
         .stats {
-            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+
+            padding: 16px 18px;
+
+            border-bottom: 1px solid #252a31;
         }
 
-        .search-area {
-            padding: 9px 11px;
+        .stat {
+            padding: 14px 15px;
+
+            background: #15191e;
+            border: 1px solid #242a31;
+            border-radius: 10px;
         }
 
-        .list-header {
+        .stat-label {
+            margin-bottom: 6px;
+
+            color: #747d89;
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            color: #f5f6f7;
+
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+        }
+
+        /* =========================
+           SEARCH
+        ========================= */
+
+        .search-wrap {
+            padding: 15px 18px 12px;
+        }
+
+        .search {
+            width: 100%;
+            height: 42px;
+
+            padding: 0 14px;
+
+            color: #ffffff;
+
+            background: #15191e;
+
+            border: 1px solid #292f37;
+            border-radius: 9px;
+
+            outline: none;
+
+            font-size: 13px;
+
+            transition:
+                border-color 0.2s,
+                background 0.2s;
+        }
+
+        .search::placeholder {
+            color: #626b77;
+        }
+
+        .search:focus {
+            background: #181d23;
+            border-color: #555f6d;
+        }
+
+        /* =========================
+           LIST
+        ========================= */
+
+        .list {
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 0 12px 18px;
+        }
+
+        .list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .list::-webkit-scrollbar-thumb {
+            background: #303640;
+            border-radius: 999px;
+        }
+
+        .record {
+            padding: 16px 14px;
+
+            margin-bottom: 8px;
+
+            background: #12161b;
+
+            border: 1px solid #242a31;
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.18s,
+                border-color 0.18s,
+                transform 0.18s;
+        }
+
+        .record:hover {
+            background: #171c22;
+            border-color: #39414c;
+            transform: translateY(-1px);
+        }
+
+        .record.active {
+            background: #191f26;
+            border-color: #697482;
+        }
+
+        .record-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-bottom: 8px;
+        }
+
+        .car-number {
+            color: #ffffff;
+
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .date {
+            flex-shrink: 0;
+
+            color: #858e9a;
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .car-name {
+            margin-bottom: 8px;
+
+            color: #aab2bd;
+
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .reason {
+            color: #707a87;
+
+            font-size: 12px;
+            line-height: 1.55;
+
+            word-break: keep-all;
+        }
+
+        .empty {
+            padding: 50px 20px;
+
+            text-align: center;
+
+            color: #646d79;
+
+            font-size: 13px;
+        }
+
+        /* =========================
+           MAP
+        ========================= */
+
+        #map {
+            flex: 1;
+
+            width: calc(100vw - 390px);
+            height: 100vh;
+
+            background: #e8eaed;
+        }
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+            position: fixed;
+            z-index: 9999;
+
+            inset: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(8, 10, 13, 0.96);
+
+            transition:
+                opacity 0.3s,
+                visibility 0.3s;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-box {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 34px;
             height: 34px;
+
+            margin: 0 auto 15px;
+
+            border: 3px solid #2a3038;
+            border-top-color: #ffffff;
+
+            border-radius: 50%;
+
+            animation: spin 0.8s linear infinite;
         }
 
-        .vehicle-list {
-            padding-bottom: 8px;
+        .loading-text {
+            color: #9ba3ae;
+
+            font-size: 12px;
         }
 
-        .map-control {
-            right: 10px;
-            top: 10px;
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
-    }
 
-</style>
-```
+        /* =========================
+           ERROR
+        ========================= */
 
+        .error-screen {
+            position: fixed;
+            z-index: 10000;
+
+            inset: 0;
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            padding: 25px;
+
+            background: #090b0e;
+        }
+
+        .error-screen.show {
+            display: flex;
+        }
+
+        .error-box {
+            width: min(500px, 100%);
+
+            padding: 30px;
+
+            background: #12161b;
+
+            border: 1px solid #30363f;
+            border-radius: 14px;
+        }
+
+        .error-title {
+            margin-bottom: 12px;
+
+            color: #ffffff;
+
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .error-message {
+            color: #8e97a3;
+
+            font-size: 13px;
+            line-height: 1.7;
+
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* =========================
+           INFO WINDOW
+        ========================= */
+
+        .info-window {
+            min-width: 250px;
+
+            padding: 16px;
+
+            color: #20242a;
+
+            background: #ffffff;
+
+            border-radius: 10px;
+        }
+
+        .info-title {
+            margin-bottom: 10px;
+
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .info-row {
+            display: flex;
+
+            gap: 10px;
+
+            margin-bottom: 6px;
+
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .info-label {
+            width: 38px;
+
+            flex-shrink: 0;
+
+            color: #8a919a;
+            font-weight: 600;
+        }
+
+        .info-value {
+            color: #343a42;
+            font-weight: 600;
+
+            word-break: keep-all;
+        }
+
+        .info-reason {
+            margin-top: 10px;
+            padding-top: 10px;
+
+            color: #5e6670;
+
+            border-top: 1px solid #eceef1;
+
+            font-size: 12px;
+            line-height: 1.55;
+
+            word-break: keep-all;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 800px) {
+            body {
+                display: block;
+                overflow: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-width: 0;
+                height: 48vh;
+
+                border-right: 0;
+                border-bottom: 1px solid #252a31;
+            }
+
+            #map {
+                width: 100%;
+                height: 52vh;
+            }
+
+            .header {
+                padding: 18px 18px 15px;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            .stats {
+                padding: 10px 12px;
+            }
+
+            .search-wrap {
+                padding: 10px 12px;
+            }
+
+            .list {
+                padding: 0 8px 12px;
+            }
+        }
+    </style>
+
+    <!--
+        Kakao Maps JavaScript SDK
+
+        반드시 본인의 JavaScript 키를 넣으세요.
+        libraries=clusterer : 마커 클러스터러 사용
+    -->
+    <script
+        type="text/javascript"
+        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7f26ddb0373cd3b598ff54652cbbdc24&libraries=clusterer">
+    </script>
 </head>
 
 <body>
 
-<div class="app">
+    <!-- =========================
+         LOADING
+    ========================== -->
 
-```
-<!-- =================================
-     사이드바
-================================== -->
-
-<aside class="sidebar">
-
-    <div class="header">
-
-        <div class="title">
-
-            <div class="title-icon">
-                🚗
+    <div class="loading" id="loading">
+        <div class="loading-box">
+            <div class="spinner"></div>
+            <div class="loading-text">
+                차량 기록을 불러오는 중...
             </div>
-
-            <div>
-
-                <h1>
-                    차량 사고 · 고장 지도
-                </h1>
-
-                <div class="subtitle">
-                    Vehicle Incident Map
-                </div>
-
-            </div>
-
         </div>
-
-
-        <div class="stats">
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    전체 기록
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="totalCount">
-                    -
-                </div>
-
-            </div>
-
-
-            <div class="stat">
-
-                <div class="stat-label">
-                    차량 수
-                </div>
-
-                <div
-                    class="stat-value"
-                    id="carCount">
-                    -
-                </div>
-
-            </div>
-
-        </div>
-
     </div>
 
+    <!-- =========================
+         ERROR
+    ========================== -->
 
-    <div class="search-area">
+    <div class="error-screen" id="errorScreen">
+        <div class="error-box">
+            <div class="error-title">
+                지도를 불러오지 못했습니다.
+            </div>
 
-        <div class="search">
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+    </div>
 
-            <span class="search-icon">
-                ⌕
-            </span>
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
 
+    <aside class="sidebar">
+
+        <header class="header">
+            <div class="eyebrow">
+                VEHICLE INCIDENT DATABASE
+            </div>
+
+            <h1 class="title">
+                차량 사고 · 고장 기록
+            </h1>
+
+            <div class="subtitle">
+                사고 및 차량 관련 기록을 지도에서 확인합니다.
+            </div>
+        </header>
+
+        <section class="stats">
+
+            <div class="stat">
+                <div class="stat-label">
+                    TOTAL RECORDS
+                </div>
+
+                <div class="stat-value" id="totalCount">
+                    -
+                </div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">
+                    UNIQUE VEHICLES
+                </div>
+
+                <div class="stat-value" id="carCount">
+                    -
+                </div>
+            </div>
+
+        </section>
+
+        <div class="search-wrap">
             <input
                 type="text"
-                id="searchInput"
+                class="search"
+                id="search"
                 placeholder="차량번호, 차종, 사고내용 검색..."
                 autocomplete="off"
             >
-
         </div>
 
-    </div>
+        <div class="list" id="recordList"></div>
 
+    </aside>
 
-    <div class="list-header">
+    <!-- =========================
+         MAP
+    ========================== -->
 
-        <span class="list-title">
-            사고 · 고장 기록
-        </span>
+    <main id="map"></main>
 
-        <span
-            class="list-count"
-            id="listCount">
-            0건
-        </span>
 
-    </div>
+    <script>
 
+        /* =====================================================
+           전역 변수
+        ===================================================== */
 
-    <div
-        class="vehicle-list"
-        id="vehicleList">
-    </div>
+        let map = null;
 
-</aside>
+        let clusterer = null;
 
+        let records = [];
 
-<!-- =================================
-     지도
-================================== -->
+        let markers = [];
 
-<main class="map-wrap">
+        let activeIndex = -1;
 
-    <div id="map"></div>
 
+        /* =====================================================
+           DOM
+        ===================================================== */
 
-    <div class="map-control">
+        const loading =
+            document.getElementById("loading");
 
-        <button
-            class="map-btn"
-            id="zoomIn"
-            title="확대">
-            +
-        </button>
+        const errorScreen =
+            document.getElementById("errorScreen");
 
-        <button
-            class="map-btn"
-            id="zoomOut"
-            title="축소">
-            −
-        </button>
+        const errorMessage =
+            document.getElementById("errorMessage");
 
-        <button
-            class="map-btn"
-            id="resetMap"
-            title="전체 보기">
-            ⌖
-        </button>
+        const recordList =
+            document.getElementById("recordList");
 
-    </div>
+        const searchInput =
+            document.getElementById("search");
 
-</main>
-```
+        const totalCount =
+            document.getElementById("totalCount");
 
-</div>
+        const carCount =
+            document.getElementById("carCount");
 
-<script>
 
-    /* ==========================================================
-       전역 변수
-    ========================================================== */
+        /* =====================================================
+           유틸
+        ===================================================== */
 
-    let vehicleData = [];
+        function escapeHtml(value) {
 
-    let map;
-
-    let markers = [];
-
-    let markerMap = new Map();
-
-    let clusterer;
-
-    let activeInfoWindow = null;
-
-    let activeIndex = null;
-
-
-    /* ==========================================================
-       카카오맵 초기화
-    ========================================================== */
-
-    const container =
-        document.getElementById("map");
-
-
-    const options = {
-
-        center:
-            new kakao.maps.LatLng(
-                36.5,
-                127.8
-            ),
-
-        level: 13
-
-    };
-
-
-    map =
-        new kakao.maps.Map(
-            container,
-            options
-        );
-
-
-    /* ==========================================================
-       카카오 기본 줌 컨트롤
-    ========================================================== */
-
-    const zoomControl =
-        new kakao.maps.ZoomControl();
-
-
-    map.addControl(
-        zoomControl,
-        kakao.maps.ControlPosition.RIGHT
-    );
-
-
-    /* ==========================================================
-       클러스터러
-    ========================================================== */
-
-    clusterer =
-        new kakao.maps.MarkerClusterer({
-
-            map: map,
-
-            averageCenter: true,
-
-            minLevel: 7,
-
-            disableClickZoom: true,
-
-            styles: [
-
-                {
-                    width: "46px",
-                    height: "46px",
-
-                    background: "#11161d",
-
-                    border:
-                        "3px solid #e6ff3f",
-
-                    borderRadius: "50%",
-
-                    color: "#e6ff3f",
-
-                    textAlign: "center",
-
-                    lineHeight: "40px",
-
-                    fontSize: "13px",
-
-                    fontWeight: "900"
-                }
-
-            ]
-
-        });
-
-
-    /* ==========================================================
-       JSON 불러오기
-    ========================================================== */
-
-    fetch("./list.json")
-
-        .then((response) => {
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "list.json을 불러오지 못했습니다."
-                );
-
+            if (value === null || value === undefined) {
+                return "";
             }
 
-            return response.json();
-
-        })
-
-        .then((json) => {
-
-            vehicleData = json;
-
-            initialize();
-
-        })
-
-        .catch((error) => {
-
-            console.error(error);
-
-            document.getElementById(
-                "vehicleList"
-            ).innerHTML = `
-                <div class="empty">
-                    데이터를 불러오지 못했습니다.
-                </div>
-            `;
-
-        });
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
 
-    /* ==========================================================
-       초기화
-    ========================================================== */
+        function formatDate(value) {
 
-    function initialize() {
+            if (
+                value === null ||
+                value === undefined ||
+                value === ""
+            ) {
+                return "날짜 없음";
+            }
 
-        updateStatistics();
+            const text = String(value);
 
-        createMarkers();
+            /*
+             * 250712 → 2025.07.12
+             */
 
-        renderList(
-            vehicleData.map(
-                (item, index) => ({
-                    item,
-                    index
-                })
-            )
-        );
+            if (/^\d{6}$/.test(text)) {
 
-        fitMap();
+                const year =
+                    Number(text.substring(0, 2));
 
-    }
+                const month =
+                    Number(text.substring(2, 4));
+
+                const day =
+                    Number(text.substring(4, 6));
+
+                /*
+                 * 00월 / 00일 등의 비정상 날짜
+                 */
+
+                if (
+                    month < 1 ||
+                    month > 12 ||
+                    day < 1 ||
+                    day > 31
+                ) {
+                    return "날짜 확인 필요";
+                }
+
+                const fullYear =
+                    year >= 70
+                        ? 1900 + year
+                        : 2000 + year;
+
+                return (
+                    fullYear +
+                    "." +
+                    String(month).padStart(2, "0") +
+                    "." +
+                    String(day).padStart(2, "0")
+                );
+            }
+
+            return escapeHtml(text);
+        }
 
 
-    /* ==========================================================
-       마커 생성
-    ========================================================== */
+        function showError(message) {
 
-    function createMarkers() {
+            loading.classList.add("hidden");
 
-        markers = [];
+            errorMessage.textContent = message;
 
-        markerMap.clear();
+            errorScreen.classList.add("show");
+        }
 
-        vehicleData.forEach(
-            (item, index) => {
 
-                const position =
+        /* =====================================================
+           Kakao SDK 확인
+        ===================================================== */
+
+        function checkKakaoSDK() {
+
+            if (
+                typeof kakao === "undefined" ||
+                !kakao.maps
+            ) {
+
+                showError(
+                    "Kakao Maps JavaScript SDK가 로드되지 않았습니다.\n\n" +
+                    "확인할 사항:\n" +
+                    "1. 카카오 JavaScript 키가 올바른지 확인\n" +
+                    "2. 카카오 Developers에 GitHub Pages 도메인이 등록되어 있는지 확인\n" +
+                    "3. 브라우저 개발자도구 Network에서 dapi.kakao.com 요청 확인"
+                );
+
+                return false;
+            }
+
+            return true;
+        }
+
+
+        /* =====================================================
+           지도 초기화
+        ===================================================== */
+
+        function initMap() {
+
+            if (!checkKakaoSDK()) {
+                return;
+            }
+
+            const container =
+                document.getElementById("map");
+
+            const options = {
+
+                center:
                     new kakao.maps.LatLng(
-                        item.latitude,
-                        item.longitude
-                    );
+                        37.5,
+                        127.5
+                    ),
+
+                level: 11
+            };
+
+            map =
+                new kakao.maps.Map(
+                    container,
+                    options
+                );
 
 
-                const marker =
-                    new kakao.maps.Marker({
+            /*
+             * 확대 / 축소 컨트롤
+             */
 
-                        position:
-                            position
+            const zoomControl =
+                new kakao.maps.ZoomControl();
 
+            map.addControl(
+                zoomControl,
+                kakao.maps.ControlPosition.RIGHT
+            );
+
+
+            /*
+             * 클러스터러
+             */
+
+            clusterer =
+                new kakao.maps.MarkerClusterer({
+
+                    map: map,
+
+                    averageCenter: true,
+
+                    minLevel: 7,
+
+                    disableClickZoom: true,
+
+                    styles: [
+                        {
+                            width: "44px",
+                            height: "44px",
+
+                            background: "#20252c",
+
+                            border: "2px solid #ffffff",
+
+                            borderRadius: "50%",
+
+                            color: "#ffffff",
+
+                            textAlign: "center",
+
+                            lineHeight: "40px",
+
+                            fontSize: "12px",
+
+                            fontWeight: "800",
+
+                            boxShadow:
+                                "0 3px 10px rgba(0,0,0,0.25)"
+                        }
+                    ]
+                });
+
+
+            loadData();
+        }
+
+
+        /* =====================================================
+           JSON 불러오기
+        ===================================================== */
+
+        async function loadData() {
+
+            try {
+
+                const response =
+                    await fetch("./list.json", {
+                        cache: "no-cache"
                     });
 
 
-                kakao.maps.event.addListener(
-                    marker,
-                    "click",
-                    function() {
+                if (!response.ok) {
 
-                        selectMarker(index);
+                    throw new Error(
+                        "list.json을 불러오지 못했습니다. " +
+                        "HTTP " +
+                        response.status
+                    );
+                }
 
-                    }
+
+                const data =
+                    await response.json();
+
+
+                if (!Array.isArray(data)) {
+
+                    throw new Error(
+                        "list.json의 최상위 데이터는 배열이어야 합니다."
+                    );
+                }
+
+
+                records = data;
+
+
+                updateStats();
+
+                renderList(records);
+
+                createMarkers(records);
+
+                fitMap();
+
+
+                loading.classList.add("hidden");
+
+            } catch (error) {
+
+                console.error(error);
+
+                showError(
+                    "데이터를 불러오는 중 오류가 발생했습니다.\n\n" +
+                    error.message
                 );
-
-
-                markers.push(marker);
-
-                markerMap.set(
-                    index,
-                    marker
-                );
-
             }
-        );
-
-
-        clusterer.clear();
-
-        clusterer.addMarkers(
-            markers
-        );
-
-    }
-
-
-    /* ==========================================================
-       마커 선택
-    ========================================================== */
-
-    function selectMarker(index) {
-
-        const item =
-            vehicleData[index];
-
-        const marker =
-            markerMap.get(index);
-
-
-        if (!marker) {
-            return;
         }
 
 
-        if (activeInfoWindow) {
+        /* =====================================================
+           통계
+        ===================================================== */
 
-            activeInfoWindow.close();
+        function updateStats() {
 
-        }
-
-
-        const infoWindow =
-            new kakao.maps.InfoWindow({
-
-                content:
-                    createInfoWindow(item),
-
-                removable: true
-
-            });
+            totalCount.textContent =
+                records.length.toLocaleString();
 
 
-        infoWindow.open(
-            map,
-            marker
-        );
-
-
-        activeInfoWindow =
-            infoWindow;
-
-        activeIndex =
-            index;
-
-
-        map.setCenter(
-            new kakao.maps.LatLng(
-                item.latitude,
-                item.longitude
-            )
-        );
-
-
-        map.setLevel(4);
-
-
-        document
-            .querySelectorAll(".vehicle-item")
-            .forEach((element) => {
-
-                element.classList.remove(
-                    "active"
+            const cars =
+                new Set(
+                    records
+                        .map(item => item.carnum)
+                        .filter(Boolean)
                 );
 
-            });
 
-
-        const selected =
-            document.querySelector(
-                `.vehicle-item[data-index="${index}"]`
-            );
-
-
-        if (selected) {
-
-            selected.classList.add(
-                "active"
-            );
-
-            selected.scrollIntoView({
-
-                behavior: "smooth",
-
-                block: "nearest"
-
-            });
-
-        }
-
-    }
-
-
-    /* ==========================================================
-       정보창
-    ========================================================== */
-
-    function createInfoWindow(item) {
-
-        return `
-
-            <div class="info-window">
-
-                <div class="info-header">
-
-                    <div class="info-number">
-                        ${escapeHtml(item.carnum)}
-                    </div>
-
-                    <div class="info-date">
-                        ${formatDate(item.date)}
-                    </div>
-
-                </div>
-
-
-                <div class="info-car">
-                    ${escapeHtml(item.car)}
-                </div>
-
-
-                <div class="info-reason">
-                    ${escapeHtml(item.reason)}
-                </div>
-
-            </div>
-
-        `;
-
-    }
-
-
-    /* ==========================================================
-       목록 출력
-    ========================================================== */
-
-    function renderList(data) {
-
-        const list =
-            document.getElementById(
-                "vehicleList"
-            );
-
-
-        list.innerHTML = "";
-
-
-        if (data.length === 0) {
-
-            list.innerHTML = `
-
-                <div class="empty">
-                    검색 결과가 없습니다.
-                </div>
-
-            `;
-
-            return;
-
+            carCount.textContent =
+                cars.size.toLocaleString();
         }
 
 
-        data.forEach(
-            ({ item, index }) => {
+        /* =====================================================
+           리스트 렌더링
+        ===================================================== */
+
+        function renderList(data) {
+
+            recordList.innerHTML = "";
+
+
+            if (!data.length) {
+
+                recordList.innerHTML = `
+                    <div class="empty">
+                        검색 결과가 없습니다.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            data.forEach((item) => {
+
+                const originalIndex =
+                    records.indexOf(item);
+
 
                 const element =
-                    document.createElement(
-                        "div"
-                    );
+                    document.createElement("div");
 
 
                 element.className =
-                    "vehicle-item";
+                    "record";
 
 
                 element.dataset.index =
-                    index;
+                    originalIndex;
 
 
                 element.innerHTML = `
 
-                    <div class="item-top">
+                    <div class="record-top">
 
                         <div class="car-number">
-                            ${escapeHtml(item.carnum)}
+                            ${escapeHtml(item.carnum || "차량번호 없음")}
                         </div>
 
                         <div class="date">
@@ -1098,14 +1006,12 @@
 
                     </div>
 
-
                     <div class="car-name">
-                        ${escapeHtml(item.car)}
+                        ${escapeHtml(item.car || "차종 정보 없음")}
                     </div>
 
-
                     <div class="reason">
-                        ${escapeHtml(item.reason)}
+                        ${escapeHtml(item.reason || "사고·고장 내용 없음")}
                     </div>
 
                 `;
@@ -1113,39 +1019,379 @@
 
                 element.addEventListener(
                     "click",
-                    function() {
+                    () => {
 
-                        selectMarker(index);
+                        selectRecord(
+                            originalIndex
+                        );
 
                     }
                 );
 
 
-                list.appendChild(
-                    element
-                );
+                recordList.appendChild(element);
+
+            });
+        }
+
+
+        /* =====================================================
+           마커 생성
+        ===================================================== */
+
+        function createMarkers(data) {
+
+            /*
+             * 기존 마커 제거
+             */
+
+            markers.forEach(marker => {
+
+                marker.setMap(null);
+
+            });
+
+            markers = [];
+
+
+            if (clusterer) {
+
+                clusterer.clear();
 
             }
-        );
 
 
-        document.getElementById(
-            "listCount"
-        ).textContent =
-            `${data.length}건`;
+            data.forEach((item, index) => {
 
-    }
+                const latitude =
+                    Number(item.latitude);
+
+                const longitude =
+                    Number(item.longitude);
 
 
-    /* ==========================================================
-       검색
-    ========================================================== */
+                if (
+                    !Number.isFinite(latitude) ||
+                    !Number.isFinite(longitude)
+                ) {
+                    return;
+                }
 
-    document
-        .getElementById("searchInput")
-        .addEventListener(
+
+                const position =
+                    new kakao.maps.LatLng(
+                        latitude,
+                        longitude
+                    );
+
+
+                const marker =
+                    new kakao.maps.Marker({
+
+                        position: position,
+
+                        title:
+                            item.carnum || "차량"
+                    });
+
+
+                marker.__recordIndex =
+                    records.indexOf(item);
+
+
+                const infoWindow =
+                    new kakao.maps.InfoWindow({
+
+                        content:
+                            createInfoWindowContent(
+                                item
+                            ),
+
+                        removable: true
+
+                    });
+
+
+                kakao.maps.event.addListener(
+                    marker,
+                    "click",
+                    function () {
+
+                        selectRecord(
+                            marker.__recordIndex
+                        );
+
+
+                        infoWindow.open(
+                            map,
+                            marker
+                        );
+
+                    }
+                );
+
+
+                marker.__infoWindow =
+                    infoWindow;
+
+
+                markers.push(marker);
+
+            });
+
+
+            if (clusterer) {
+
+                clusterer.addMarkers(
+                    markers
+                );
+
+            } else {
+
+                markers.forEach(marker => {
+                    marker.setMap(map);
+                });
+
+            }
+        }
+
+
+        /* =====================================================
+           InfoWindow
+        ===================================================== */
+
+        function createInfoWindowContent(item) {
+
+            return `
+
+                <div class="info-window">
+
+                    <div class="info-title">
+                        ${escapeHtml(
+                            item.carnum || "차량 정보"
+                        )}
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            차종
+                        </div>
+
+                        <div class="info-value">
+                            ${escapeHtml(
+                                item.car || "-"
+                            )}
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            날짜
+                        </div>
+
+                        <div class="info-value">
+                            ${formatDate(item.date)}
+                        </div>
+
+                    </div>
+
+                    <div class="info-reason">
+                        ${escapeHtml(
+                            item.reason || "기록 없음"
+                        )}
+                    </div>
+
+                </div>
+
+            `;
+        }
+
+
+        /* =====================================================
+           기록 선택
+        ===================================================== */
+
+        function selectRecord(index) {
+
+            if (
+                index < 0 ||
+                index >= records.length
+            ) {
+                return;
+            }
+
+
+            activeIndex = index;
+
+
+            /*
+             * 리스트 active 상태
+             */
+
+            document
+                .querySelectorAll(".record")
+                .forEach(element => {
+
+                    element.classList.remove(
+                        "active"
+                    );
+
+                });
+
+
+            const activeElement =
+                document.querySelector(
+                    `.record[data-index="${index}"]`
+                );
+
+
+            if (activeElement) {
+
+                activeElement.classList.add(
+                    "active"
+                );
+
+                activeElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                });
+
+            }
+
+
+            /*
+             * 지도 이동
+             */
+
+            const item =
+                records[index];
+
+
+            const latitude =
+                Number(item.latitude);
+
+            const longitude =
+                Number(item.longitude);
+
+
+            if (
+                !Number.isFinite(latitude) ||
+                !Number.isFinite(longitude)
+            ) {
+                return;
+            }
+
+
+            const position =
+                new kakao.maps.LatLng(
+                    latitude,
+                    longitude
+                );
+
+
+            map.setCenter(position);
+
+            map.setLevel(4);
+
+
+            /*
+             * InfoWindow 열기
+             */
+
+            markers.forEach(marker => {
+
+                if (
+                    marker.__recordIndex === index
+                ) {
+
+                    if (
+                        marker.__infoWindow
+                    ) {
+
+                        marker.__infoWindow.open(
+                            map,
+                            marker
+                        );
+
+                    }
+
+                }
+
+            });
+
+        }
+
+
+        /* =====================================================
+           전체 데이터 기준 지도 범위
+        ===================================================== */
+
+        function fitMap() {
+
+            if (
+                !records.length ||
+                !map
+            ) {
+                return;
+            }
+
+
+            const bounds =
+                new kakao.maps.LatLngBounds();
+
+
+            let count = 0;
+
+
+            records.forEach(item => {
+
+                const latitude =
+                    Number(item.latitude);
+
+                const longitude =
+                    Number(item.longitude);
+
+
+                if (
+                    !Number.isFinite(latitude) ||
+                    !Number.isFinite(longitude)
+                ) {
+                    return;
+                }
+
+
+                bounds.extend(
+                    new kakao.maps.LatLng(
+                        latitude,
+                        longitude
+                    )
+                );
+
+
+                count++;
+
+            });
+
+
+            if (count > 0) {
+
+                map.setBounds(bounds);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           검색
+        ===================================================== */
+
+        searchInput.addEventListener(
             "input",
-            function() {
+            function () {
 
                 const keyword =
                     this.value
@@ -1155,27 +1401,20 @@
 
                 if (!keyword) {
 
-                    renderList(
-                        vehicleData.map(
-                            (item, index) => ({
-                                item,
-                                index
-                            })
-                        )
-                    );
+                    renderList(records);
+
+                    createMarkers(records);
+
+                    fitMap();
 
                     return;
-
                 }
 
 
-                const result = [];
+                const filtered =
+                    records.filter(item => {
 
-
-                vehicleData.forEach(
-                    (item, index) => {
-
-                        const target = [
+                        const text = [
 
                             item.carnum,
 
@@ -1186,285 +1425,128 @@
                             item.reason
 
                         ]
+                            .filter(Boolean)
                             .join(" ")
                             .toLowerCase();
 
 
+                        return text.includes(
+                            keyword
+                        );
+
+                    });
+
+
+                renderList(filtered);
+
+                createMarkers(filtered);
+
+
+                /*
+                 * 검색 결과가 있을 경우
+                 * 검색된 위치로 지도 이동
+                 */
+
+                if (filtered.length) {
+
+                    const bounds =
+                        new kakao.maps.LatLngBounds();
+
+                    let count = 0;
+
+
+                    filtered.forEach(item => {
+
+                        const latitude =
+                            Number(item.latitude);
+
+                        const longitude =
+                            Number(item.longitude);
+
+
                         if (
-                            target.includes(
-                                keyword
-                            )
+                            !Number.isFinite(latitude) ||
+                            !Number.isFinite(longitude)
                         ) {
-
-                            result.push({
-                                item,
-                                index
-                            });
-
+                            return;
                         }
+
+
+                        bounds.extend(
+                            new kakao.maps.LatLng(
+                                latitude,
+                                longitude
+                            )
+                        );
+
+
+                        count++;
+
+                    });
+
+
+                    if (count) {
+
+                        map.setBounds(
+                            bounds
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           시작
+        ===================================================== */
+
+        /*
+         * Kakao SDK가 정상적으로 로드된 이후
+         * DOM이 준비되었을 때 실행
+         */
+
+        window.addEventListener(
+            "load",
+            function () {
+
+                /*
+                 * SDK 로딩 여부 확인
+                 */
+
+                if (
+                    typeof kakao === "undefined"
+                ) {
+
+                    showError(
+                        "Kakao Maps SDK를 불러오지 못했습니다.\n\n" +
+                        "카카오 Developers의 Web 플랫폼 도메인 등록과 " +
+                        "JavaScript 키를 확인해주세요."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * kakao.maps.load을 이용해
+                 * 지도 SDK 초기화 완료 후 실행
+                 */
+
+                kakao.maps.load(
+                    function () {
+
+                        initMap();
 
                     }
                 );
 
-
-                renderList(result);
-
             }
         );
 
-
-    /* ==========================================================
-       통계
-    ========================================================== */
-
-    function updateStatistics() {
-
-        document.getElementById(
-            "totalCount"
-        ).textContent =
-            vehicleData.length;
-
-
-        const uniqueCars =
-            new Set(
-                vehicleData.map(
-                    item =>
-                        item.carnum
-                )
-            );
-
-
-        document.getElementById(
-            "carCount"
-        ).textContent =
-            uniqueCars.size;
-
-    }
-
-
-    /* ==========================================================
-       전체 지도 보기
-    ========================================================== */
-
-    function fitMap() {
-
-        if (
-            !vehicleData.length
-        ) {
-            return;
-        }
-
-
-        const bounds =
-            new kakao.maps.LatLngBounds();
-
-
-        vehicleData.forEach(
-            (item) => {
-
-                bounds.extend(
-
-                    new kakao.maps.LatLng(
-
-                        item.latitude,
-
-                        item.longitude
-
-                    )
-
-                );
-
-            }
-        );
-
-
-        map.setBounds(
-            bounds
-        );
-
-    }
-
-
-    /* ==========================================================
-       날짜 포맷
-    ========================================================== */
-
-    function formatDate(value) {
-
-        if (
-            !/^\d{6}$/.test(value)
-        ) {
-
-            return "날짜 확인 필요";
-
-        }
-
-
-        const year =
-            Number(
-                value.substring(
-                    0,
-                    2
-                )
-            );
-
-
-        const month =
-            Number(
-                value.substring(
-                    2,
-                    4
-                )
-            );
-
-
-        const day =
-            Number(
-                value.substring(
-                    4,
-                    6
-                )
-            );
-
-
-        if (
-            month < 1 ||
-            month > 12 ||
-            day < 1 ||
-            day > 31
-        ) {
-
-            return "날짜 확인 필요";
-
-        }
-
-
-        return (
-            `20${String(year).padStart(2, "0")}.` +
-            `${String(month).padStart(2, "0")}.` +
-            `${String(day).padStart(2, "0")}`
-        );
-
-    }
-
-
-    /* ==========================================================
-       지도 버튼
-    ========================================================== */
-
-    document
-        .getElementById("zoomIn")
-        .addEventListener(
-            "click",
-            function() {
-
-                map.setLevel(
-                    map.getLevel() - 1
-                );
-
-            }
-        );
-
-
-    document
-        .getElementById("zoomOut")
-        .addEventListener(
-            "click",
-            function() {
-
-                map.setLevel(
-                    map.getLevel() + 1
-                );
-
-            }
-        );
-
-
-    document
-        .getElementById("resetMap")
-        .addEventListener(
-            "click",
-            function() {
-
-                fitMap();
-
-
-                if (activeInfoWindow) {
-
-                    activeInfoWindow.close();
-
-                }
-
-
-                document
-                    .querySelectorAll(
-                        ".vehicle-item"
-                    )
-                    .forEach(
-                        (element) => {
-
-                            element.classList.remove(
-                                "active"
-                            );
-
-                        }
-                    );
-
-            }
-        );
-
-
-    /* ==========================================================
-       HTML Escape
-    ========================================================== */
-
-    function escapeHtml(value) {
-
-        return String(value)
-
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-
-            .replace(
-                /</g,
-                "&lt;"
-            )
-
-            .replace(
-                />/g,
-                "&gt;"
-            )
-
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-
-            .replace(
-                /'/g,
-                "&#039;"
-            );
-
-    }
-
-
-    /* ==========================================================
-       창 크기 변경
-    ========================================================== */
-
-    window.addEventListener(
-        "resize",
-        function() {
-
-            map.relayout();
-
-        }
-    );
-
-</script>
+    </script>
 
 </body>
-
 </html>
