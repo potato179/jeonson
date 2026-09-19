@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
 
-<meta
- name="viewport"
- content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-/>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+  />
 
   <title>전손맵</title>
 
@@ -64,6 +63,8 @@
         "Segoe UI",
         "Noto Sans KR",
         sans-serif;
+
+      overscroll-behavior: none;
     }
 
     body {
@@ -281,6 +282,8 @@
       transition:
         border-color 0.2s ease,
         background 0.2s ease;
+
+      -webkit-appearance: none;
     }
 
     #search::placeholder {
@@ -396,10 +399,14 @@
         20px;
 
       overflow-y: auto;
+      overflow-x: hidden;
 
-      overscroll-behavior: contain;
+      overscroll-behavior-y: contain;
+      overscroll-behavior-x: none;
 
       touch-action: pan-y;
+
+      -webkit-overflow-scrolling: touch;
 
       scrollbar-width: thin;
 
@@ -453,6 +460,8 @@
         background 0.18s ease,
         border-color 0.18s ease,
         transform 0.18s ease;
+
+      touch-action: manipulation;
     }
 
     .record:hover {
@@ -825,6 +834,12 @@
         will-change: transform;
 
         pointer-events: none;
+
+        /*
+         * 바텀시트 자체는 세로 이동이 가능하지만
+         * 리스트가 실제 스크롤 영역을 담당한다.
+         */
+        touch-action: pan-y;
       }
 
       .sidebar-handle-area,
@@ -852,6 +867,9 @@
 
         cursor: grab;
 
+        /*
+         * 핸들 영역에서만 시트 드래그를 담당한다.
+         */
         touch-action: none;
       }
 
@@ -893,18 +911,59 @@
           9px;
       }
 
+      /*
+       * iOS Safari 핵심 설정
+       */
       .list {
+        position: relative;
+
+        min-height: 0;
+
+        height: 0;
+
+        flex: 1 1 auto;
+
         padding:
           0
           10px
           calc(
-            20px +
+            40px +
             env(safe-area-inset-bottom)
           );
+
+        overflow-y: scroll;
+        overflow-x: hidden;
+
+        -webkit-overflow-scrolling: touch;
+
+        overscroll-behavior-y: contain;
+
+        touch-action: pan-y;
+
+        /*
+         * iOS에서 스크롤 컨테이너로
+         * 확실하게 인식되도록 한다.
+         */
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
       }
 
       .record {
         padding: 14px;
+
+        /*
+         * 버튼 자체가 터치 이벤트를
+         * 스크롤로 방해하지 않도록 한다.
+         */
+        touch-action: manipulation;
+      }
+
+      .status {
+        padding-bottom:
+          calc(
+            40px +
+            env(safe-area-inset-bottom)
+          );
       }
 
       .map-actions {
@@ -954,99 +1013,23 @@
       }
     }
   </style>
-
 </head>
 
 <body>
 
   <div id="app">
 
-```
-<!-- =====================================================
-     MAP
-====================================================== -->
+    <!-- =====================================================
+         MAP
+    ====================================================== -->
 
-<div id="map"></div>
+    <div id="map"></div>
 
-<!-- =====================================================
-     MOBILE TOP BRAND
-====================================================== -->
+    <!-- =====================================================
+         MOBILE TOP BRAND
+    ====================================================== -->
 
-<div class="mobile-top-brand">
-
-  <div class="brand-mark">
-    🤪
-  </div>
-
-  <div class="brand-text">
-
-    <div class="brand-title">
-      전손맵
-    </div>
-
-    <div class="brand-subtitle">
-      다음은 너다!!! -사고차주 일동-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- =====================================================
-     MAP ACTIONS
-====================================================== -->
-
-<div class="map-actions">
-
-  <button
-    type="button"
-    class="map-button"
-    id="fitButton"
-    aria-label="전체 보기"
-    title="전체 보기"
-  >
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-      <path d="M16 3h3a2 2 0 0 1 2 2v3" />
-      <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
-      <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
-    </svg>
-  </button>
-
-</div>
-
-<!-- =====================================================
-     SIDEBAR / BOTTOM SHEET
-====================================================== -->
-
-<aside
-  class="sidebar"
-  id="sidebar"
->
-
-  <!-- MOBILE HANDLE -->
-
-  <div
-    class="sidebar-handle-area"
-    id="sheetHandle"
-  >
-    <div class="sidebar-handle"></div>
-  </div>
-
-  <!-- HEADER -->
-
-  <div class="sidebar-header">
-
-    <!-- DESKTOP ONLY BRAND -->
-
-    <div class="brand desktop-brand">
+    <div class="mobile-top-brand">
 
       <div class="brand-mark">
         🤪
@@ -1066,107 +1049,180 @@
 
     </div>
 
-    <!-- SEARCH -->
+    <!-- =====================================================
+         MAP ACTIONS
+    ====================================================== -->
 
-    <div class="search-wrap">
+    <div class="map-actions">
 
-      <svg
-        class="search-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+      <button
+        type="button"
+        class="map-button"
+        id="fitButton"
+        aria-label="전체 보기"
+        title="전체 보기"
       >
-        <circle
-          cx="11"
-          cy="11"
-          r="7"
-        ></circle>
-
-        <path
-          d="m20 20-4-4"
-        ></path>
-      </svg>
-
-      <input
-        id="search"
-        type="search"
-        placeholder="차량번호, 차종, 날짜, 사고내용 검색"
-        autocomplete="off"
-      />
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+          <path d="M16 3h3a2 2 0 0 1 2 2v3" />
+          <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
+          <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
+        </svg>
+      </button>
 
     </div>
 
-  </div>
+    <!-- =====================================================
+         SIDEBAR / BOTTOM SHEET
+    ====================================================== -->
 
-  <!-- STATS -->
-
-  <div class="stats">
-
-    <div class="stat">
-
-      <div class="stat-label">
-        Records
-      </div>
-
-      <div
-        class="stat-value"
-        id="totalCount"
-      >
-        0
-      </div>
-
-    </div>
-
-    <div class="stat">
-
-      <div class="stat-label">
-        Vehicles
-      </div>
-
-      <div
-        class="stat-value"
-        id="vehicleCount"
-      >
-        0
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- LIST HEADER -->
-
-  <div class="list-header">
-
-    <div class="list-title">
-      INCIDENT RECORDS
-    </div>
-
-    <div
-      class="list-count"
-      id="listCount"
+    <aside
+      class="sidebar"
+      id="sidebar"
     >
-      0
-    </div>
 
-  </div>
+      <!-- MOBILE HANDLE -->
 
-  <!-- LIST -->
+      <div
+        class="sidebar-handle-area"
+        id="sheetHandle"
+      >
+        <div class="sidebar-handle"></div>
+      </div>
 
-  <div
-    class="list"
-    id="recordList"
-  >
-    <div class="status">
-      데이터를 불러오는 중...
-    </div>
-  </div>
+      <!-- HEADER -->
 
-</aside>
-```
+      <div class="sidebar-header">
+
+        <!-- DESKTOP ONLY BRAND -->
+
+        <div class="brand desktop-brand">
+
+          <div class="brand-mark">
+            🤪
+          </div>
+
+          <div class="brand-text">
+
+            <div class="brand-title">
+              전손맵
+            </div>
+
+            <div class="brand-subtitle">
+              다음은 너다!!! -사고차주 일동-
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- SEARCH -->
+
+        <div class="search-wrap">
+
+          <svg
+            class="search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle
+              cx="11"
+              cy="11"
+              r="7"
+            ></circle>
+
+            <path
+              d="m20 20-4-4"
+            ></path>
+          </svg>
+
+          <input
+            id="search"
+            type="search"
+            placeholder="차량번호, 차종, 날짜, 사고내용 검색"
+            autocomplete="off"
+          />
+
+        </div>
+
+      </div>
+
+      <!-- STATS -->
+
+      <div class="stats">
+
+        <div class="stat">
+
+          <div class="stat-label">
+            Records
+          </div>
+
+          <div
+            class="stat-value"
+            id="totalCount"
+          >
+            0
+          </div>
+
+        </div>
+
+        <div class="stat">
+
+          <div class="stat-label">
+            Vehicles
+          </div>
+
+          <div
+            class="stat-value"
+            id="vehicleCount"
+          >
+            0
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- LIST HEADER -->
+
+      <div class="list-header">
+
+        <div class="list-title">
+          INCIDENT RECORDS
+        </div>
+
+        <div
+          class="list-count"
+          id="listCount"
+        >
+          0
+        </div>
+
+      </div>
+
+      <!-- LIST -->
+
+      <div
+        class="list"
+        id="recordList"
+      >
+        <div class="status">
+          데이터를 불러오는 중...
+        </div>
+      </div>
+
+    </aside>
 
   </div>
 
@@ -1188,15 +1244,25 @@
 
     /*
      * records는 항상 날짜 내림차순으로 유지한다.
-     *
-     * 각 데이터에는
-     * originalIndex가 존재하며,
-     * 이것은 list.json의 원래 index이다.
      */
     let records = [];
+
     let markers = [];
 
-    let activeRecordIndex = -1;
+    /*
+     * recordId -> record
+     */
+    let recordById = new Map();
+
+    /*
+     * recordId -> {
+     *   marker,
+     *   infoWindow
+     * }
+     */
+    let markerByRecordId = new Map();
+
+    let activeRecordId = null;
     let activeInfoWindow = null;
 
     const sheetState = {
@@ -1430,6 +1496,9 @@
 
     /* =========================================================
        SHEET DRAG
+       IMPORTANT:
+       시트 드래그는 sidebar 전체가 아니라
+       handle 영역에서만 시작한다.
     ========================================================= */
 
     function getTouchY(event) {
@@ -1457,6 +1526,10 @@
         return;
       }
 
+      /*
+       * 리스트에서는 절대로
+       * 바텀시트 드래그를 시작하지 않는다.
+       */
       if (
         event.target.closest(
           ".list"
@@ -1465,9 +1538,24 @@
         return;
       }
 
+      /*
+       * 검색창 등 입력요소에서도
+       * 시트 드래그를 시작하지 않는다.
+       */
       if (
         event.target.closest(
           "input, button"
+        )
+      ) {
+        return;
+      }
+
+      /*
+       * 핸들 영역에서만 드래그한다.
+       */
+      if (
+        !event.target.closest(
+          "#sheetHandle"
         )
       ) {
         return;
@@ -1579,7 +1667,11 @@
       );
     }
 
-    sidebar.addEventListener(
+    /*
+     * 핸들 영역에만 이벤트를 걸어
+     * 리스트와 완전히 분리한다.
+     */
+    sheetHandle.addEventListener(
       "touchstart",
       startSheetDrag,
       {
@@ -1587,7 +1679,7 @@
       }
     );
 
-    sidebar.addEventListener(
+    sheetHandle.addEventListener(
       "touchmove",
       moveSheetDrag,
       {
@@ -1595,7 +1687,7 @@
       }
     );
 
-    sidebar.addEventListener(
+    sheetHandle.addEventListener(
       "touchend",
       endSheetDrag,
       {
@@ -1603,9 +1695,55 @@
       }
     );
 
-    sidebar.addEventListener(
+    sheetHandle.addEventListener(
       "touchcancel",
       endSheetDrag,
+      {
+        passive: true
+      }
+    );
+
+    /* =========================================================
+       LIST TOUCH PROTECTION
+       iOS Safari에서 부모 시트로 이벤트가
+       전달되는 것을 방지한다.
+    ========================================================= */
+
+    recordList.addEventListener(
+      "touchstart",
+      event => {
+        event.stopPropagation();
+      },
+      {
+        passive: true
+      }
+    );
+
+    recordList.addEventListener(
+      "touchmove",
+      event => {
+        event.stopPropagation();
+      },
+      {
+        passive: true
+      }
+    );
+
+    recordList.addEventListener(
+      "touchend",
+      event => {
+        event.stopPropagation();
+      },
+      {
+        passive: true
+      }
+    );
+
+    recordList.addEventListener(
+      "touchcancel",
+      event => {
+        event.stopPropagation();
+      },
       {
         passive: true
       }
@@ -1722,9 +1860,6 @@
               b.date
             );
 
-          /*
-           * 큰 날짜가 먼저 오도록 한다.
-           */
           return bValue - aValue;
         }
       );
@@ -1764,16 +1899,13 @@
 
     /* =========================================================
        FIND RECORD
-       originalIndex를 기준으로 정확한 데이터 검색
     ========================================================= */
 
-    function findRecordByOriginalIndex(
-      originalIndex
+    function findRecordById(
+      recordId
     ) {
-      return records.find(
-        record =>
-          record.originalIndex ===
-          originalIndex
+      return recordById.get(
+        Number(recordId)
       );
     }
 
@@ -1809,6 +1941,8 @@
 
     /* =========================================================
        LIST
+       records 자체가 이미 날짜 내림차순이므로
+       여기서 다시 sort하지 않는다.
     ========================================================= */
 
     function renderList(
@@ -1828,20 +1962,11 @@
         return;
       }
 
-      /*
-       * 검색 결과 역시 항상
-       * 최신 날짜순으로 정렬한다.
-       */
-      const sortedData =
-        sortRecordsByDate(
-          data
-        );
-
       listCount.textContent =
-        sortedData.length;
+        data.length;
 
       recordList.innerHTML =
-        sortedData
+        data
           .map(
             item => {
               const date =
@@ -1853,12 +1978,12 @@
                 <button
                   type="button"
                   class="record ${
-                    activeRecordIndex ===
-                    item.originalIndex
+                    activeRecordId ===
+                    item.recordId
                       ? "active"
                       : ""
                   }"
-                  data-index="${item.originalIndex}"
+                  data-record-id="${item.recordId}"
                 >
 
                   <div class="record-top">
@@ -1912,7 +2037,7 @@
               () => {
                 selectRecord(
                   Number(
-                    element.dataset.index
+                    element.dataset.recordId
                   )
                 );
               }
@@ -1980,33 +2105,32 @@
     ========================================================= */
 
     function openMarkerInfo(
-      originalIndex,
-      marker,
-      infoWindow
+      recordId
     ) {
-      if (!map || !marker) {
+      if (!map) {
         return;
       }
 
-      /*
-       * originalIndex로 정확한 record를 찾는다.
-       *
-       * 날짜 정렬로 records의 배열 순서가
-       * 변경되어도 절대 다른 차량을 가져오지 않는다.
-       */
-      const item =
-        findRecordByOriginalIndex(
-          originalIndex
-        );
+      const id =
+        Number(recordId);
 
-      if (!item) {
+      const item =
+        findRecordById(id);
+
+      const markerEntry =
+        markerByRecordId.get(id);
+
+      if (
+        !item ||
+        !markerEntry
+      ) {
         return;
       }
 
       closeActiveInfoWindow();
 
-      activeRecordIndex =
-        originalIndex;
+      activeRecordId =
+        id;
 
       document
         .querySelectorAll(
@@ -2017,21 +2141,20 @@
             element.classList.toggle(
               "active",
               Number(
-                element.dataset.index
-              ) === originalIndex
+                element.dataset.recordId
+              ) === id
             );
           }
         );
 
+      const marker =
+        markerEntry.marker;
+
+      const infoWindow =
+        markerEntry.infoWindow;
+
       const position =
-        new kakao.maps.LatLng(
-          Number(
-            item.latitude
-          ),
-          Number(
-            item.longitude
-          )
-        );
+        marker.getPosition();
 
       if (isMobile()) {
         setSheetPosition(
@@ -2076,7 +2199,7 @@
 
       const selectedElement =
         document.querySelector(
-          `.record[data-index="${originalIndex}"]`
+          `.record[data-record-id="${id}"]`
         );
 
       if (
@@ -2115,15 +2238,12 @@
 
       markers = [];
 
-      /*
-       * 마커 생성도 날짜순으로 처리한다.
-       */
-      const sortedData =
-        sortRecordsByDate(
-          data
-        );
+      markerByRecordId.clear();
 
-      sortedData.forEach(
+      /*
+       * data 자체가 이미 날짜 내림차순이다.
+       */
+      data.forEach(
         item => {
           const latitude =
             Number(
@@ -2171,19 +2291,23 @@
               }
             );
 
-          /*
-           * 중요:
-           * 배열 index가 아니라
-           * originalIndex를 전달한다.
-           */
+          const recordId =
+            item.recordId;
+
+          markerByRecordId.set(
+            recordId,
+            {
+              marker,
+              infoWindow
+            }
+          );
+
           kakao.maps.event.addListener(
             marker,
             "click",
             () => {
               openMarkerInfo(
-                item.originalIndex,
-                marker,
-                infoWindow
+                recordId
               );
             }
           );
@@ -2204,74 +2328,27 @@
     ========================================================= */
 
     function selectRecord(
-      originalIndex
+      recordId
     ) {
-      /*
-       * 날짜 정렬 후에도
-       * originalIndex로 정확한 데이터를 찾는다.
-       */
       const target =
-        findRecordByOriginalIndex(
-          originalIndex
+        findRecordById(
+          recordId
         );
 
-      if (!target) {
-        return;
-      }
-
-      /*
-       * 해당 차량의 좌표와 일치하는 마커를 찾는다.
-       */
-      const markerIndex =
-        markers.findIndex(
-          marker => {
-            const position =
-              marker.getPosition();
-
-            return (
-              Math.abs(
-                position.getLat() -
-                Number(
-                  target.latitude
-                )
-              ) <
-                0.000000001 &&
-              Math.abs(
-                position.getLng() -
-                Number(
-                  target.longitude
-                )
-              ) <
-                0.000000001
-            );
-          }
+      const markerEntry =
+        markerByRecordId.get(
+          Number(recordId)
         );
 
       if (
-        markerIndex < 0
+        !target ||
+        !markerEntry
       ) {
         return;
       }
 
-      const marker =
-        markers[markerIndex];
-
-      const infoWindow =
-        new kakao.maps.InfoWindow(
-          {
-            content:
-              createInfoWindowContent(
-                target
-              ),
-
-            removable: false
-          }
-        );
-
       openMarkerInfo(
-        originalIndex,
-        marker,
-        infoWindow
+        recordId
       );
     }
 
@@ -2336,8 +2413,8 @@
       () => {
         closeActiveInfoWindow();
 
-        activeRecordIndex =
-          -1;
+        activeRecordId =
+          null;
 
         document
           .querySelectorAll(
@@ -2373,6 +2450,10 @@
         return records;
       }
 
+      /*
+       * records가 이미 날짜 내림차순이므로
+       * filter() 결과도 그대로 내림차순이다.
+       */
       return records.filter(
         item => {
           return [
@@ -2402,8 +2483,8 @@
             event.target.value
           );
 
-        activeRecordIndex =
-          -1;
+        activeRecordId =
+          null;
 
         closeActiveInfoWindow();
 
@@ -2446,9 +2527,9 @@
         }
 
         /*
-         * 1.
-         * list.json의 원본 위치를
-         * originalIndex에 저장한다.
+         * 각 record에 고유 ID를 부여한다.
+         *
+         * 정렬되어도 recordId는 변하지 않는다.
          */
         records =
           json
@@ -2456,7 +2537,7 @@
               (item, index) => ({
                 ...item,
 
-                originalIndex:
+                recordId:
                   index
               })
             )
@@ -2475,17 +2556,24 @@
             );
 
         /*
-         * 2.
-         * 날짜 최신순으로 정렬한다.
-         *
-         * 중요:
-         * originalIndex는 그대로 유지되기 때문에
-         * 정렬 이후에도 원본 데이터와 정확하게
-         * 연결된다.
+         * 최신 날짜순.
          */
         records =
           sortRecordsByDate(
             records
+          );
+
+        /*
+         * 빠른 정확한 검색을 위해 Map으로 관리한다.
+         */
+        recordById =
+          new Map(
+            records.map(
+              item => [
+                item.recordId,
+                item
+              ]
+            )
           );
 
         updateStats(
