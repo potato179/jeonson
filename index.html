@@ -1,1552 +1,2021 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>차량 사고·고장 기록</title>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+
+  <title>Vehicle Incident Map</title>
+
+  <!-- Kakao Map -->
+  <script
+    src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7f26ddb0373cd3b598ff54652cbbdc24&libraries=clusterer"
+  ></script>
+
+  <style>
+    :root {
+      --bg: #080b0f;
+      --panel: #0d1117;
+      --panel-2: #11161d;
+      --panel-3: #161c24;
+
+      --text: #f4f6f8;
+      --text-soft: #c0c7d0;
+      --text-muted: #89929e;
+
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.13);
+
+      --accent: #f05a3d;
+      --accent-soft: rgba(240, 90, 61, 0.12);
+      --accent-border: rgba(240, 90, 61, 0.42);
+
+      --danger: #ff635d;
+
+      --sidebar-width: 390px;
+
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+
+      --shadow-lg:
+        0 24px 60px rgba(0, 0, 0, 0.35),
+        0 4px 14px rgba(0, 0, 0, 0.22);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family:
+        Pretendard,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    /* =========================================================
+       DESKTOP SIDEBAR
+    ========================================================= */
+
+    .sidebar {
+      position: absolute;
+      z-index: 30;
+      top: 0;
+      left: 0;
+
+      width: var(--sidebar-width);
+      height: 100%;
+
+      display: flex;
+      flex-direction: column;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(15, 19, 25, 0.985) 0%,
+          rgba(10, 14, 19, 0.99) 100%
+        );
+
+      border-right: 1px solid var(--border);
+
+      box-shadow:
+        20px 0 55px rgba(0, 0, 0, 0.28);
+    }
+
+    .sidebar-handle {
+      display: none;
+    }
+
+    .header {
+      flex: 0 0 auto;
+      padding: 28px 26px 22px;
+
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      margin-bottom: 10px;
+
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+    }
+
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+
+      box-shadow: 0 0 16px rgba(240, 90, 61, 0.65);
+    }
+
+    .title {
+      font-size: 27px;
+      line-height: 1.2;
+      letter-spacing: -0.045em;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .subtitle {
+      margin-top: 8px;
+
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .brand-mark {
+      flex: 0 0 auto;
+
+      width: 42px;
+      height: 42px;
+
+      display: grid;
+      place-items: center;
+
+      border: 1px solid var(--border-strong);
+      border-radius: 13px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.075),
+          rgba(255, 255, 255, 0.02)
+        );
+
+      color: var(--accent);
+
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .brand-mark svg {
+      width: 21px;
+      height: 21px;
+    }
+
+    /* =========================================================
+       STATS
+    ========================================================= */
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+
+      margin-top: 22px;
+    }
+
+    .stat {
+      min-width: 0;
+      padding: 14px 15px;
+
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.045),
+          rgba(255, 255, 255, 0.018)
+        );
+    }
+
+    .stat-label {
+      display: block;
+      margin-bottom: 5px;
+
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .stat-value {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+
+      font-size: 21px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      color: var(--text);
+    }
+
+    .stat-value small {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* =========================================================
+       SEARCH
+    ========================================================= */
+
+    .search-section {
+      flex: 0 0 auto;
+      padding: 18px 20px 14px;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+
+      width: 18px;
+      height: 18px;
+
+      transform: translateY(-50%);
+      pointer-events: none;
+
+      color: var(--text-muted);
+    }
+
+    .search {
+      width: 100%;
+      height: 48px;
+
+      padding: 0 44px 0 44px;
+
+      outline: none;
+
+      color: var(--text);
+      background: var(--panel-3);
+
+      border: 1px solid var(--border);
+      border-radius: 14px;
+
+      transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+    }
+
+    .search::placeholder {
+      color: #69727f;
+    }
+
+    .search:hover {
+      background: #181e27;
+    }
+
+    .search:focus {
+      border-color: var(--accent-border);
+      background: #171d25;
+
+      box-shadow:
+        0 0 0 3px rgba(240, 90, 61, 0.09);
+    }
+
+    .search-clear {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+
+      width: 34px;
+      height: 34px;
+
+      display: none;
+      place-items: center;
+
+      transform: translateY(-50%);
+
+      border-radius: 9px;
+
+      background: transparent;
+      color: var(--text-muted);
+
+      cursor: pointer;
+    }
+
+    .search-clear:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+    }
+
+    .search-clear.visible {
+      display: grid;
+    }
+
+    .search-clear svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    /* =========================================================
+       LIST
+    ========================================================= */
+
+    .list-header {
+      flex: 0 0 auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 22px 11px;
+    }
+
+    .list-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .result-count {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .list {
+      flex: 1 1 auto;
+      min-height: 0;
+
+      padding: 0 14px 22px;
+
+      overflow-y: auto;
+      overscroll-behavior: contain;
+
+      scrollbar-width: thin;
+      scrollbar-color:
+        rgba(255, 255, 255, 0.15)
+        transparent;
+    }
+
+    .list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.13);
+      border-radius: 999px;
+    }
+
+    .record {
+      position: relative;
+
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 16px 16px 15px;
+
+      text-align: left;
+
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+
+      background: transparent;
+      color: inherit;
+
+      cursor: pointer;
+
+      transition:
+        background 0.16s ease,
+        border-color 0.16s ease,
+        transform 0.16s ease;
+    }
+
+    .record:hover {
+      background: rgba(255, 255, 255, 0.045);
+      border-color: var(--border);
+    }
+
+    .record:active {
+      transform: scale(0.993);
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+    .record.active {
+      background:
+        linear-gradient(
+          135deg,
+          rgba(240, 90, 61, 0.13),
+          rgba(240, 90, 61, 0.055)
+        );
 
-        html,
-        body {
-            margin: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                "Noto Sans KR",
-                sans-serif;
-            background: #0b0d10;
-            color: #f3f4f6;
-        }
+      border-color: var(--accent-border);
+    }
 
-        body {
-            display: flex;
-        }
+    .record.active::before {
+      content: "";
 
-        /* =========================
-           SIDEBAR
-        ========================= */
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      left: 0;
 
-        .sidebar {
-            position: relative;
-            z-index: 10;
+      width: 3px;
+
+      border-radius: 0 999px 999px 0;
+      background: var(--accent);
+    }
+
+    .record-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .car-number {
+      min-width: 0;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
 
-            width: 390px;
-            min-width: 390px;
-            height: 100vh;
+      font-size: 16px;
+      line-height: 1.3;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+
+      color: var(--text);
+    }
+
+    .date {
+      flex: 0 0 auto;
+
+      padding: 5px 7px;
+
+      border: 1px solid var(--border);
+      border-radius: 7px;
+
+      background: rgba(255, 255, 255, 0.035);
+
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 750;
+      color: var(--text-soft);
+    }
+
+    .date.invalid {
+      border-color: rgba(255, 99, 93, 0.25);
+      background: rgba(255, 99, 93, 0.08);
+      color: #ff8f8a;
+    }
+
+    .car-name {
+      margin-top: 7px;
 
-            display: flex;
-            flex-direction: column;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
 
-            background:
-                linear-gradient(
-                    180deg,
-                    #111419 0%,
-                    #0c0f13 100%
-                );
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 600;
 
-            border-right: 1px solid #252a31;
+      color: var(--text-soft);
+    }
+
+    .reason {
+      margin-top: 8px;
 
-            box-shadow:
-                10px 0 40px rgba(0, 0, 0, 0.25);
-        }
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
 
-        .header {
-            padding: 26px 26px 22px;
+      overflow: hidden;
 
-            border-bottom: 1px solid #252a31;
-        }
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-muted);
 
-        .eyebrow {
-            margin-bottom: 7px;
+      word-break: keep-all;
+    }
 
-            color: #8d96a3;
+    .record.active .reason {
+      color: #aeb5be;
+    }
+
+    .empty {
+      padding: 50px 24px;
+
+      text-align: center;
 
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.16em;
-        }
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-muted);
+    }
+
+    /* =========================================================
+       MAP
+    ========================================================= */
+
+    #map {
+      position: absolute;
+      top: 0;
+      right: 0;
+
+      width: calc(100% - var(--sidebar-width));
+      height: 100%;
+    }
+
+    /* subtle edge shadow */
+    .map-edge {
+      position: absolute;
+      z-index: 20;
+      top: 0;
+      left: var(--sidebar-width);
+
+      width: 24px;
+      height: 100%;
+
+      pointer-events: none;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0.21),
+          transparent
+        );
+    }
+
+    /* =========================================================
+       MAP FLOATING BADGE
+    ========================================================= */
+
+    .map-badge {
+      position: absolute;
+      z-index: 25;
+      top: 18px;
+      right: 18px;
+
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      padding: 10px 13px;
+
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 12px;
+
+      background: rgba(255, 255, 255, 0.94);
+      color: #171a1f;
 
-        .title {
-            margin: 0;
+      box-shadow:
+        0 7px 24px rgba(0, 0, 0, 0.18);
 
-            color: #ffffff;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
 
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.05em;
-        }
+      font-size: 11px;
+      font-weight: 750;
+    }
 
-        .subtitle {
-            margin-top: 8px;
+    .map-badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
 
-            color: #7e8794;
+      background: var(--accent);
 
-            font-size: 13px;
-            line-height: 1.5;
-        }
+      box-shadow:
+        0 0 0 4px rgba(240, 90, 61, 0.13);
+    }
 
-        /* =========================
-           STATS
-        ========================= */
+    /* =========================================================
+       LOADING
+    ========================================================= */
 
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+    .loading {
+      position: absolute;
+      z-index: 100;
+      inset: 0;
 
-            gap: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
 
-            padding: 16px 18px;
+      background: rgba(8, 11, 15, 0.96);
 
-            border-bottom: 1px solid #252a31;
-        }
+      transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
+    }
 
-        .stat {
-            padding: 14px 15px;
+    .loading.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
 
-            background: #15191e;
-            border: 1px solid #242a31;
-            border-radius: 10px;
-        }
+      animation: spin 0.7s linear infinite;
+    }
 
-        .stat-label {
-            margin-bottom: 6px;
+    .loading-text {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
-            color: #747d89;
+    /* =========================================================
+       ERROR
+    ========================================================= */
 
-            font-size: 11px;
-            font-weight: 600;
-        }
+    .error-screen {
+      position: fixed;
+      z-index: 999;
+      inset: 0;
 
-        .stat-value {
-            color: #f5f6f7;
+      display: none;
+      align-items: center;
+      justify-content: center;
 
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: -0.04em;
-        }
+      padding: 24px;
 
-        /* =========================
-           SEARCH
-        ========================= */
+      background: var(--bg);
+    }
 
-        .search-wrap {
-            padding: 15px 18px 12px;
-        }
+    .error-screen.visible {
+      display: flex;
+    }
 
-        .search {
-            width: 100%;
-            height: 42px;
+    .error-box {
+      width: min(100%, 520px);
 
-            padding: 0 14px;
+      padding: 26px;
 
-            color: #ffffff;
+      border: 1px solid rgba(255, 99, 93, 0.22);
+      border-radius: 18px;
 
-            background: #15191e;
+      background: var(--panel);
 
-            border: 1px solid #292f37;
-            border-radius: 9px;
+      box-shadow: var(--shadow-lg);
+    }
 
-            outline: none;
+    .error-title {
+      margin-bottom: 10px;
 
-            font-size: 13px;
+      font-size: 20px;
+      font-weight: 800;
+      color: #ff817b;
+    }
 
-            transition:
-                border-color 0.2s,
-                background 0.2s;
-        }
+    .error-message {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-soft);
 
-        .search::placeholder {
-            color: #626b77;
-        }
+      word-break: keep-all;
+    }
 
-        .search:focus {
-            background: #181d23;
-            border-color: #555f6d;
-        }
+    /* =========================================================
+       KAKAO INFOWINDOW
+    ========================================================= */
+
+    .info-window {
+      width: 270px;
+      padding: 15px 16px 16px;
+
+      font-family:
+        Pretendard,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: #171a1f;
+    }
 
-        /* =========================
-           LIST
-        ========================= */
+    .info-title {
+      margin-bottom: 10px;
 
-        .list {
-            flex: 1;
+      font-size: 15px;
+      line-height: 1.3;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
 
-            overflow-y: auto;
+    .info-row {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 8px;
 
-            padding: 0 12px 18px;
-        }
+      margin-top: 6px;
 
-        .list::-webkit-scrollbar {
-            width: 6px;
-        }
+      font-size: 11px;
+      line-height: 1.5;
+    }
 
-        .list::-webkit-scrollbar-track {
-            background: transparent;
-        }
+    .info-label {
+      color: #7a8089;
+      font-weight: 700;
+    }
 
-        .list::-webkit-scrollbar-thumb {
-            background: #303640;
-            border-radius: 999px;
-        }
+    .info-value {
+      color: #2d3137;
+      font-weight: 600;
 
-        .record {
-            padding: 16px 14px;
+      word-break: break-word;
+    }
 
-            margin-bottom: 8px;
+    .info-reason {
+      margin-top: 11px;
+      padding-top: 11px;
 
-            background: #12161b;
+      border-top: 1px solid #eceef0;
 
-            border: 1px solid #242a31;
-            border-radius: 10px;
+      font-size: 11px;
+      line-height: 1.6;
+      color: #555b63;
 
-            cursor: pointer;
+      word-break: keep-all;
+    }
 
-            transition:
-                background 0.18s,
-                border-color 0.18s,
-                transform 0.18s;
-        }
+    /* =========================================================
+       MOBILE
+    ========================================================= */
 
-        .record:hover {
-            background: #171c22;
-            border-color: #39414c;
-            transform: translateY(-1px);
-        }
+    .mobile-map-header {
+      display: none;
+    }
 
-        .record.active {
-            background: #191f26;
-            border-color: #697482;
-        }
+    @media (max-width: 800px) {
+      :root {
+        --mobile-panel-height: 46dvh;
+      }
 
-        .record-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+      .app {
+        height: 100vh;
+        height: 100dvh;
+      }
 
-            gap: 10px;
+      #map {
+        inset: 0;
 
-            margin-bottom: 8px;
-        }
+        width: 100%;
+        height: 100%;
+      }
 
-        .car-number {
-            color: #ffffff;
+      .map-edge,
+      .map-badge {
+        display: none;
+      }
 
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-        }
+      /* ---------------------------------------
+         MOBILE TOP BAR
+      --------------------------------------- */
 
-        .date {
-            flex-shrink: 0;
+      .mobile-map-header {
+        position: absolute;
+        z-index: 35;
+        top: 0;
+        left: 0;
+        right: 0;
 
-            color: #858e9a;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
 
-            font-size: 11px;
-            font-weight: 600;
-        }
+        padding:
+          calc(12px + env(safe-area-inset-top))
+          14px
+          10px;
 
-        .car-name {
-            margin-bottom: 8px;
+        pointer-events: none;
+      }
 
-            color: #aab2bd;
+      .mobile-brand {
+        min-width: 0;
 
-            font-size: 12px;
-            font-weight: 600;
-        }
+        padding: 10px 13px 11px;
 
-        .reason {
-            color: #707a87;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 13px;
 
-            font-size: 12px;
-            line-height: 1.55;
+        background: rgba(10, 14, 19, 0.9);
 
-            word-break: keep-all;
-        }
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
 
-        .empty {
-            padding: 50px 20px;
+        box-shadow:
+          0 8px 30px rgba(0, 0, 0, 0.28);
 
-            text-align: center;
+        pointer-events: auto;
+      }
 
-            color: #646d79;
+      .mobile-brand-label {
+        margin-bottom: 3px;
 
-            font-size: 13px;
-        }
+        font-size: 9px;
+        line-height: 1;
+        letter-spacing: 0.12em;
+        font-weight: 800;
+        color: var(--accent);
+      }
 
-        /* =========================
-           MAP
-        ========================= */
+      .mobile-brand-title {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
 
-        #map {
-            flex: 1;
+        font-size: 14px;
+        line-height: 1.25;
+        font-weight: 800;
+        color: var(--text);
+      }
 
-            width: calc(100vw - 390px);
-            height: 100vh;
+      .mobile-stats {
+        flex: 0 0 auto;
 
-            background: #e8eaed;
-        }
+        display: flex;
 
-        /* =========================
-           LOADING
-        ========================= */
+        overflow: hidden;
 
-        .loading {
-            position: fixed;
-            z-index: 9999;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 13px;
 
-            inset: 0;
+        background: rgba(10, 14, 19, 0.9);
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
 
-            background: rgba(8, 10, 13, 0.96);
+        box-shadow:
+          0 8px 30px rgba(0, 0, 0, 0.28);
 
-            transition:
-                opacity 0.3s,
-                visibility 0.3s;
-        }
+        pointer-events: auto;
+      }
 
-        .loading.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
+      .mobile-stat {
+        min-width: 56px;
+        padding: 9px 10px 8px;
 
-        .loading-box {
-            text-align: center;
-        }
+        text-align: center;
+      }
 
-        .spinner {
-            width: 34px;
-            height: 34px;
+      .mobile-stat + .mobile-stat {
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+      }
 
-            margin: 0 auto 15px;
+      .mobile-stat strong {
+        display: block;
 
-            border: 3px solid #2a3038;
-            border-top-color: #ffffff;
+        font-size: 15px;
+        line-height: 1.15;
+        font-weight: 800;
+        color: var(--text);
+      }
 
-            border-radius: 50%;
+      .mobile-stat span {
+        display: block;
+        margin-top: 2px;
 
-            animation: spin 0.8s linear infinite;
-        }
+        font-size: 8px;
+        font-weight: 700;
+        color: var(--text-muted);
+      }
 
-        .loading-text {
-            color: #9ba3ae;
+      /* ---------------------------------------
+         BOTTOM SHEET
+      --------------------------------------- */
 
-            font-size: 12px;
-        }
+      .sidebar {
+        top: auto;
+        bottom: 0;
+        left: 0;
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        width: 100%;
+        height: var(--mobile-panel-height);
 
-        /* =========================
-           ERROR
-        ========================= */
+        border-right: 0;
+        border-top: 1px solid var(--border-strong);
 
-        .error-screen {
-            position: fixed;
-            z-index: 10000;
+        border-radius: 22px 22px 0 0;
 
-            inset: 0;
+        background:
+          linear-gradient(
+            180deg,
+            rgba(15, 19, 25, 0.985),
+            rgba(9, 13, 18, 0.995)
+          );
 
-            display: none;
-            align-items: center;
-            justify-content: center;
+        box-shadow:
+          0 -18px 50px rgba(0, 0, 0, 0.36);
 
-            padding: 25px;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
 
-            background: #090b0e;
-        }
+      .sidebar-handle {
+        flex: 0 0 auto;
 
-        .error-screen.show {
-            display: flex;
-        }
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        .error-box {
-            width: min(500px, 100%);
+        height: 21px;
+      }
 
-            padding: 30px;
+      .sidebar-handle::before {
+        content: "";
 
-            background: #12161b;
+        width: 38px;
+        height: 4px;
 
-            border: 1px solid #30363f;
-            border-radius: 14px;
-        }
+        border-radius: 999px;
 
-        .error-title {
-            margin-bottom: 12px;
+        background: rgba(255, 255, 255, 0.17);
+      }
 
-            color: #ffffff;
+      .header {
+        display: none;
+      }
 
-            font-size: 20px;
-            font-weight: 800;
-        }
+      .search-section {
+        padding: 0 14px 10px;
+      }
 
-        .error-message {
-            color: #8e97a3;
+      .search {
+        height: 46px;
 
-            font-size: 13px;
-            line-height: 1.7;
+        padding-left: 43px;
 
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
+        border-radius: 13px;
 
-        /* =========================
-           INFO WINDOW
-        ========================= */
+        font-size: 14px;
 
-        .info-window {
-            min-width: 250px;
+        background: #171d25;
+      }
 
-            padding: 16px;
+      .search-icon {
+        left: 14px;
 
-            color: #20242a;
+        width: 18px;
+        height: 18px;
+      }
 
-            background: #ffffff;
+      .list-header {
+        padding: 0 17px 9px;
+      }
 
-            border-radius: 10px;
-        }
+      .list-title {
+        font-size: 10px;
+      }
 
-        .info-title {
-            margin-bottom: 10px;
+      .result-count {
+        font-size: 10px;
+      }
 
-            font-size: 15px;
-            font-weight: 800;
-        }
+      .list {
+        padding:
+          0
+          9px
+          calc(10px + env(safe-area-inset-bottom));
 
-        .info-row {
-            display: flex;
+        scroll-padding-bottom: 20px;
+      }
 
-            gap: 10px;
+      .record {
+        margin-bottom: 7px;
+        padding: 13px 13px 13px;
 
-            margin-bottom: 6px;
+        border-radius: 13px;
 
-            font-size: 12px;
-            line-height: 1.45;
-        }
+        background: rgba(255, 255, 255, 0.025);
+        border-color: rgba(255, 255, 255, 0.045);
+      }
 
-        .info-label {
-            width: 38px;
+      .record:hover {
+        background: rgba(255, 255, 255, 0.025);
+      }
 
-            flex-shrink: 0;
+      .record.active {
+        background:
+          linear-gradient(
+            135deg,
+            rgba(240, 90, 61, 0.15),
+            rgba(240, 90, 61, 0.06)
+          );
 
-            color: #8a919a;
-            font-weight: 600;
-        }
+        border-color: rgba(240, 90, 61, 0.43);
+      }
 
-        .info-value {
-            color: #343a42;
-            font-weight: 600;
+      .record.active::before {
+        top: 12px;
+        bottom: 12px;
 
-            word-break: keep-all;
-        }
+        width: 3px;
+      }
 
-        .info-reason {
-            margin-top: 10px;
-            padding-top: 10px;
+      .car-number {
+        font-size: 16px;
+      }
 
-            color: #5e6670;
+      .date {
+        padding: 5px 7px;
 
-            border-top: 1px solid #eceef1;
+        font-size: 9px;
+      }
 
-            font-size: 12px;
-            line-height: 1.55;
+      .car-name {
+        margin-top: 5px;
 
-            word-break: keep-all;
-        }
+        font-size: 13px;
+        color: #b9c0c9;
+      }
 
-        /* =========================
-           MOBILE
-        ========================= */
+      .reason {
+        margin-top: 6px;
 
-        @media (max-width: 800px) {
-            body {
-                display: block;
-                overflow: auto;
-            }
+        font-size: 12px;
+        line-height: 1.55;
 
-            .sidebar {
-                width: 100%;
-                min-width: 0;
-                height: 48vh;
+        -webkit-line-clamp: 2;
 
-                border-right: 0;
-                border-bottom: 1px solid #252a31;
-            }
+        color: #868f9b;
+      }
 
-            #map {
-                width: 100%;
-                height: 52vh;
-            }
+      .empty {
+        padding: 34px 18px;
+      }
 
-            .header {
-                padding: 18px 18px 15px;
-            }
+      /* Kakao controls와 bottom sheet 충돌 완화 */
+      .custom_typecontrol,
+      .custom_zoomcontrol {
+        margin-bottom: var(--mobile-panel-height);
+      }
 
-            .title {
-                font-size: 20px;
-            }
+      .info-window {
+        width: 230px;
+        padding: 13px 14px;
+      }
 
-            .stats {
-                padding: 10px 12px;
-            }
+      .info-title {
+        font-size: 14px;
+      }
+    }
 
-            .search-wrap {
-                padding: 10px 12px;
-            }
+    /* =========================================================
+       SMALL MOBILE
+    ========================================================= */
 
-            .list {
-                padding: 0 8px 12px;
-            }
-        }
-    </style>
+    @media (max-width: 480px) {
+      :root {
+        --mobile-panel-height: 48dvh;
+      }
 
-    <!--
-        Kakao Maps JavaScript SDK
+      .mobile-map-header {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
 
-        반드시 본인의 JavaScript 키를 넣으세요.
-        libraries=clusterer : 마커 클러스터러 사용
-    -->
-    <script
-        type="text/javascript"
-        src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7f26ddb0373cd3b598ff54652cbbdc24&libraries=clusterer">
-    </script>
+      .mobile-brand {
+        max-width: calc(100vw - 145px);
+
+        padding-left: 11px;
+        padding-right: 11px;
+      }
+
+      .mobile-brand-title {
+        font-size: 13px;
+      }
+
+      .mobile-stat {
+        min-width: 53px;
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      .mobile-stat strong {
+        font-size: 14px;
+      }
+
+      .sidebar {
+        border-radius: 19px 19px 0 0;
+      }
+
+      .search-section {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .list {
+        padding-left: 7px;
+        padding-right: 7px;
+      }
+
+      .record {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .reason {
+        -webkit-line-clamp: 2;
+      }
+    }
+
+    /* =========================================================
+       SHORT HEIGHT MOBILE
+    ========================================================= */
+
+    @media (max-width: 800px) and (max-height: 650px) {
+      :root {
+        --mobile-panel-height: 51dvh;
+      }
+
+      .mobile-map-header {
+        padding-top:
+          calc(8px + env(safe-area-inset-top));
+      }
+
+      .mobile-brand {
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+
+      .mobile-stats {
+        transform: scale(0.94);
+        transform-origin: top right;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div class="app">
+    <!-- MOBILE MAP HEADER -->
+    <div class="mobile-map-header">
+      <div class="mobile-brand">
+        <div class="mobile-brand-label">INCIDENT MAP</div>
+        <div class="mobile-brand-title">Vehicle Incident Records</div>
+      </div>
 
-    <!-- =========================
-         LOADING
-    ========================== -->
-
-    <div class="loading" id="loading">
-        <div class="loading-box">
-            <div class="spinner"></div>
-            <div class="loading-text">
-                차량 기록을 불러오는 중...
-            </div>
+      <div class="mobile-stats">
+        <div class="mobile-stat">
+          <strong id="mobileTotalCount">0</strong>
+          <span>사고</span>
         </div>
+
+        <div class="mobile-stat">
+          <strong id="mobileCarCount">0</strong>
+          <span>차량</span>
+        </div>
+      </div>
     </div>
 
-    <!-- =========================
-         ERROR
-    ========================== -->
-
-    <div class="error-screen" id="errorScreen">
-        <div class="error-box">
-            <div class="error-title">
-                지도를 불러오지 못했습니다.
-            </div>
-
-            <div class="error-message" id="errorMessage"></div>
-        </div>
-    </div>
-
-    <!-- =========================
-         SIDEBAR
-    ========================== -->
-
+    <!-- SIDEBAR / MOBILE BOTTOM SHEET -->
     <aside class="sidebar">
+      <div class="sidebar-handle"></div>
 
-        <header class="header">
+      <header class="header">
+        <div class="brand-row">
+          <div class="brand-copy">
             <div class="eyebrow">
-                VEHICLE INCIDENT DATABASE
+              <span class="eyebrow-dot"></span>
+              VEHICLE INCIDENT DATABASE
             </div>
 
-            <h1 class="title">
-                차량 사고 · 고장 기록
-            </h1>
+            <h1 class="title">Incident Map</h1>
 
-            <div class="subtitle">
-                사고 및 차량 관련 기록을 지도에서 확인합니다.
-            </div>
-        </header>
+            <p class="subtitle">
+              차량 사고 및 고장 기록을 지도 기반으로 확인합니다.
+            </p>
+          </div>
 
-        <section class="stats">
-
-            <div class="stat">
-                <div class="stat-label">
-                    TOTAL RECORDS
-                </div>
-
-                <div class="stat-value" id="totalCount">
-                    -
-                </div>
-            </div>
-
-            <div class="stat">
-                <div class="stat-label">
-                    UNIQUE VEHICLES
-                </div>
-
-                <div class="stat-value" id="carCount">
-                    -
-                </div>
-            </div>
-
-        </section>
-
-        <div class="search-wrap">
-            <input
-                type="text"
-                class="search"
-                id="search"
-                placeholder="차량번호, 차종, 사고내용 검색..."
-                autocomplete="off"
+          <div class="brand-mark">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
+              <path d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11z"/>
+              <circle cx="12" cy="10" r="2.4"/>
+            </svg>
+          </div>
         </div>
 
-        <div class="list" id="recordList"></div>
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">TOTAL RECORDS</span>
 
+            <div class="stat-value">
+              <span id="totalCount">0</span>
+              <small>건</small>
+            </div>
+          </div>
+
+          <div class="stat">
+            <span class="stat-label">VEHICLES</span>
+
+            <div class="stat-value">
+              <span id="carCount">0</span>
+              <small>대</small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- SEARCH -->
+      <div class="search-section">
+        <div class="search-wrap">
+          <svg
+            class="search-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="11" cy="11" r="7"/>
+            <path d="m20 20-3.5-3.5"/>
+          </svg>
+
+          <input
+            id="searchInput"
+            class="search"
+            type="search"
+            placeholder="차량번호, 차종, 사고 내용 검색"
+            autocomplete="off"
+          />
+
+          <button
+            id="searchClear"
+            class="search-clear"
+            type="button"
+            aria-label="검색어 지우기"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M6 6l12 12M18 6 6 18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- LIST HEADER -->
+      <div class="list-header">
+        <div class="list-title">INCIDENT RECORDS</div>
+        <div id="resultCount" class="result-count">0 records</div>
+      </div>
+
+      <!-- LIST -->
+      <div id="recordList" class="list"></div>
     </aside>
 
-    <!-- =========================
-         MAP
-    ========================== -->
+    <!-- MAP -->
+    <div id="map"></div>
+    <div class="map-edge"></div>
 
-    <main id="map"></main>
+    <div class="map-badge">
+      <span class="map-badge-dot"></span>
+      LIVE MAP VIEW
+    </div>
 
+    <!-- LOADING -->
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">사고 기록을 불러오는 중입니다.</div>
+    </div>
 
-    <script>
+    <!-- ERROR -->
+    <div id="errorScreen" class="error-screen">
+      <div class="error-box">
+        <div class="error-title">
+          데이터를 불러오지 못했습니다.
+        </div>
 
-        /* =====================================================
-           전역 변수
-        ===================================================== */
+        <div id="errorMessage" class="error-message"></div>
+      </div>
+    </div>
+  </div>
 
-        let map = null;
+  <script>
+    let map = null;
+    let clusterer = null;
 
-        let clusterer = null;
+    let records = [];
+    let markers = [];
+    let infoWindows = [];
 
-        let records = [];
+    let activeInfoWindow = null;
+    let activeRecordIndex = null;
 
-        let markers = [];
+    const recordList =
+      document.getElementById("recordList");
 
-        let activeIndex = -1;
+    const searchInput =
+      document.getElementById("searchInput");
 
+    const searchClear =
+      document.getElementById("searchClear");
 
-        /* =====================================================
-           DOM
-        ===================================================== */
+    const totalCount =
+      document.getElementById("totalCount");
 
-        const loading =
-            document.getElementById("loading");
+    const carCount =
+      document.getElementById("carCount");
 
-        const errorScreen =
-            document.getElementById("errorScreen");
+    const mobileTotalCount =
+      document.getElementById("mobileTotalCount");
 
-        const errorMessage =
-            document.getElementById("errorMessage");
+    const mobileCarCount =
+      document.getElementById("mobileCarCount");
 
-        const recordList =
-            document.getElementById("recordList");
+    const resultCount =
+      document.getElementById("resultCount");
 
-        const searchInput =
-            document.getElementById("search");
+    const loading =
+      document.getElementById("loading");
 
-        const totalCount =
-            document.getElementById("totalCount");
+    const errorScreen =
+      document.getElementById("errorScreen");
 
-        const carCount =
-            document.getElementById("carCount");
+    const errorMessage =
+      document.getElementById("errorMessage");
 
+    /* =========================================================
+       UTIL
+    ========================================================= */
 
-        /* =====================================================
-           유틸
-        ===================================================== */
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
 
-        function escapeHtml(value) {
+    function parseRecordDate(rawDate) {
+      const value = String(rawDate ?? "").trim();
 
-            if (value === null || value === undefined) {
-                return "";
-            }
+      if (!/^\d{6}$/.test(value)) {
+        return {
+          valid: false,
+          text: value || "날짜 미상"
+        };
+      }
 
-            return String(value)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+      const yy = Number(value.slice(0, 2));
+      const mm = Number(value.slice(2, 4));
+      const dd = Number(value.slice(4, 6));
+
+      const year = 2000 + yy;
+
+      const date = new Date(
+        year,
+        mm - 1,
+        dd
+      );
+
+      const valid =
+        mm >= 1 &&
+        mm <= 12 &&
+        dd >= 1 &&
+        dd <= 31 &&
+        date.getFullYear() === year &&
+        date.getMonth() === mm - 1 &&
+        date.getDate() === dd;
+
+      if (!valid) {
+        return {
+          valid: false,
+          text: "날짜 확인 필요"
+        };
+      }
+
+      return {
+        valid: true,
+        text:
+          String(year).slice(2) +
+          "." +
+          String(mm).padStart(2, "0") +
+          "." +
+          String(dd).padStart(2, "0")
+      };
+    }
+
+    function showError(message) {
+      loading.classList.add("hidden");
+
+      errorMessage.innerHTML =
+        escapeHtml(message).replace(/\n/g, "<br>");
+
+      errorScreen.classList.add("visible");
+    }
+
+    function closeActiveInfoWindow() {
+      if (activeInfoWindow) {
+        activeInfoWindow.close();
+        activeInfoWindow = null;
+      }
+    }
+
+    /* =========================================================
+       MAP
+    ========================================================= */
+
+    function initMap() {
+      const mapContainer =
+        document.getElementById("map");
+
+      const mapOptions = {
+        center: new kakao.maps.LatLng(
+          37.5665,
+          126.9780
+        ),
+        level: 8
+      };
+
+      map =
+        new kakao.maps.Map(
+          mapContainer,
+          mapOptions
+        );
+
+      const zoomControl =
+        new kakao.maps.ZoomControl();
+
+      map.addControl(
+        zoomControl,
+        kakao.maps.ControlPosition.RIGHT
+      );
+
+      clusterer =
+        new kakao.maps.MarkerClusterer({
+          map,
+          averageCenter: true,
+          minLevel: 6,
+          disableClickZoom: false
+        });
+
+      kakao.maps.event.addListener(
+        map,
+        "click",
+        closeActiveInfoWindow
+      );
+
+      loadData();
+    }
+
+    /* =========================================================
+       DATA
+    ========================================================= */
+
+    async function loadData() {
+      try {
+        const response =
+          await fetch("./list.json", {
+            cache: "no-store"
+          });
+
+        if (!response.ok) {
+          throw new Error(
+            `list.json 요청 실패 (${response.status})`
+          );
         }
 
+        const json = await response.json();
 
-        function formatDate(value) {
+        if (!Array.isArray(json)) {
+          throw new Error(
+            "list.json 데이터 형식이 배열이 아닙니다."
+          );
+        }
+
+        records = json.filter((item) => {
+          const lat = Number(item.latitude);
+          const lng = Number(item.longitude);
+
+          return (
+            Number.isFinite(lat) &&
+            Number.isFinite(lng)
+          );
+        });
+
+        updateStats();
+
+        renderList(records);
+        createMarkers(records);
+
+        fitMap();
+
+        loading.classList.add("hidden");
+      } catch (error) {
+        console.error(error);
+
+        showError(
+          "list.json 파일을 확인해주세요.\n\n" +
+          error.message
+        );
+      }
+    }
+
+    /* =========================================================
+       STATS
+    ========================================================= */
+
+    function updateStats() {
+      const uniqueVehicles =
+        new Set(
+          records
+            .map((item) =>
+              String(item.carnum ?? "").trim()
+            )
+            .filter(Boolean)
+        );
+
+      const total =
+        records.length;
+
+      const vehicles =
+        uniqueVehicles.size;
+
+      totalCount.textContent = total;
+      carCount.textContent = vehicles;
+
+      mobileTotalCount.textContent = total;
+      mobileCarCount.textContent = vehicles;
+    }
+
+    function updateResultCount(count) {
+      resultCount.textContent =
+        `${count} record${count === 1 ? "" : "s"}`;
+    }
+
+    /* =========================================================
+       RECORD LIST
+    ========================================================= */
+
+    function renderList(data) {
+      recordList.innerHTML = "";
+
+      updateResultCount(data.length);
+
+      if (!data.length) {
+        recordList.innerHTML = `
+          <div class="empty">
+            검색 조건에 해당하는 기록이 없습니다.
+          </div>
+        `;
+        return;
+      }
+
+      const fragment =
+        document.createDocumentFragment();
+
+      data.forEach((item) => {
+        const originalIndex =
+          records.indexOf(item);
+
+        const dateInfo =
+          parseRecordDate(item.date);
+
+        const button =
+          document.createElement("button");
+
+        button.type = "button";
+        button.className = "record";
+        button.dataset.index = originalIndex;
+
+        if (
+          activeRecordIndex === originalIndex
+        ) {
+          button.classList.add("active");
+        }
+
+        button.innerHTML = `
+          <div class="record-top">
+            <div class="car-number">
+              ${escapeHtml(item.carnum || "차량번호 없음")}
+            </div>
+
+            <div class="date ${
+              dateInfo.valid ? "" : "invalid"
+            }">
+              ${escapeHtml(dateInfo.text)}
+            </div>
+          </div>
+
+          <div class="car-name">
+            ${escapeHtml(item.car || "차종 정보 없음")}
+          </div>
+
+          <div class="reason">
+            ${escapeHtml(item.reason || "사고 내용 없음")}
+          </div>
+        `;
+
+        button.addEventListener(
+          "click",
+          () => {
+            selectRecord(originalIndex);
+          }
+        );
+
+        fragment.appendChild(button);
+      });
+
+      recordList.appendChild(fragment);
+    }
+
+    /* =========================================================
+       MARKERS
+    ========================================================= */
+
+    function createMarkers(data) {
+      closeActiveInfoWindow();
+
+      clusterer.clear();
+
+      markers.forEach((marker) => {
+        marker.setMap(null);
+      });
+
+      markers = [];
+      infoWindows = [];
+
+      data.forEach((item) => {
+        const originalIndex =
+          records.indexOf(item);
+
+        const position =
+          new kakao.maps.LatLng(
+            Number(item.latitude),
+            Number(item.longitude)
+          );
+
+        const marker =
+          new kakao.maps.Marker({
+            position
+          });
+
+        marker.__recordIndex =
+          originalIndex;
+
+        const infoWindow =
+          new kakao.maps.InfoWindow({
+            removable: false,
+            content:
+              createInfoWindowContent(item)
+          });
+
+        kakao.maps.event.addListener(
+          marker,
+          "click",
+          () => {
+            selectRecord(originalIndex);
+          }
+        );
+
+        markers.push(marker);
+        infoWindows.push({
+          marker,
+          infoWindow,
+          originalIndex
+        });
+      });
+
+      clusterer.addMarkers(markers);
+    }
+
+    function createInfoWindowContent(item) {
+      const dateInfo =
+        parseRecordDate(item.date);
+
+      return `
+        <div class="info-window">
+          <div class="info-title">
+            ${escapeHtml(item.carnum || "차량번호 없음")}
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">차종</div>
+            <div class="info-value">
+              ${escapeHtml(item.car || "-")}
+            </div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-label">일자</div>
+            <div class="info-value">
+              ${escapeHtml(dateInfo.text)}
+            </div>
+          </div>
+
+          <div class="info-reason">
+            ${escapeHtml(item.reason || "사고 내용 없음")}
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================
+       SELECT RECORD
+    ========================================================= */
+
+    function selectRecord(index) {
+      const item = records[index];
+
+      if (!item) {
+        return;
+      }
+
+      activeRecordIndex = index;
+
+      document
+        .querySelectorAll(".record")
+        .forEach((element) => {
+          element.classList.toggle(
+            "active",
+            Number(element.dataset.index) ===
+              index
+          );
+        });
+
+      const position =
+        new kakao.maps.LatLng(
+          Number(item.latitude),
+          Number(item.longitude)
+        );
+
+      map.panTo(position);
+
+      if (map.getLevel() > 4) {
+        map.setLevel(4, {
+          anchor: position
+        });
+      }
+
+      closeActiveInfoWindow();
+
+      const pair =
+        infoWindows.find(
+          (entry) =>
+            entry.originalIndex === index
+        );
+
+      if (pair) {
+        pair.infoWindow.open(
+          map,
+          pair.marker
+        );
+
+        activeInfoWindow =
+          pair.infoWindow;
+      }
+
+      const selectedElement =
+        document.querySelector(
+          `.record[data-index="${index}"]`
+        );
+
+      if (selectedElement) {
+        selectedElement.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest"
+        });
+      }
+    }
+
+    /* =========================================================
+       FIT MAP
+    ========================================================= */
+
+    function fitMap() {
+      if (
+        !map ||
+        !markers.length
+      ) {
+        return;
+      }
+
+      if (markers.length === 1) {
+        map.setCenter(
+          markers[0].getPosition()
+        );
+
+        map.setLevel(4);
+        return;
+      }
+
+      const bounds =
+        new kakao.maps.LatLngBounds();
+
+      markers.forEach((marker) => {
+        bounds.extend(
+          marker.getPosition()
+        );
+      });
+
+      map.setBounds(bounds);
+    }
+
+    /* =========================================================
+       SEARCH
+    ========================================================= */
+
+    function runSearch() {
+      const keyword =
+        searchInput.value
+          .trim()
+          .toLowerCase();
+
+      searchClear.classList.toggle(
+        "visible",
+        Boolean(keyword)
+      );
+
+      activeRecordIndex = null;
+      closeActiveInfoWindow();
+
+      if (!keyword) {
+        renderList(records);
+        createMarkers(records);
+        fitMap();
+        return;
+      }
+
+      const filtered =
+        records.filter((item) => {
+          const target = [
+            item.carnum,
+            item.car,
+            item.date,
+            item.reason
+          ]
+            .join(" ")
+            .toLowerCase();
+
+          return target.includes(keyword);
+        });
+
+      renderList(filtered);
+      createMarkers(filtered);
+
+      if (filtered.length) {
+        fitMap();
+      }
+    }
+
+    searchInput.addEventListener(
+      "input",
+      runSearch
+    );
+
+    searchClear.addEventListener(
+      "click",
+      () => {
+        searchInput.value = "";
+        searchInput.focus();
+
+        runSearch();
+      }
+    );
+
+    /* =========================================================
+       RESIZE
+    ========================================================= */
+
+    let resizeTimer;
+
+    window.addEventListener(
+      "resize",
+      () => {
+        clearTimeout(resizeTimer);
+
+        resizeTimer =
+          setTimeout(() => {
+            if (!map) {
+              return;
+            }
+
+            map.relayout();
 
             if (
-                value === null ||
-                value === undefined ||
-                value === ""
+              activeRecordIndex !== null
             ) {
-                return "날짜 없음";
-            }
+              const item =
+                records[
+                  activeRecordIndex
+                ];
 
-            const text = String(value);
-
-            /*
-             * 250712 → 2025.07.12
-             */
-
-            if (/^\d{6}$/.test(text)) {
-
-                const year =
-                    Number(text.substring(0, 2));
-
-                const month =
-                    Number(text.substring(2, 4));
-
-                const day =
-                    Number(text.substring(4, 6));
-
-                /*
-                 * 00월 / 00일 등의 비정상 날짜
-                 */
-
-                if (
-                    month < 1 ||
-                    month > 12 ||
-                    day < 1 ||
-                    day > 31
-                ) {
-                    return "날짜 확인 필요";
-                }
-
-                const fullYear =
-                    year >= 70
-                        ? 1900 + year
-                        : 2000 + year;
-
-                return (
-                    fullYear +
-                    "." +
-                    String(month).padStart(2, "0") +
-                    "." +
-                    String(day).padStart(2, "0")
+              if (item) {
+                map.setCenter(
+                  new kakao.maps.LatLng(
+                    Number(item.latitude),
+                    Number(item.longitude)
+                  )
                 );
-            }
-
-            return escapeHtml(text);
-        }
-
-
-        function showError(message) {
-
-            loading.classList.add("hidden");
-
-            errorMessage.textContent = message;
-
-            errorScreen.classList.add("show");
-        }
-
-
-        /* =====================================================
-           Kakao SDK 확인
-        ===================================================== */
-
-        function checkKakaoSDK() {
-
-            if (
-                typeof kakao === "undefined" ||
-                !kakao.maps
-            ) {
-
-                showError(
-                    "Kakao Maps JavaScript SDK가 로드되지 않았습니다.\n\n" +
-                    "확인할 사항:\n" +
-                    "1. 카카오 JavaScript 키가 올바른지 확인\n" +
-                    "2. 카카오 Developers에 GitHub Pages 도메인이 등록되어 있는지 확인\n" +
-                    "3. 브라우저 개발자도구 Network에서 dapi.kakao.com 요청 확인"
-                );
-
-                return false;
-            }
-
-            return true;
-        }
-
-
-        /* =====================================================
-           지도 초기화
-        ===================================================== */
-
-        function initMap() {
-
-            if (!checkKakaoSDK()) {
-                return;
-            }
-
-            const container =
-                document.getElementById("map");
-
-            const options = {
-
-                center:
-                    new kakao.maps.LatLng(
-                        37.5,
-                        127.5
-                    ),
-
-                level: 11
-            };
-
-            map =
-                new kakao.maps.Map(
-                    container,
-                    options
-                );
-
-
-            /*
-             * 확대 / 축소 컨트롤
-             */
-
-            const zoomControl =
-                new kakao.maps.ZoomControl();
-
-            map.addControl(
-                zoomControl,
-                kakao.maps.ControlPosition.RIGHT
-            );
-
-
-            /*
-             * 클러스터러
-             */
-
-            clusterer =
-                new kakao.maps.MarkerClusterer({
-
-                    map: map,
-
-                    averageCenter: true,
-
-                    minLevel: 7,
-
-                    disableClickZoom: true,
-
-                    styles: [
-                        {
-                            width: "44px",
-                            height: "44px",
-
-                            background: "#20252c",
-
-                            border: "2px solid #ffffff",
-
-                            borderRadius: "50%",
-
-                            color: "#ffffff",
-
-                            textAlign: "center",
-
-                            lineHeight: "40px",
-
-                            fontSize: "12px",
-
-                            fontWeight: "800",
-
-                            boxShadow:
-                                "0 3px 10px rgba(0,0,0,0.25)"
-                        }
-                    ]
-                });
-
-
-            loadData();
-        }
-
-
-        /* =====================================================
-           JSON 불러오기
-        ===================================================== */
-
-        async function loadData() {
-
-            try {
-
-                const response =
-                    await fetch("./list.json", {
-                        cache: "no-cache"
-                    });
-
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        "list.json을 불러오지 못했습니다. " +
-                        "HTTP " +
-                        response.status
-                    );
-                }
-
-
-                const data =
-                    await response.json();
-
-
-                if (!Array.isArray(data)) {
-
-                    throw new Error(
-                        "list.json의 최상위 데이터는 배열이어야 합니다."
-                    );
-                }
-
-
-                records = data;
-
-
-                updateStats();
-
-                renderList(records);
-
-                createMarkers(records);
-
-                fitMap();
-
-
-                loading.classList.add("hidden");
-
-            } catch (error) {
-
-                console.error(error);
-
-                showError(
-                    "데이터를 불러오는 중 오류가 발생했습니다.\n\n" +
-                    error.message
-                );
-            }
-        }
-
-
-        /* =====================================================
-           통계
-        ===================================================== */
-
-        function updateStats() {
-
-            totalCount.textContent =
-                records.length.toLocaleString();
-
-
-            const cars =
-                new Set(
-                    records
-                        .map(item => item.carnum)
-                        .filter(Boolean)
-                );
-
-
-            carCount.textContent =
-                cars.size.toLocaleString();
-        }
-
-
-        /* =====================================================
-           리스트 렌더링
-        ===================================================== */
-
-        function renderList(data) {
-
-            recordList.innerHTML = "";
-
-
-            if (!data.length) {
-
-                recordList.innerHTML = `
-                    <div class="empty">
-                        검색 결과가 없습니다.
-                    </div>
-                `;
-
-                return;
-            }
-
-
-            data.forEach((item) => {
-
-                const originalIndex =
-                    records.indexOf(item);
-
-
-                const element =
-                    document.createElement("div");
-
-
-                element.className =
-                    "record";
-
-
-                element.dataset.index =
-                    originalIndex;
-
-
-                element.innerHTML = `
-
-                    <div class="record-top">
-
-                        <div class="car-number">
-                            ${escapeHtml(item.carnum || "차량번호 없음")}
-                        </div>
-
-                        <div class="date">
-                            ${formatDate(item.date)}
-                        </div>
-
-                    </div>
-
-                    <div class="car-name">
-                        ${escapeHtml(item.car || "차종 정보 없음")}
-                    </div>
-
-                    <div class="reason">
-                        ${escapeHtml(item.reason || "사고·고장 내용 없음")}
-                    </div>
-
-                `;
-
-
-                element.addEventListener(
-                    "click",
-                    () => {
-
-                        selectRecord(
-                            originalIndex
-                        );
-
-                    }
-                );
-
-
-                recordList.appendChild(element);
-
-            });
-        }
-
-
-        /* =====================================================
-           마커 생성
-        ===================================================== */
-
-        function createMarkers(data) {
-
-            /*
-             * 기존 마커 제거
-             */
-
-            markers.forEach(marker => {
-
-                marker.setMap(null);
-
-            });
-
-            markers = [];
-
-
-            if (clusterer) {
-
-                clusterer.clear();
-
-            }
-
-
-            data.forEach((item, index) => {
-
-                const latitude =
-                    Number(item.latitude);
-
-                const longitude =
-                    Number(item.longitude);
-
-
-                if (
-                    !Number.isFinite(latitude) ||
-                    !Number.isFinite(longitude)
-                ) {
-                    return;
-                }
-
-
-                const position =
-                    new kakao.maps.LatLng(
-                        latitude,
-                        longitude
-                    );
-
-
-                const marker =
-                    new kakao.maps.Marker({
-
-                        position: position,
-
-                        title:
-                            item.carnum || "차량"
-                    });
-
-
-                marker.__recordIndex =
-                    records.indexOf(item);
-
-
-                const infoWindow =
-                    new kakao.maps.InfoWindow({
-
-                        content:
-                            createInfoWindowContent(
-                                item
-                            ),
-
-                        removable: true
-
-                    });
-
-
-                kakao.maps.event.addListener(
-                    marker,
-                    "click",
-                    function () {
-
-                        selectRecord(
-                            marker.__recordIndex
-                        );
-
-
-                        infoWindow.open(
-                            map,
-                            marker
-                        );
-
-                    }
-                );
-
-
-                marker.__infoWindow =
-                    infoWindow;
-
-
-                markers.push(marker);
-
-            });
-
-
-            if (clusterer) {
-
-                clusterer.addMarkers(
-                    markers
-                );
-
+              }
             } else {
-
-                markers.forEach(marker => {
-                    marker.setMap(map);
-                });
-
+              fitMap();
             }
+          }, 160);
+      }
+    );
+
+    /* =========================================================
+       INIT
+    ========================================================= */
+
+    window.addEventListener(
+      "load",
+      () => {
+        if (
+          typeof kakao === "undefined" ||
+          !kakao.maps
+        ) {
+          showError(
+            "Kakao Maps SDK를 불러오지 못했습니다.\n" +
+            "JavaScript 키와 등록된 사이트 도메인을 확인해주세요."
+          );
+
+          return;
         }
 
-
-        /* =====================================================
-           InfoWindow
-        ===================================================== */
-
-        function createInfoWindowContent(item) {
-
-            return `
-
-                <div class="info-window">
-
-                    <div class="info-title">
-                        ${escapeHtml(
-                            item.carnum || "차량 정보"
-                        )}
-                    </div>
-
-                    <div class="info-row">
-
-                        <div class="info-label">
-                            차종
-                        </div>
-
-                        <div class="info-value">
-                            ${escapeHtml(
-                                item.car || "-"
-                            )}
-                        </div>
-
-                    </div>
-
-                    <div class="info-row">
-
-                        <div class="info-label">
-                            날짜
-                        </div>
-
-                        <div class="info-value">
-                            ${formatDate(item.date)}
-                        </div>
-
-                    </div>
-
-                    <div class="info-reason">
-                        ${escapeHtml(
-                            item.reason || "기록 없음"
-                        )}
-                    </div>
-
-                </div>
-
-            `;
-        }
-
-
-        /* =====================================================
-           기록 선택
-        ===================================================== */
-
-        function selectRecord(index) {
-
-            if (
-                index < 0 ||
-                index >= records.length
-            ) {
-                return;
-            }
-
-
-            activeIndex = index;
-
-
-            /*
-             * 리스트 active 상태
-             */
-
-            document
-                .querySelectorAll(".record")
-                .forEach(element => {
-
-                    element.classList.remove(
-                        "active"
-                    );
-
-                });
-
-
-            const activeElement =
-                document.querySelector(
-                    `.record[data-index="${index}"]`
-                );
-
-
-            if (activeElement) {
-
-                activeElement.classList.add(
-                    "active"
-                );
-
-                activeElement.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest"
-                });
-
-            }
-
-
-            /*
-             * 지도 이동
-             */
-
-            const item =
-                records[index];
-
-
-            const latitude =
-                Number(item.latitude);
-
-            const longitude =
-                Number(item.longitude);
-
-
-            if (
-                !Number.isFinite(latitude) ||
-                !Number.isFinite(longitude)
-            ) {
-                return;
-            }
-
-
-            const position =
-                new kakao.maps.LatLng(
-                    latitude,
-                    longitude
-                );
-
-
-            map.setCenter(position);
-
-            map.setLevel(4);
-
-
-            /*
-             * InfoWindow 열기
-             */
-
-            markers.forEach(marker => {
-
-                if (
-                    marker.__recordIndex === index
-                ) {
-
-                    if (
-                        marker.__infoWindow
-                    ) {
-
-                        marker.__infoWindow.open(
-                            map,
-                            marker
-                        );
-
-                    }
-
-                }
-
-            });
-
-        }
-
-
-        /* =====================================================
-           전체 데이터 기준 지도 범위
-        ===================================================== */
-
-        function fitMap() {
-
-            if (
-                !records.length ||
-                !map
-            ) {
-                return;
-            }
-
-
-            const bounds =
-                new kakao.maps.LatLngBounds();
-
-
-            let count = 0;
-
-
-            records.forEach(item => {
-
-                const latitude =
-                    Number(item.latitude);
-
-                const longitude =
-                    Number(item.longitude);
-
-
-                if (
-                    !Number.isFinite(latitude) ||
-                    !Number.isFinite(longitude)
-                ) {
-                    return;
-                }
-
-
-                bounds.extend(
-                    new kakao.maps.LatLng(
-                        latitude,
-                        longitude
-                    )
-                );
-
-
-                count++;
-
-            });
-
-
-            if (count > 0) {
-
-                map.setBounds(bounds);
-
-            }
-
-        }
-
-
-        /* =====================================================
-           검색
-        ===================================================== */
-
-        searchInput.addEventListener(
-            "input",
-            function () {
-
-                const keyword =
-                    this.value
-                        .trim()
-                        .toLowerCase();
-
-
-                if (!keyword) {
-
-                    renderList(records);
-
-                    createMarkers(records);
-
-                    fitMap();
-
-                    return;
-                }
-
-
-                const filtered =
-                    records.filter(item => {
-
-                        const text = [
-
-                            item.carnum,
-
-                            item.car,
-
-                            item.date,
-
-                            item.reason
-
-                        ]
-                            .filter(Boolean)
-                            .join(" ")
-                            .toLowerCase();
-
-
-                        return text.includes(
-                            keyword
-                        );
-
-                    });
-
-
-                renderList(filtered);
-
-                createMarkers(filtered);
-
-
-                /*
-                 * 검색 결과가 있을 경우
-                 * 검색된 위치로 지도 이동
-                 */
-
-                if (filtered.length) {
-
-                    const bounds =
-                        new kakao.maps.LatLngBounds();
-
-                    let count = 0;
-
-
-                    filtered.forEach(item => {
-
-                        const latitude =
-                            Number(item.latitude);
-
-                        const longitude =
-                            Number(item.longitude);
-
-
-                        if (
-                            !Number.isFinite(latitude) ||
-                            !Number.isFinite(longitude)
-                        ) {
-                            return;
-                        }
-
-
-                        bounds.extend(
-                            new kakao.maps.LatLng(
-                                latitude,
-                                longitude
-                            )
-                        );
-
-
-                        count++;
-
-                    });
-
-
-                    if (count) {
-
-                        map.setBounds(
-                            bounds
-                        );
-
-                    }
-
-                }
-
-            }
-        );
-
-
-        /* =====================================================
-           시작
-        ===================================================== */
-
-        /*
-         * Kakao SDK가 정상적으로 로드된 이후
-         * DOM이 준비되었을 때 실행
-         */
-
-        window.addEventListener(
-            "load",
-            function () {
-
-                /*
-                 * SDK 로딩 여부 확인
-                 */
-
-                if (
-                    typeof kakao === "undefined"
-                ) {
-
-                    showError(
-                        "Kakao Maps SDK를 불러오지 못했습니다.\n\n" +
-                        "카카오 Developers의 Web 플랫폼 도메인 등록과 " +
-                        "JavaScript 키를 확인해주세요."
-                    );
-
-                    return;
-                }
-
-
-                /*
-                 * kakao.maps.load을 이용해
-                 * 지도 SDK 초기화 완료 후 실행
-                 */
-
-                kakao.maps.load(
-                    function () {
-
-                        initMap();
-
-                    }
-                );
-
-            }
-        );
-
-    </script>
-
+        kakao.maps.load(() => {
+          initMap();
+        });
+      }
+    );
+  </script>
 </body>
 </html>
