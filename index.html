@@ -105,13 +105,13 @@
     }
 
     /* =========================================================
-       SIDEBAR
+       DESKTOP SIDEBAR
     ========================================================= */
 
     .sidebar {
       position: absolute;
 
-      z-index: 30;
+      z-index: 20;
 
       top: 0;
       left: 0;
@@ -131,31 +131,23 @@
           rgba(8, 11, 15, 0.98)
         );
 
-      border-right: 1px solid var(--border);
+      border-right:
+        1px solid var(--border);
 
       box-shadow:
-        12px 0 40px rgba(0, 0, 0, 0.28);
+        12px 0 40px
+        rgba(0, 0, 0, 0.28);
     }
 
-    .sidebar-header {
-      flex: 0 0 auto;
-
-      padding:
-        28px
-        24px
-        20px;
-
-      border-bottom:
-        1px solid var(--border);
-    }
+    /* =========================================================
+       BRAND
+    ========================================================= */
 
     .brand {
       display: flex;
       align-items: center;
 
       gap: 12px;
-
-      margin-bottom: 22px;
     }
 
     .brand-mark {
@@ -164,6 +156,8 @@
 
       display: grid;
       place-items: center;
+
+      flex: 0 0 auto;
 
       border-radius: 11px;
 
@@ -207,6 +201,38 @@
 
       text-transform: uppercase;
     }
+
+    /* =========================================================
+       DESKTOP HEADER
+    ========================================================= */
+
+    .sidebar-header {
+      flex: 0 0 auto;
+
+      padding:
+        28px
+        24px
+        20px;
+
+      border-bottom:
+        1px solid var(--border);
+    }
+
+    .desktop-brand {
+      margin-bottom: 22px;
+    }
+
+    /* =========================================================
+       MOBILE TOP BRAND
+    ========================================================= */
+
+    .mobile-top-brand {
+      display: none;
+    }
+
+    /* =========================================================
+       SEARCH
+    ========================================================= */
 
     .search-wrap {
       position: relative;
@@ -597,7 +623,7 @@
     }
 
     /* =========================================================
-       MOBILE HANDLE
+       MOBILE SHEET HANDLE
     ========================================================= */
 
     .sidebar-handle-area {
@@ -678,11 +704,6 @@
             var(--sidebar-width)
           );
       }
-
-      .map-actions {
-        top: 20px;
-        right: 20px;
-      }
     }
 
     /* =========================================================
@@ -690,11 +711,76 @@
     ========================================================= */
 
     @media (max-width: 800px) {
+
       /*
-       * 핵심 수정:
-       *
-       * Sidebar 전체가 지도 위의 터치를
-       * 무조건 가로채지 않도록 한다.
+       * 모바일에서는 브랜드를 지도 최상단에
+       * 별도로 표시한다.
+       */
+      .mobile-top-brand {
+        position: absolute;
+
+        z-index: 15;
+
+        top:
+          max(
+            14px,
+            env(safe-area-inset-top)
+          );
+
+        left: 16px;
+
+        display: flex;
+        align-items: center;
+
+        gap: 10px;
+
+        padding:
+          9px
+          13px
+          9px
+          9px;
+
+        border:
+          1px solid
+          rgba(255, 255, 255, 0.1);
+
+        border-radius: 14px;
+
+        background:
+          rgba(8, 11, 15, 0.88);
+
+        backdrop-filter:
+          blur(14px);
+
+        -webkit-backdrop-filter:
+          blur(14px);
+
+        box-shadow:
+          0 8px 28px
+          rgba(0, 0, 0, 0.25);
+
+        pointer-events: none;
+      }
+
+      .mobile-top-brand .brand-mark {
+        width: 32px;
+        height: 32px;
+
+        border-radius: 9px;
+
+        font-size: 14px;
+      }
+
+      .mobile-top-brand .brand-title {
+        font-size: 13px;
+      }
+
+      .mobile-top-brand .brand-subtitle {
+        font-size: 9px;
+      }
+
+      /*
+       * Bottom Sheet
        */
       .sidebar {
         top: auto;
@@ -706,8 +792,6 @@
 
         height:
           var(--sheet-expanded);
-
-        display: flex;
 
         border-top:
           1px solid
@@ -748,14 +832,13 @@
         will-change: transform;
 
         /*
-         * 지도 터치가 Bottom Sheet의
-         * 빈 영역에 막히지 않도록 한다.
+         * 지도 위의 터치를 가로채지 않는다.
          */
         pointer-events: none;
       }
 
       /*
-       * 실제 Bottom Sheet UI만 터치를 받는다.
+       * Sheet 자체의 실제 UI 영역만 터치를 받는다.
        */
       .sidebar-handle-area,
       .sidebar-header,
@@ -799,6 +882,10 @@
           rgba(255, 255, 255, 0.25);
       }
 
+      /*
+       * 모바일 Sheet에는 브랜드가 없고
+       * 검색창부터 바로 시작한다.
+       */
       .sidebar-header {
         padding:
           0
@@ -806,15 +893,8 @@
           15px;
       }
 
-      .brand {
-        margin-bottom: 14px;
-      }
-
-      .brand-mark {
-        width: 34px;
-        height: 34px;
-
-        border-radius: 10px;
+      .desktop-brand {
+        display: none;
       }
 
       .stats {
@@ -845,7 +925,12 @@
       }
 
       .map-actions {
-        top: 14px;
+        top:
+          max(
+            14px,
+            env(safe-area-inset-top)
+          );
+
         right: 14px;
       }
 
@@ -869,10 +954,6 @@
     ========================================================= */
 
     @media (max-width: 420px) {
-      .brand-title {
-        font-size: 14px;
-      }
-
       .stats {
         gap: 8px;
       }
@@ -901,6 +982,30 @@
     ====================================================== -->
 
     <div id="map"></div>
+
+    <!-- =====================================================
+         MOBILE TOP BRAND
+    ====================================================== -->
+
+    <div class="mobile-top-brand">
+
+      <div class="brand-mark">
+        V
+      </div>
+
+      <div class="brand-text">
+
+        <div class="brand-title">
+          Vehicle Incident Map
+        </div>
+
+        <div class="brand-subtitle">
+          Accident & Breakdown Records
+        </div>
+
+      </div>
+
+    </div>
 
     <!-- =====================================================
          MAP ACTIONS
@@ -933,7 +1038,7 @@
     </div>
 
     <!-- =====================================================
-         SIDEBAR
+         SIDEBAR / BOTTOM SHEET
     ====================================================== -->
 
     <aside
@@ -954,7 +1059,9 @@
 
       <div class="sidebar-header">
 
-        <div class="brand">
+        <!-- DESKTOP ONLY BRAND -->
+
+        <div class="brand desktop-brand">
 
           <div class="brand-mark">
             V
@@ -1087,7 +1194,7 @@
 
   <script>
     /* =========================================================
-       GLOBAL STATE
+       GLOBAL
     ========================================================= */
 
     let map = null;
@@ -1172,30 +1279,22 @@
         return null;
       }
 
-      const viewportHeight =
+      const height =
         window.innerHeight;
 
-      const expanded =
-        viewportHeight * 0.14;
-
-      const middle =
-        viewportHeight * 0.43;
-
-      const collapsed =
-        viewportHeight * 0.68;
-
       return {
-        expanded,
-        middle,
-        collapsed
+        expanded:
+          height * 0.14,
+
+        middle:
+          height * 0.43,
+
+        collapsed:
+          height * 0.68
       };
     }
 
     function getCurrentSheetTranslate() {
-      if (!isMobile()) {
-        return 0;
-      }
-
       return sheetState.currentTranslate;
     }
 
@@ -1220,7 +1319,7 @@
 
     function getNearestSheetState(
       translate,
-      velocity = 0
+      velocity
     ) {
       const positions =
         getSheetPositions();
@@ -1321,13 +1420,6 @@
       const translate =
         positions[state];
 
-      if (
-        typeof translate !==
-        "number"
-      ) {
-        return;
-      }
-
       sheetState.current =
         state;
 
@@ -1341,20 +1433,6 @@
 
       sidebar.style.transform =
         `translate3d(0, ${translate}px, 0)`;
-    }
-
-    function updateSheetForViewport() {
-      if (!isMobile()) {
-        sidebar.style.transform =
-          "";
-
-        return;
-      }
-
-      setSheetPosition(
-        sheetState.current,
-        false
-      );
     }
 
     /* =========================================================
@@ -1386,6 +1464,10 @@
         return;
       }
 
+      /*
+       * 리스트를 스크롤할 때는
+       * Sheet를 움직이지 않는다.
+       */
       if (
         event.target.closest(
           ".list"
@@ -1399,13 +1481,6 @@
           "input, button"
         )
       ) {
-        return;
-      }
-
-      const positions =
-        getSheetPositions();
-
-      if (!positions) {
         return;
       }
 
@@ -1547,30 +1622,6 @@
       }
     );
 
-    sheetHandle.addEventListener(
-      "touchstart",
-      startSheetDrag,
-      {
-        passive: true
-      }
-    );
-
-    sheetHandle.addEventListener(
-      "touchmove",
-      moveSheetDrag,
-      {
-        passive: false
-      }
-    );
-
-    sheetHandle.addEventListener(
-      "touchend",
-      endSheetDrag,
-      {
-        passive: true
-      }
-    );
-
     /* =========================================================
        DATE
     ========================================================= */
@@ -1578,18 +1629,10 @@
     function parseRecordDate(
       value
     ) {
-      if (
-        value === null ||
-        value === undefined
-      ) {
-        return {
-          valid: false,
-          text: "날짜 확인 필요"
-        };
-      }
-
       const raw =
-        String(value).trim();
+        String(
+          value ?? ""
+        ).trim();
 
       if (
         !/^\d{6}$/.test(raw)
@@ -1625,7 +1668,8 @@
 
       const valid =
         date.getFullYear() === year &&
-        date.getMonth() === month - 1 &&
+        date.getMonth() ===
+          month - 1 &&
         date.getDate() === day;
 
       if (!valid) {
@@ -1637,6 +1681,7 @@
 
       return {
         valid: true,
+
         text:
           `${year}.${String(month).padStart(2, "0")}.${String(day).padStart(2, "0")}`
       };
@@ -1684,7 +1729,7 @@
       totalCount.textContent =
         data.length;
 
-      const uniqueCars =
+      const vehicles =
         new Set(
           data
             .map(
@@ -1698,7 +1743,7 @@
         );
 
       vehicleCount.textContent =
-        uniqueCars.size;
+        vehicles.size;
 
       listCount.textContent =
         data.length;
@@ -1732,9 +1777,6 @@
         data
           .map(
             item => {
-              const originalIndex =
-                item.originalIndex;
-
               const date =
                 parseRecordDate(
                   item.date
@@ -1745,11 +1787,11 @@
                   type="button"
                   class="record ${
                     activeRecordIndex ===
-                    originalIndex
+                    item.originalIndex
                       ? "active"
                       : ""
                   }"
-                  data-index="${originalIndex}"
+                  data-index="${item.originalIndex}"
                 >
 
                   <div class="record-top">
@@ -1801,13 +1843,10 @@
             element.addEventListener(
               "click",
               () => {
-                const index =
+                selectRecord(
                   Number(
                     element.dataset.index
-                  );
-
-                selectRecord(
-                  index
+                  )
                 );
               }
             );
@@ -1878,7 +1917,7 @@
       marker,
       infoWindow
     ) {
-      if (!map) {
+      if (!map || !marker) {
         return;
       }
 
@@ -1923,26 +1962,33 @@
         );
 
       /*
-       * Level 4 확대
+       * 모바일에서는 Sheet를 먼저 접는다.
+       * 단, 지도 중앙 위치 자체는 변경하지 않는다.
+       */
+      if (isMobile()) {
+        setSheetPosition(
+          "collapsed",
+          true
+        );
+      }
+
+      /*
+       * Level 4로 확대
        */
       map.setLevel(4);
 
       /*
-       * 핵심 수정:
-       *
-       * 기존에는 모바일에서
-       * panToMarkerForMobile()을 사용해서
-       * 핀을 화면 상단 27% 지점으로 이동시켰다.
-       *
-       * 이제 모바일도 일반 panTo()를 사용한다.
-       * 따라서 선택한 핀이 지도 화면의 정중앙으로 온다.
+       * 선택한 핀을 지도 정중앙으로 이동
        */
       map.panTo(
         position
       );
 
       /*
-       * 지도 이동 후 InfoWindow 표시
+       * Kakao Maps의 이동/확대 애니메이션이
+       * 끝난 다음 InfoWindow를 연다.
+       *
+       * 모바일에서는 조금 더 충분히 기다린다.
        */
       setTimeout(
         () => {
@@ -1950,21 +1996,34 @@
             return;
           }
 
-          infoWindow.open(
-            map,
-            marker
+          /*
+           * 다시 한 번 해당 위치를 중심으로
+           * 맞춰준다.
+           */
+          map.panTo(
+            position
           );
 
-          activeInfoWindow =
-            infoWindow;
+          setTimeout(
+            () => {
+              infoWindow.open(
+                map,
+                marker
+              );
+
+              activeInfoWindow =
+                infoWindow;
+            },
+            80
+          );
         },
         isMobile()
-          ? 300
+          ? 350
           : 150
       );
 
       /*
-       * 선택된 리스트 항목으로 스크롤
+       * 리스트 위치 이동
        */
       const selectedElement =
         document.querySelector(
@@ -1984,7 +2043,7 @@
     }
 
     /* =========================================================
-       MARKERS
+       CREATE MARKERS
     ========================================================= */
 
     function createMarkers(
@@ -2055,18 +2114,18 @@
               }
             );
 
-          const originalIndex =
-            item.originalIndex;
-
           /*
-           * 핀 클릭
+           * 중요:
+           *
+           * 클러스터러에 들어간 Marker도
+           * 개별 Marker click 이벤트를 유지한다.
            */
           kakao.maps.event.addListener(
             marker,
             "click",
             () => {
               openMarkerInfo(
-                originalIndex,
+                item.originalIndex,
                 marker,
                 infoWindow
               );
@@ -2166,41 +2225,37 @@
       const bounds =
         new kakao.maps.LatLngBounds();
 
-      let validCount = 0;
+      let count = 0;
 
       records.forEach(
         item => {
-          const latitude =
+          const lat =
             Number(
               item.latitude
             );
 
-          const longitude =
+          const lng =
             Number(
               item.longitude
             );
 
           if (
-            Number.isFinite(
-              latitude
-            ) &&
-            Number.isFinite(
-              longitude
-            )
+            Number.isFinite(lat) &&
+            Number.isFinite(lng)
           ) {
             bounds.extend(
               new kakao.maps.LatLng(
-                latitude,
-                longitude
+                lat,
+                lng
               )
             );
 
-            validCount++;
+            count++;
           }
         }
       );
 
-      if (validCount) {
+      if (count > 0) {
         map.setBounds(
           bounds,
           50,
@@ -2255,14 +2310,12 @@
 
       return records.filter(
         item => {
-          const values = [
+          return [
             item.carnum,
             item.car,
             item.date,
             item.reason
-          ];
-
-          return values.some(
+          ].some(
             value =>
               String(
                 value ?? ""
@@ -2328,32 +2381,27 @@
         }
 
         records =
-          json.map(
-            (item, index) => ({
-              ...item,
-
-              originalIndex:
-                index
-            })
-          );
-
-        /*
-         * 좌표가 유효한 데이터만 표시
-         */
-        records =
-          records.filter(
-            item =>
-              Number.isFinite(
-                Number(
-                  item.latitude
+          json
+            .map(
+              (item, index) => ({
+                ...item,
+                originalIndex:
+                  index
+              })
+            )
+            .filter(
+              item =>
+                Number.isFinite(
+                  Number(
+                    item.latitude
+                  )
+                ) &&
+                Number.isFinite(
+                  Number(
+                    item.longitude
+                  )
                 )
-              ) &&
-              Number.isFinite(
-                Number(
-                  item.longitude
-                )
-              )
-          );
+            );
 
         updateStats(
           records
@@ -2432,6 +2480,10 @@
 
             minLevel: 6,
 
+            /*
+             * 클러스터를 클릭했을 때
+             * 개별 마커 위치로 확대
+             */
             disableClickZoom: false
           }
         );
@@ -2446,7 +2498,12 @@
     window.addEventListener(
       "resize",
       () => {
-        updateSheetForViewport();
+        if (isMobile()) {
+          setSheetPosition(
+            sheetState.current,
+            false
+          );
+        }
 
         if (map) {
           map.relayout();
