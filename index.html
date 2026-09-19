@@ -2,13 +2,14 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   />
 
   <title>Vehicle Incident Map</title>
+
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7f26ddb0373cd3b598ff54652cbbdc24&libraries=clusterer"></script>
 
   <style>
     :root {
@@ -52,22 +53,17 @@
       width: 100%;
       height: 100%;
       margin: 0;
-
       overflow: hidden;
-
       background: var(--bg);
       color: var(--text);
-
       font-family:
+        Inter,
+        Pretendard,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
-        "Noto Sans KR",
+        Roboto,
         sans-serif;
-    }
-
-    body {
-      position: relative;
     }
 
     button,
@@ -75,33 +71,14 @@
       font: inherit;
     }
 
-    button {
-      border: 0;
-      outline: 0;
-    }
-
-    #app {
-      position: relative;
-
-      width: 100%;
-      height: 100%;
-
-      overflow: hidden;
-    }
-
     /* =========================================================
        MAP
     ========================================================= */
 
     #map {
-      position: absolute;
-
-      inset: 0;
-
-      width: 100%;
-      height: 100%;
-
-      background: #10151b;
+      position: fixed;
+      inset: 0 0 0 var(--sidebar-width);
+      background: #111;
     }
 
     /* =========================================================
@@ -109,10 +86,8 @@
     ========================================================= */
 
     .sidebar {
-      position: absolute;
-
+      position: fixed;
       z-index: 20;
-
       top: 0;
       left: 0;
       bottom: 0;
@@ -122,8 +97,6 @@
       display: flex;
       flex-direction: column;
 
-      overflow: hidden;
-
       background:
         linear-gradient(
           180deg,
@@ -131,12 +104,9 @@
           rgba(8, 11, 15, 0.98)
         );
 
-      border-right:
-        1px solid var(--border);
+      border-right: 1px solid var(--border);
 
-      box-shadow:
-        12px 0 40px
-        rgba(0, 0, 0, 0.28);
+      box-shadow: 12px 0 40px rgba(0, 0, 0, 0.28);
     }
 
     /* =========================================================
@@ -144,90 +114,35 @@
     ========================================================= */
 
     .brand {
-      display: flex;
-      align-items: center;
-
-      gap: 12px;
+      padding: 26px 24px 20px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .brand-mark {
-      width: 38px;
-      height: 38px;
+    .brand-kicker {
+      margin-bottom: 6px;
 
-      display: grid;
-      place-items: center;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
 
-      flex: 0 0 auto;
-
-      border-radius: 11px;
-
-      background:
-        linear-gradient(
-          135deg,
-          #ff704f,
-          #c93622
-        );
-
-      color: #fff;
-
-      font-size: 17px;
-      font-weight: 900;
-
-      box-shadow:
-        0 8px 22px
-        rgba(240, 90, 61, 0.22);
-    }
-
-    .brand-text {
-      min-width: 0;
+      color: var(--accent);
     }
 
     .brand-title {
-      font-size: 15px;
-      font-weight: 800;
-
-      letter-spacing: -0.02em;
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 850;
+      letter-spacing: -0.04em;
     }
 
     .brand-subtitle {
-      margin-top: 2px;
+      margin-top: 7px;
+
+      font-size: 12px;
+      line-height: 1.5;
 
       color: var(--text-muted);
-
-      font-size: 11px;
-      font-weight: 600;
-
-      letter-spacing: 0.04em;
-
-      text-transform: uppercase;
-    }
-
-    /* =========================================================
-       DESKTOP HEADER
-    ========================================================= */
-
-    .sidebar-header {
-      flex: 0 0 auto;
-
-      padding:
-        28px
-        24px
-        20px;
-
-      border-bottom:
-        1px solid var(--border);
-    }
-
-    .desktop-brand {
-      margin-bottom: 22px;
-    }
-
-    /* =========================================================
-       MOBILE TOP BRAND
-    ========================================================= */
-
-    .mobile-top-brand {
-      display: none;
     }
 
     /* =========================================================
@@ -235,40 +150,35 @@
     ========================================================= */
 
     .search-wrap {
+      padding: 14px 16px 10px;
+    }
+
+    .search-box {
       position: relative;
     }
 
     .search-icon {
       position: absolute;
-
-      left: 14px;
       top: 50%;
+      left: 13px;
 
       width: 16px;
       height: 16px;
 
-      transform:
-        translateY(-50%);
+      transform: translateY(-50%);
 
       color: var(--text-muted);
-
       pointer-events: none;
     }
 
-    #search {
+    .search-input {
       width: 100%;
-      height: 46px;
+      height: 42px;
 
-      padding:
-        0
-        14px
-        0
-        42px;
+      padding: 0 14px 0 39px;
 
-      border:
-        1px solid var(--border);
-
-      border-radius: 13px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
 
       outline: none;
 
@@ -276,78 +186,64 @@
       color: var(--text);
 
       font-size: 13px;
-      font-weight: 600;
 
       transition:
         border-color 0.2s ease,
         background 0.2s ease;
     }
 
-    #search::placeholder {
-      color: #66707c;
+    .search-input::placeholder {
+      color: #68717c;
     }
 
-    #search:focus {
-      border-color:
-        var(--accent-border);
-
-      background:
-        var(--panel-3);
+    .search-input:focus {
+      border-color: var(--accent-border);
+      background: var(--panel-3);
     }
 
     /* =========================================================
-       STATS
+       COMPACT STATS
     ========================================================= */
 
     .stats {
       display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
 
-      grid-template-columns:
-        repeat(2, 1fr);
-
-      gap: 10px;
-
-      padding:
-        16px
-        24px;
-
-      border-bottom:
-        1px solid var(--border);
+      padding: 8px 16px 10px;
     }
 
-    .stat {
-      padding: 14px;
+    .stat-card {
+      min-height: 46px;
 
-      border:
-        1px solid var(--border);
+      padding: 8px 12px;
 
-      border-radius:
-        var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
 
-      background:
-        rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+
+      background: rgba(255, 255, 255, 0.035);
     }
 
     .stat-label {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+
       color: var(--text-muted);
-
-      font-size: 10px;
-      font-weight: 700;
-
-      letter-spacing: 0.05em;
-
-      text-transform: uppercase;
     }
 
     .stat-value {
-      margin-top: 5px;
+      font-size: 16px;
+      line-height: 1;
+
+      font-weight: 850;
+      letter-spacing: -0.03em;
 
       color: var(--text);
-
-      font-size: 22px;
-      font-weight: 850;
-
-      letter-spacing: -0.04em;
     }
 
     /* =========================================================
@@ -355,57 +251,45 @@
     ========================================================= */
 
     .list-header {
-      flex: 0 0 auto;
+      height: 42px;
+
+      padding: 0 18px;
 
       display: flex;
       align-items: center;
       justify-content: space-between;
 
-      padding:
-        15px
-        24px
-        11px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     .list-title {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
+      letter-spacing: 0.1em;
 
-      letter-spacing: -0.01em;
+      color: var(--text-soft);
     }
 
     .list-count {
-      color: var(--text-muted);
-
       font-size: 11px;
-      font-weight: 700;
+      color: var(--text-muted);
     }
 
     /* =========================================================
-       LIST
+       RECORD LIST
     ========================================================= */
 
     .list {
-      flex: 1 1 auto;
-
-      min-height: 0;
-
-      padding:
-        0
-        12px
-        20px;
+      flex: 1;
 
       overflow-y: auto;
-
       overscroll-behavior: contain;
 
-      touch-action: pan-y;
+      padding: 6px 10px 18px;
 
       scrollbar-width: thin;
-
-      scrollbar-color:
-        #2b333d
-        transparent;
+      scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
     }
 
     .list::-webkit-scrollbar {
@@ -417,35 +301,22 @@
     }
 
     .list::-webkit-scrollbar-thumb {
-      background: #2b333d;
-
-      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.13);
+      border-radius: 999px;
     }
 
     .record {
+      position: relative;
+
       width: 100%;
 
-      display: block;
+      padding: 13px 12px;
+      margin-bottom: 5px;
 
-      margin:
-        0
-        0
-        7px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
 
-      padding: 15px;
-
-      border:
-        1px solid transparent;
-
-      border-radius:
-        var(--radius-md);
-
-      background:
-        rgba(255, 255, 255, 0.025);
-
-      color: var(--text);
-
-      text-align: left;
+      background: transparent;
 
       cursor: pointer;
 
@@ -456,174 +327,118 @@
     }
 
     .record:hover {
-      background:
-        rgba(255, 255, 255, 0.045);
-
-      border-color:
-        var(--border);
-    }
-
-    .record:active {
-      transform:
-        scale(0.99);
+      background: rgba(255, 255, 255, 0.035);
     }
 
     .record.active {
-      background:
-        var(--accent-soft);
+      border-color: var(--accent-border);
+      background: var(--accent-soft);
+    }
 
-      border-color:
-        var(--accent-border);
+    .record::before {
+      content: "";
+
+      position: absolute;
+      top: 13px;
+      bottom: 13px;
+      left: 0;
+
+      width: 2px;
+
+      border-radius: 99px;
+
+      background: transparent;
+    }
+
+    .record.active::before {
+      background: var(--accent);
     }
 
     .record-top {
       display: flex;
-
       align-items: center;
       justify-content: space-between;
 
-      gap: 12px;
+      gap: 10px;
     }
 
     .record-car-number {
-      color: var(--text);
-
       font-size: 14px;
-      font-weight: 850;
-
+      font-weight: 800;
       letter-spacing: -0.02em;
     }
 
     .record-date {
-      flex: 0 0 auto;
-
-      padding:
-        4px
-        7px;
-
-      border-radius: 7px;
-
-      background:
-        rgba(255, 255, 255, 0.06);
-
-      color: var(--text-muted);
+      flex-shrink: 0;
 
       font-size: 10px;
       font-weight: 700;
+
+      color: var(--text-muted);
     }
 
     .record-date.invalid {
-      color: #ff8179;
-
-      background:
-        rgba(255, 105, 98, 0.1);
-    }
-
-    .record-car {
-      margin-top: 5px;
-
-      color: var(--text-soft);
-
-      font-size: 12px;
-      font-weight: 650;
-
-      line-height: 1.45;
-    }
-
-    .record-reason {
-      margin-top: 8px;
-
-      color: var(--text-muted);
-
-      font-size: 11px;
-      font-weight: 500;
-
-      line-height: 1.55;
-
-      display: -webkit-box;
-
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
-
-      overflow: hidden;
-    }
-
-    /* =========================================================
-       STATUS
-    ========================================================= */
-
-    .status {
-      padding:
-        28px
-        18px;
-
-      color: var(--text-muted);
-
-      font-size: 12px;
-
-      line-height: 1.6;
-
-      text-align: center;
-    }
-
-    .status.error {
       color: var(--danger);
     }
 
+    .record-car {
+      margin-top: 4px;
+
+      font-size: 11px;
+      font-weight: 600;
+
+      color: var(--text-soft);
+    }
+
+    .record-reason {
+      display: -webkit-box;
+
+      margin-top: 7px;
+
+      overflow: hidden;
+
+      font-size: 11px;
+      line-height: 1.5;
+
+      color: var(--text-muted);
+
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
     /* =========================================================
-       MAP ACTIONS
+       EMPTY / ERROR
     ========================================================= */
 
-    .map-actions {
-      position: absolute;
+    .empty {
+      padding: 40px 20px;
 
-      z-index: 10;
+      text-align: center;
 
-      top: 20px;
-      right: 20px;
-
-      display: flex;
-
-      flex-direction: column;
-
-      gap: 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.6;
     }
 
-    .map-button {
-      width: 42px;
-      height: 42px;
+    .error {
+      padding: 20px;
 
-      display: grid;
-      place-items: center;
+      color: var(--danger);
 
-      border:
-        1px solid rgba(0, 0, 0, 0.12);
-
-      border-radius: 12px;
-
-      background:
-        rgba(255, 255, 255, 0.96);
-
-      color: #252b31;
-
-      cursor: pointer;
-
-      box-shadow:
-        0 5px 18px
-        rgba(0, 0, 0, 0.16);
-    }
-
-    .map-button:hover {
-      background: #fff;
-    }
-
-    .map-button svg {
-      width: 18px;
-      height: 18px;
+      font-size: 12px;
+      line-height: 1.6;
     }
 
     /* =========================================================
-       MOBILE SHEET HANDLE
+       MOBILE TOP BRAND
+    ========================================================= */
+
+    .mobile-top-brand {
+      display: none;
+    }
+
+    /* =========================================================
+       MOBILE SHEET
     ========================================================= */
 
     .sidebar-handle-area {
@@ -634,154 +449,128 @@
        INFO WINDOW
     ========================================================= */
 
-    .custom-info {
-      min-width: 245px;
-      max-width: 300px;
+    .incident-info {
+      width: 280px;
 
-      padding:
-        15px
-        16px;
+      padding: 15px;
 
-      color: #16191d;
+      border-radius: 14px;
+
+      background: #11161d;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.38);
+
+      color: #f5f7fa;
 
       font-family:
+        Inter,
+        Pretendard,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",
-        "Noto Sans KR",
         sans-serif;
     }
 
-    .custom-info-title {
-      margin-bottom: 3px;
+    .incident-info-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
 
-      font-size: 14px;
+      gap: 12px;
+
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .incident-info-number {
+      font-size: 16px;
       font-weight: 850;
-
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
     }
 
-    .custom-info-car {
-      color: #59616b;
-
-      font-size: 11px;
-      font-weight: 650;
-    }
-
-    .custom-info-date {
-      margin-top: 9px;
-
-      color: #777f88;
+    .incident-info-date {
+      flex-shrink: 0;
 
       font-size: 10px;
       font-weight: 700;
+
+      color: #9aa3ae;
     }
 
-    .custom-info-reason {
-      margin-top: 8px;
+    .incident-info-date.invalid {
+      color: #ff6962;
+    }
 
-      color: #353b42;
+    .incident-info-car {
+      margin-bottom: 8px;
 
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 700;
 
-      line-height: 1.5;
-
-      word-break: keep-all;
+      color: #c4cbd4;
     }
 
-    /* =========================================================
-       DESKTOP
-    ========================================================= */
+    .incident-info-reason {
+      font-size: 12px;
+      line-height: 1.6;
 
-    @media (min-width: 801px) {
-      #map {
-        left: var(--sidebar-width);
+      color: #dce1e7;
 
-        width:
-          calc(
-            100% -
-            var(--sidebar-width)
-          );
-      }
+      word-break: keep-all;
     }
 
     /* =========================================================
        MOBILE
     ========================================================= */
 
-    @media (max-width: 800px) {
+    @media (max-width: 720px) {
+      #map {
+        inset: 0;
+      }
 
-      /*
-       * 모바일에서는 브랜드를 지도 최상단에
-       * 별도로 표시한다.
-       */
       .mobile-top-brand {
-        position: absolute;
+        position: fixed;
+        z-index: 30;
 
-        z-index: 15;
-
-        top:
-          max(
-            14px,
-            env(safe-area-inset-top)
-          );
-
+        top: 14px;
         left: 16px;
 
-        display: flex;
-        align-items: center;
-
-        gap: 10px;
-
-        padding:
-          9px
-          13px
-          9px
-          9px;
-
-        border:
-          1px solid
-          rgba(255, 255, 255, 0.1);
-
-        border-radius: 14px;
-
-        background:
-          rgba(8, 11, 15, 0.88);
-
-        backdrop-filter:
-          blur(14px);
-
-        -webkit-backdrop-filter:
-          blur(14px);
-
-        box-shadow:
-          0 8px 28px
-          rgba(0, 0, 0, 0.25);
+        display: block;
 
         pointer-events: none;
+
+        padding: 10px 13px;
+
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+
+        background: rgba(8, 11, 15, 0.82);
+
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
       }
 
-      .mobile-top-brand .brand-mark {
-        width: 32px;
-        height: 32px;
-
-        border-radius: 9px;
-
-        font-size: 14px;
-      }
-
-      .mobile-top-brand .brand-title {
+      .mobile-top-brand-title {
         font-size: 13px;
+        font-weight: 850;
+        letter-spacing: -0.03em;
       }
 
-      .mobile-top-brand .brand-subtitle {
-        font-size: 9px;
+      .mobile-top-brand-subtitle {
+        margin-top: 2px;
+
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+
+        color: var(--text-muted);
       }
 
-      /*
-       * Bottom Sheet
-       */
       .sidebar {
         top: auto;
         right: 0;
@@ -789,185 +578,130 @@
         left: 0;
 
         width: 100%;
+        height: var(--sheet-expanded);
 
-        height:
-          var(--sheet-expanded);
-
-        border-top:
-          1px solid
-          rgba(255, 255, 255, 0.09);
-
+        border-top: 1px solid var(--border-strong);
         border-right: 0;
 
-        border-radius:
-          22px
-          22px
-          0
-          0;
+        border-radius: 22px 22px 0 0;
 
         box-shadow:
-          0 -12px 40px
-          rgba(0, 0, 0, 0.38);
+          0 -16px 45px rgba(0, 0, 0, 0.34);
 
-        transform:
-          translate3d(
-            0,
-            calc(
-              var(--sheet-expanded) -
-              var(--sheet-collapsed)
-            ),
-            0
-          );
+        transform: translateY(
+          calc(
+            var(--sheet-expanded) - var(--sheet-collapsed)
+          )
+        );
 
-        transition:
-          transform
-          0.34s
-          cubic-bezier(
-            .22,
-            .8,
-            .24,
-            1
-          );
+        transition: transform 0.28s cubic-bezier(.22, .61, .36, 1);
 
-        will-change: transform;
-
-        /*
-         * 지도 위의 터치를 가로채지 않는다.
-         */
         pointer-events: none;
       }
 
-      /*
-       * Sheet 자체의 실제 UI 영역만 터치를 받는다.
-       */
-      .sidebar-handle-area,
-      .sidebar-header,
-      .stats,
-      .list-header,
-      .list {
-        pointer-events: auto;
+      .sidebar.sheet-middle {
+        transform: translateY(
+          calc(
+            var(--sheet-expanded) - var(--sheet-middle)
+          )
+        );
       }
 
-      .sidebar.dragging {
+      .sidebar.sheet-expanded {
+        transform: translateY(0);
+      }
+
+      .sidebar.sheet-dragging {
         transition: none;
       }
 
+      .brand {
+        display: none;
+      }
+
       .sidebar-handle-area {
+        position: absolute;
+        z-index: 5;
+
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 34px;
+
         display: flex;
-
-        flex:
-          0 0 auto;
-
-        height: 32px;
-
         align-items: center;
         justify-content: center;
 
-        cursor: grab;
+        pointer-events: auto;
 
         touch-action: none;
       }
 
-      .sidebar-handle-area:active {
-        cursor: grabbing;
-      }
-
       .sidebar-handle {
-        width: 42px;
-        height: 5px;
-
-        border-radius: 99px;
-
-        background:
-          rgba(255, 255, 255, 0.25);
-      }
-
-      /*
-       * 모바일 Sheet에는 브랜드가 없고
-       * 검색창부터 바로 시작한다.
-       */
-      .sidebar-header {
-        padding:
-          0
-          18px
-          15px;
-      }
-
-      .desktop-brand {
-        display: none;
-      }
-
-      .stats {
-        padding:
-          12px
-          18px;
-      }
-
-      .list-header {
-        padding:
-          13px
-          18px
-          9px;
-      }
-
-      .list {
-        padding:
-          0
-          10px
-          calc(
-            20px +
-            env(safe-area-inset-bottom)
-          );
-      }
-
-      .record {
-        padding: 14px;
-      }
-
-      .map-actions {
-        top:
-          max(
-            14px,
-            env(safe-area-inset-top)
-          );
-
-        right: 14px;
-      }
-
-      .map-button {
         width: 40px;
-        height: 40px;
+        height: 4px;
+
+        border-radius: 999px;
+
+        background: rgba(255, 255, 255, 0.2);
       }
 
-      .custom-info {
-        min-width: 220px;
-        max-width: 270px;
-
-        padding:
-          13px
-          14px;
+      .search-wrap {
+        padding-top: 38px;
       }
-    }
 
-    /* =========================================================
-       SMALL MOBILE
-    ========================================================= */
-
-    @media (max-width: 420px) {
       .stats {
-        gap: 8px;
+        padding: 8px 14px 9px;
+        gap: 6px;
       }
 
-      .stat {
-        padding: 12px;
+      .stat-card {
+        min-height: 38px;
+        padding: 6px 10px;
+      }
+
+      .stat-label {
+        font-size: 8px;
       }
 
       .stat-value {
-        font-size: 19px;
+        font-size: 14px;
       }
 
-      #search {
-        height: 43px;
+      .list-header {
+        height: 39px;
+        padding: 0 15px;
+      }
+
+      .list {
+        padding: 5px 9px 22px;
+      }
+
+      .record {
+        padding: 12px 11px;
+        margin-bottom: 4px;
+      }
+
+      .record-car-number {
+        font-size: 13px;
+      }
+
+      .record-car {
+        font-size: 10px;
+      }
+
+      .record-reason {
+        font-size: 10px;
+      }
+
+      .incident-info {
+        width: min(280px, calc(100vw - 32px));
+      }
+
+      .kakao-map-control {
+        transform: scale(0.92);
+        transform-origin: right top;
       }
     }
   </style>
@@ -975,360 +709,807 @@
 
 <body>
 
-  <div id="app">
+  <div id="map"></div>
 
-    <!-- =====================================================
-         MAP
-    ====================================================== -->
+  <!-- Mobile only -->
+  <div class="mobile-top-brand">
+    <div class="mobile-top-brand-title">
+      Vehicle Incident Map
+    </div>
+    <div class="mobile-top-brand-subtitle">
+      ACCIDENT &amp; BREAKDOWN RECORDS
+    </div>
+  </div>
 
-    <div id="map"></div>
+  <aside class="sidebar" id="sidebar">
 
-    <!-- =====================================================
-         MOBILE TOP BRAND
-    ====================================================== -->
-
-    <div class="mobile-top-brand">
-
-      <div class="brand-mark">
-        V
-      </div>
-
-      <div class="brand-text">
-
-        <div class="brand-title">
-          Vehicle Incident Map
-        </div>
-
-        <div class="brand-subtitle">
-          Accident & Breakdown Records
-        </div>
-
-      </div>
-
+    <div class="sidebar-handle-area" id="sheetHandle">
+      <div class="sidebar-handle"></div>
     </div>
 
-    <!-- =====================================================
-         MAP ACTIONS
-    ====================================================== -->
+    <div class="brand">
+      <div class="brand-kicker">Incident Database</div>
 
-    <div class="map-actions">
+      <div class="brand-title">
+        Vehicle Incident Map
+      </div>
 
-      <button
-        type="button"
-        class="map-button"
-        id="fitButton"
-        aria-label="전체 보기"
-        title="전체 보기"
-      >
+      <div class="brand-subtitle">
+        Accident &amp; breakdown records visualized on the map.
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-box">
         <svg
+          class="search-icon"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
         >
-          <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-          <path d="M16 3h3a2 2 0 0 1 2 2v3" />
-          <path d="M21 16v3a2 2 0 0 1-2 2h-3" />
-          <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
         </svg>
-      </button>
 
+        <input
+          id="searchInput"
+          class="search-input"
+          type="search"
+          autocomplete="off"
+          placeholder="차량번호, 차종, 사고내용 검색"
+        />
+      </div>
     </div>
 
-    <!-- =====================================================
-         SIDEBAR / BOTTOM SHEET
-    ====================================================== -->
-
-    <aside
-      class="sidebar"
-      id="sidebar"
-    >
-
-      <!-- MOBILE HANDLE -->
-
-      <div
-        class="sidebar-handle-area"
-        id="sheetHandle"
-      >
-        <div class="sidebar-handle"></div>
+    <div class="stats">
+      <div class="stat-card">
+        <span class="stat-label">RECORDS</span>
+        <span class="stat-value" id="totalCount">0</span>
       </div>
 
-      <!-- HEADER -->
-
-      <div class="sidebar-header">
-
-        <!-- DESKTOP ONLY BRAND -->
-
-        <div class="brand desktop-brand">
-
-          <div class="brand-mark">
-            V
-          </div>
-
-          <div class="brand-text">
-
-            <div class="brand-title">
-              Vehicle Incident Map
-            </div>
-
-            <div class="brand-subtitle">
-              Accident & Breakdown Records
-            </div>
-
-          </div>
-
-        </div>
-
-        <!-- SEARCH -->
-
-        <div class="search-wrap">
-
-          <svg
-            class="search-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle
-              cx="11"
-              cy="11"
-              r="7"
-            ></circle>
-
-            <path
-              d="m20 20-4-4"
-            ></path>
-          </svg>
-
-          <input
-            id="search"
-            type="search"
-            placeholder="차량번호, 차종, 날짜, 사고내용 검색"
-            autocomplete="off"
-          />
-
-        </div>
-
+      <div class="stat-card">
+        <span class="stat-label">VEHICLES</span>
+        <span class="stat-value" id="vehicleCount">0</span>
       </div>
+    </div>
 
-      <!-- STATS -->
+    <div class="list-header">
+      <span class="list-title">INCIDENT LIST</span>
+      <span class="list-count" id="listCount">0</span>
+    </div>
 
-      <div class="stats">
-
-        <div class="stat">
-
-          <div class="stat-label">
-            Records
-          </div>
-
-          <div
-            class="stat-value"
-            id="totalCount"
-          >
-            0
-          </div>
-
-        </div>
-
-        <div class="stat">
-
-          <div class="stat-label">
-            Vehicles
-          </div>
-
-          <div
-            class="stat-value"
-            id="vehicleCount"
-          >
-            0
-          </div>
-
-        </div>
-
+    <div class="list" id="recordList">
+      <div class="empty">
+        데이터를 불러오는 중입니다.
       </div>
+    </div>
 
-      <!-- LIST HEADER -->
-
-      <div class="list-header">
-
-        <div class="list-title">
-          INCIDENT RECORDS
-        </div>
-
-        <div
-          class="list-count"
-          id="listCount"
-        >
-          0
-        </div>
-
-      </div>
-
-      <!-- LIST -->
-
-      <div
-        class="list"
-        id="recordList"
-      >
-        <div class="status">
-          데이터를 불러오는 중...
-        </div>
-      </div>
-
-    </aside>
-
-  </div>
-
-  <!-- =======================================================
-       KAKAO MAP
-  ======================================================== -->
-
-  <script
-    src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7f26ddb0373cd3b598ff54652cbbdc24&libraries=clusterer"
-  ></script>
+  </aside>
 
   <script>
-    /* =========================================================
-       GLOBAL
-    ========================================================= */
-
     let map = null;
     let clusterer = null;
 
     let records = [];
     let markers = [];
 
-    let activeRecordIndex = -1;
     let activeInfoWindow = null;
+    let activeRecordIndex = null;
 
-    const sheetState = {
-      current: "collapsed",
+    let currentFilteredRecords = [];
 
-      dragging: false,
+    const sidebar = document.getElementById("sidebar");
+    const searchInput = document.getElementById("searchInput");
+    const recordList = document.getElementById("recordList");
 
-      startY: 0,
-      startTranslate: 0,
-
-      currentTranslate: 0,
-
-      lastY: 0,
-      lastTime: 0,
-
-      velocity: 0
-    };
+    const totalCount = document.getElementById("totalCount");
+    const vehicleCount = document.getElementById("vehicleCount");
+    const listCount = document.getElementById("listCount");
 
     /* =========================================================
-       DOM
-    ========================================================= */
-
-    const sidebar =
-      document.getElementById(
-        "sidebar"
-      );
-
-    const sheetHandle =
-      document.getElementById(
-        "sheetHandle"
-      );
-
-    const recordList =
-      document.getElementById(
-        "recordList"
-      );
-
-    const searchInput =
-      document.getElementById(
-        "search"
-      );
-
-    const totalCount =
-      document.getElementById(
-        "totalCount"
-      );
-
-    const vehicleCount =
-      document.getElementById(
-        "vehicleCount"
-      );
-
-    const listCount =
-      document.getElementById(
-        "listCount"
-      );
-
-    const fitButton =
-      document.getElementById(
-        "fitButton"
-      );
-
-    /* =========================================================
-       MOBILE
+       UTILS
     ========================================================= */
 
     function isMobile() {
-      return window.innerWidth <= 800;
+      return window.innerWidth <= 720;
     }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function parseRecordDate(value) {
+      const raw = String(value ?? "").trim();
+
+      if (!/^\d{6}$/.test(raw)) {
+        return {
+          valid: false,
+          text: "날짜 확인 필요"
+        };
+      }
+
+      const year = 2000 + Number(raw.slice(0, 2));
+      const month = Number(raw.slice(2, 4));
+      const day = Number(raw.slice(4, 6));
+
+      const date = new Date(year, month - 1, day);
+
+      const valid =
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day;
+
+      if (!valid) {
+        return {
+          valid: false,
+          text: "날짜 확인 필요"
+        };
+      }
+
+      return {
+        valid: true,
+        text:
+          `${year}.` +
+          `${String(month).padStart(2, "0")}.` +
+          `${String(day).padStart(2, "0")}`
+      };
+    }
+
+    /* =========================================================
+       DATE SORT
+    ========================================================= */
+
+    function sortRecordsByDate(data) {
+      return [...data].sort((a, b) => {
+        const aRaw = String(a.date ?? "").trim();
+        const bRaw = String(b.date ?? "").trim();
+
+        const aParsed = parseRecordDate(aRaw);
+        const bParsed = parseRecordDate(bRaw);
+
+        // 유효한 날짜를 먼저
+        if (aParsed.valid && !bParsed.valid) {
+          return -1;
+        }
+
+        if (!aParsed.valid && bParsed.valid) {
+          return 1;
+        }
+
+        // 둘 다 잘못된 날짜라면 원래 순서 유지
+        if (!aParsed.valid && !bParsed.valid) {
+          return 0;
+        }
+
+        // 최신 날짜가 먼저
+        return bRaw.localeCompare(aRaw);
+      });
+    }
+
+    /* =========================================================
+       STATS
+    ========================================================= */
+
+    function updateStats(data) {
+      totalCount.textContent = data.length;
+
+      const vehicles = new Set(
+        data
+          .map(item => String(item.carnum ?? "").trim())
+          .filter(Boolean)
+      );
+
+      vehicleCount.textContent = vehicles.size;
+    }
+
+    /* =========================================================
+       INFO WINDOW
+    ========================================================= */
+
+    function createInfoWindowContent(item) {
+      const parsedDate = parseRecordDate(item.date);
+
+      return `
+        <div class="incident-info">
+
+          <div class="incident-info-head">
+            <div class="incident-info-number">
+              ${escapeHtml(item.carnum || "차량번호 없음")}
+            </div>
+
+            <div class="incident-info-date ${parsedDate.valid ? "" : "invalid"}">
+              ${escapeHtml(parsedDate.text)}
+            </div>
+          </div>
+
+          <div class="incident-info-car">
+            ${escapeHtml(item.car || "차종 정보 없음")}
+          </div>
+
+          <div class="incident-info-reason">
+            ${escapeHtml(item.reason || "사고 내용 없음")}
+          </div>
+
+        </div>
+      `;
+    }
+
+    function closeActiveInfoWindow() {
+      if (activeInfoWindow) {
+        activeInfoWindow.close();
+        activeInfoWindow = null;
+      }
+
+      activeRecordIndex = null;
+
+      document
+        .querySelectorAll(".record.active")
+        .forEach(element => {
+          element.classList.remove("active");
+        });
+    }
+
+    /* =========================================================
+       MOBILE SHEET
+    ========================================================= */
 
     function getSheetPositions() {
       if (!isMobile()) {
         return null;
       }
 
-      const height =
-        window.innerHeight;
+      const height = window.innerHeight;
 
       return {
-        expanded:
-          height * 0.14,
-
-        middle:
-          height * 0.43,
-
-        collapsed:
-          height * 0.68
+        expanded: height * 0.14,
+        middle: height * 0.43,
+        collapsed: height * 0.68
       };
     }
 
-    function getCurrentSheetTranslate() {
-      return sheetState.currentTranslate;
-    }
-
-    function clampSheetTranslate(
-      value
-    ) {
-      const positions =
-        getSheetPositions();
-
-      if (!positions) {
-        return value;
+    function setSheetPosition(position, instant = false) {
+      if (!isMobile()) {
+        return;
       }
 
-      return Math.max(
-        positions.expanded,
-        Math.min(
-          positions.collapsed,
-          value
-        )
+      sidebar.classList.remove(
+        "sheet-middle",
+        "sheet-expanded",
+        "sheet-dragging"
+      );
+
+      if (position === "middle") {
+        sidebar.classList.add("sheet-middle");
+      }
+
+      if (position === "expanded") {
+        sidebar.classList.add("sheet-expanded");
+      }
+
+      if (instant) {
+        sidebar.style.transition = "none";
+
+        requestAnimationFrame(() => {
+          sidebar.style.transition = "";
+        });
+      }
+    }
+
+    /* =========================================================
+       MARKER OPEN
+    ========================================================= */
+
+    function openMarkerInfo(originalIndex, marker, infoWindow) {
+      if (!map || !marker || !infoWindow) {
+        return;
+      }
+
+      const item = records.find(
+        record => record.originalIndex === originalIndex
+      );
+
+      if (!item) {
+        return;
+      }
+
+      if (activeInfoWindow && activeInfoWindow !== infoWindow) {
+        activeInfoWindow.close();
+      }
+
+      activeInfoWindow = infoWindow;
+      activeRecordIndex = originalIndex;
+
+      document
+        .querySelectorAll(".record.active")
+        .forEach(element => {
+          element.classList.remove("active");
+        });
+
+      const activeElement = document.querySelector(
+        `.record[data-index="${originalIndex}"]`
+      );
+
+      if (activeElement) {
+        activeElement.classList.add("active");
+      }
+
+      const position = marker.getPosition();
+
+      /*
+       * 모바일에서는 목록을 먼저 접어서
+       * 지도 영역을 확보한다.
+       */
+      if (isMobile()) {
+        setSheetPosition("collapsed");
+
+        /*
+         * marker가 화면 중앙에 오도록 이동.
+         */
+        map.setCenter(position);
+
+        /*
+         * 지도 이동이 완료된 뒤 InfoWindow를 연다.
+         */
+        setTimeout(() => {
+          map.setCenter(position);
+
+          setTimeout(() => {
+            infoWindow.open(map, marker);
+          }, 120);
+        }, 280);
+      } else {
+        map.panTo(position);
+
+        setTimeout(() => {
+          infoWindow.open(map, marker);
+        }, 80);
+      }
+
+      /*
+       * 목록에서도 선택 항목을 보여준다.
+       */
+      if (activeElement) {
+        setTimeout(() => {
+          activeElement.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
+          });
+        }, 120);
+      }
+    }
+
+    /* =========================================================
+       MARKERS
+    ========================================================= */
+
+    function createMarkers(data) {
+      if (!map || !clusterer) {
+        return;
+      }
+
+      clusterer.clear();
+
+      markers.forEach(marker => {
+        marker.setMap(null);
+      });
+
+      markers = [];
+
+      data.forEach(item => {
+        const latitude = Number(item.latitude);
+        const longitude = Number(item.longitude);
+
+        if (
+          !Number.isFinite(latitude) ||
+          !Number.isFinite(longitude)
+        ) {
+          return;
+        }
+
+        const position = new kakao.maps.LatLng(
+          latitude,
+          longitude
+        );
+
+        const marker = new kakao.maps.Marker({
+          position
+        });
+
+        const infoWindow = new kakao.maps.InfoWindow({
+          content: createInfoWindowContent(item),
+          removable: false
+        });
+
+        kakao.maps.event.addListener(
+          marker,
+          "click",
+          () => {
+            openMarkerInfo(
+              item.originalIndex,
+              marker,
+              infoWindow
+            );
+          }
+        );
+
+        markers.push(marker);
+      });
+
+      clusterer.addMarkers(markers);
+    }
+
+    /* =========================================================
+       LIST
+    ========================================================= */
+
+    function renderList(data) {
+      currentFilteredRecords = data;
+
+      listCount.textContent = data.length;
+
+      if (!data.length) {
+        recordList.innerHTML = `
+          <div class="empty">
+            검색 결과가 없습니다.
+          </div>
+        `;
+
+        return;
+      }
+
+      recordList.innerHTML = data
+        .map(item => {
+          const parsedDate = parseRecordDate(item.date);
+
+          return `
+            <div
+              class="record"
+              data-index="${item.originalIndex}"
+              role="button"
+              tabindex="0"
+            >
+
+              <div class="record-top">
+                <div class="record-car-number">
+                  ${escapeHtml(item.carnum || "차량번호 없음")}
+                </div>
+
+                <div class="record-date ${parsedDate.valid ? "" : "invalid"}">
+                  ${escapeHtml(parsedDate.text)}
+                </div>
+              </div>
+
+              <div class="record-car">
+                ${escapeHtml(item.car || "차종 정보 없음")}
+              </div>
+
+              <div class="record-reason">
+                ${escapeHtml(item.reason || "사고 내용 없음")}
+              </div>
+
+            </div>
+          `;
+        })
+        .join("");
+
+      recordList
+        .querySelectorAll(".record")
+        .forEach(element => {
+          const index = Number(element.dataset.index);
+
+          element.addEventListener("click", () => {
+            selectRecord(index);
+          });
+
+          element.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              selectRecord(index);
+            }
+          });
+        });
+    }
+
+    /* =========================================================
+       SELECT RECORD
+    ========================================================= */
+
+    function selectRecord(index) {
+      const target = records.find(
+        record => record.originalIndex === index
+      );
+
+      if (!target) {
+        return;
+      }
+
+      const markerIndex = markers.findIndex(marker => {
+        const position = marker.getPosition();
+
+        return (
+          Math.abs(
+            position.getLat() - Number(target.latitude)
+          ) < 0.000000001 &&
+          Math.abs(
+            position.getLng() - Number(target.longitude)
+          ) < 0.000000001
+        );
+      });
+
+      if (markerIndex < 0) {
+        return;
+      }
+
+      const marker = markers[markerIndex];
+
+      const infoWindow = new kakao.maps.InfoWindow({
+        content: createInfoWindowContent(target),
+        removable: false
+      });
+
+      openMarkerInfo(
+        index,
+        marker,
+        infoWindow
       );
     }
 
-    function getNearestSheetState(
-      translate,
-      velocity
-    ) {
-      const positions =
-        getSheetPositions();
+    /* =========================================================
+       SEARCH
+    ========================================================= */
 
-      if (!positions) {
-        return "collapsed";
+    function filterRecords(keyword) {
+      const query = String(keyword ?? "")
+        .trim()
+        .toLowerCase();
+
+      if (!query) {
+        renderList(records);
+        createMarkers(records);
+        return;
       }
 
-      const states = [
+      const filtered = records.filter(item => {
+        const text = [
+          item.carnum,
+          item.car,
+          item.reason,
+          item.date
+        ]
+          .map(value => String(value ?? "").toLowerCase())
+          .join(" ");
+
+        return text.includes(query);
+      });
+
+      renderList(filtered);
+      createMarkers(filtered);
+    }
+
+    searchInput.addEventListener("input", event => {
+      filterRecords(event.target.value);
+    });
+
+    /* =========================================================
+       FIT MAP
+    ========================================================= */
+
+    function fitMap(data = records) {
+      if (!map || !data.length) {
+        return;
+      }
+
+      const bounds = new kakao.maps.LatLngBounds();
+
+      let hasValidPosition = false;
+
+      data.forEach(item => {
+        const latitude = Number(item.latitude);
+        const longitude = Number(item.longitude);
+
+        if (
+          !Number.isFinite(latitude) ||
+          !Number.isFinite(longitude)
+        ) {
+          return;
+        }
+
+        bounds.extend(
+          new kakao.maps.LatLng(
+            latitude,
+            longitude
+          )
+        );
+
+        hasValidPosition = true;
+      });
+
+      if (!hasValidPosition) {
+        return;
+      }
+
+      map.setBounds(bounds);
+    }
+
+    /* =========================================================
+       LOAD DATA
+    ========================================================= */
+
+    async function loadData() {
+      try {
+        const response = await fetch("./list.json", {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+          throw new Error(
+            "list.json 형식이 배열이 아닙니다."
+          );
+        }
+
+        /*
+         * 원본 index를 먼저 저장.
+         * 이후 날짜순으로 정렬해도
+         * marker/list 연결이 유지된다.
+         */
+        records = data.map((item, index) => ({
+          ...item,
+          originalIndex: index
+        }));
+
+        /*
+         * 최신 날짜 → 과거 날짜 순.
+         * 잘못된 날짜는 가장 아래.
+         */
+        records = sortRecordsByDate(records);
+
+        updateStats(records);
+        renderList(records);
+        createMarkers(records);
+
+        setTimeout(() => {
+          fitMap(records);
+        }, 150);
+
+      } catch (error) {
+        console.error(error);
+
+        recordList.innerHTML = `
+          <div class="error">
+            데이터를 불러오지 못했습니다.<br />
+            <br />
+            ${escapeHtml(error.message)}
+          </div>
+        `;
+      }
+    }
+
+    /* =========================================================
+       MAP INIT
+    ========================================================= */
+
+    function initMap() {
+      const container = document.getElementById("map");
+
+      map = new kakao.maps.Map(
+        container,
+        {
+          center: new kakao.maps.LatLng(
+            37.5665,
+            126.978
+          ),
+          level: 8
+        }
+      );
+
+      const zoomControl =
+        new kakao.maps.ZoomControl();
+
+      map.addControl(
+        zoomControl,
+        kakao.maps.ControlPosition.RIGHT
+      );
+
+      clusterer =
+        new kakao.maps.MarkerClusterer({
+          map,
+          averageCenter: true,
+          minLevel: 6,
+          disableClickZoom: false
+        });
+
+      loadData();
+    }
+
+    /* =========================================================
+       MOBILE SHEET DRAG
+    ========================================================= */
+
+    let dragStartY = 0;
+    let dragStartTranslate = 0;
+    let isDraggingSheet = false;
+
+    function getCurrentTranslateY() {
+      const style =
+        window.getComputedStyle(sidebar);
+
+      const matrix =
+        new DOMMatrixReadOnly(
+          style.transform
+        );
+
+      return matrix.m42;
+    }
+
+    function getSheetTranslateValues() {
+      const positions = getSheetPositions();
+
+      if (!positions) {
+        return null;
+      }
+
+      const expanded =
+        positions.expanded -
+        positions.expanded;
+
+      const middle =
+        positions.expanded -
+        positions.middle;
+
+      const collapsed =
+        positions.expanded -
+        positions.collapsed;
+
+      return {
+        expanded,
+        middle,
+        collapsed
+      };
+    }
+
+    function applySheetDrag(translateY) {
+      sidebar.style.transform =
+        `translateY(${translateY}px)`;
+    }
+
+    function finishSheetDrag() {
+      if (!isDraggingSheet) {
+        return;
+      }
+
+      isDraggingSheet = false;
+
+      sidebar.classList.remove(
+        "sheet-dragging"
+      );
+
+      sidebar.style.transform = "";
+
+      const positions =
+        getSheetTranslateValues();
+
+      if (!positions) {
+        return;
+      }
+
+      const current =
+        getCurrentTranslateY();
+
+      const candidates = [
         {
           name: "expanded",
           value: positions.expanded
@@ -1343,1171 +1524,138 @@
         }
       ];
 
-      if (
-        Math.abs(velocity) > 0.45
-      ) {
-        if (velocity < 0) {
-          if (
-            translate >
-            positions.middle
-          ) {
-            return "middle";
-          }
-
-          return "expanded";
-        }
-
-        if (
-          translate <
-          positions.middle
-        ) {
-          return "middle";
-        }
-
-        return "collapsed";
-      }
-
-      let closest =
-        states[0];
-
-      let distance =
-        Math.abs(
-          translate -
-          states[0].value
-        );
-
-      for (
-        let i = 1;
-        i < states.length;
-        i++
-      ) {
-        const currentDistance =
-          Math.abs(
-            translate -
-            states[i].value
-          );
-
-        if (
-          currentDistance <
-          distance
-        ) {
-          closest =
-            states[i];
-
-          distance =
-            currentDistance;
-        }
-      }
-
-      return closest.name;
-    }
-
-    function setSheetPosition(
-      state,
-      animate = true
-    ) {
-      if (!isMobile()) {
-        return;
-      }
-
-      const positions =
-        getSheetPositions();
-
-      if (!positions) {
-        return;
-      }
-
-      const translate =
-        positions[state];
-
-      sheetState.current =
-        state;
-
-      sheetState.currentTranslate =
-        translate;
-
-      sidebar.classList.toggle(
-        "dragging",
-        !animate
+      candidates.sort(
+        (a, b) =>
+          Math.abs(current - a.value) -
+          Math.abs(current - b.value)
       );
-
-      sidebar.style.transform =
-        `translate3d(0, ${translate}px, 0)`;
-    }
-
-    /* =========================================================
-       SHEET DRAG
-    ========================================================= */
-
-    function getTouchY(event) {
-      if (
-        event.touches &&
-        event.touches.length
-      ) {
-        return event.touches[0].clientY;
-      }
-
-      if (
-        event.changedTouches &&
-        event.changedTouches.length
-      ) {
-        return event.changedTouches[0].clientY;
-      }
-
-      return 0;
-    }
-
-    function startSheetDrag(
-      event
-    ) {
-      if (!isMobile()) {
-        return;
-      }
-
-      /*
-       * 리스트를 스크롤할 때는
-       * Sheet를 움직이지 않는다.
-       */
-      if (
-        event.target.closest(
-          ".list"
-        )
-      ) {
-        return;
-      }
-
-      if (
-        event.target.closest(
-          "input, button"
-        )
-      ) {
-        return;
-      }
-
-      const y =
-        getTouchY(event);
-
-      sheetState.dragging =
-        true;
-
-      sheetState.startY =
-        y;
-
-      sheetState.startTranslate =
-        getCurrentSheetTranslate();
-
-      sheetState.currentTranslate =
-        sheetState.startTranslate;
-
-      sheetState.lastY =
-        y;
-
-      sheetState.lastTime =
-        performance.now();
-
-      sheetState.velocity =
-        0;
-
-      sidebar.classList.add(
-        "dragging"
-      );
-    }
-
-    function moveSheetDrag(
-      event
-    ) {
-      if (
-        !isMobile() ||
-        !sheetState.dragging
-      ) {
-        return;
-      }
-
-      event.preventDefault();
-
-      const y =
-        getTouchY(event);
-
-      const now =
-        performance.now();
-
-      const deltaY =
-        y -
-        sheetState.startY;
-
-      const nextTranslate =
-        clampSheetTranslate(
-          sheetState.startTranslate +
-          deltaY
-        );
-
-      const dt =
-        Math.max(
-          now -
-          sheetState.lastTime,
-          1
-        );
-
-      sheetState.velocity =
-        (
-          (y - sheetState.lastY) /
-          dt
-        ) * 16;
-
-      sheetState.lastY =
-        y;
-
-      sheetState.lastTime =
-        now;
-
-      sheetState.currentTranslate =
-        nextTranslate;
-
-      sidebar.style.transform =
-        `translate3d(0, ${nextTranslate}px, 0)`;
-    }
-
-    function endSheetDrag() {
-      if (
-        !isMobile() ||
-        !sheetState.dragging
-      ) {
-        return;
-      }
-
-      sheetState.dragging =
-        false;
-
-      const nextState =
-        getNearestSheetState(
-          sheetState.currentTranslate,
-          sheetState.velocity
-        );
 
       setSheetPosition(
-        nextState,
-        true
+        candidates[0].name
       );
     }
 
-    sidebar.addEventListener(
+    const sheetHandle =
+      document.getElementById(
+        "sheetHandle"
+      );
+
+    sheetHandle.addEventListener(
       "touchstart",
-      startSheetDrag,
-      {
-        passive: true
-      }
-    );
-
-    sidebar.addEventListener(
-      "touchmove",
-      moveSheetDrag,
-      {
-        passive: false
-      }
-    );
-
-    sidebar.addEventListener(
-      "touchend",
-      endSheetDrag,
-      {
-        passive: true
-      }
-    );
-
-    sidebar.addEventListener(
-      "touchcancel",
-      endSheetDrag,
-      {
-        passive: true
-      }
-    );
-
-    /* =========================================================
-       DATE
-    ========================================================= */
-
-    function parseRecordDate(
-      value
-    ) {
-      const raw =
-        String(
-          value ?? ""
-        ).trim();
-
-      if (
-        !/^\d{6}$/.test(raw)
-      ) {
-        return {
-          valid: false,
-          text: "날짜 확인 필요"
-        };
-      }
-
-      const year =
-        2000 +
-        Number(
-          raw.slice(0, 2)
-        );
-
-      const month =
-        Number(
-          raw.slice(2, 4)
-        );
-
-      const day =
-        Number(
-          raw.slice(4, 6)
-        );
-
-      const date =
-        new Date(
-          year,
-          month - 1,
-          day
-        );
-
-      const valid =
-        date.getFullYear() === year &&
-        date.getMonth() ===
-          month - 1 &&
-        date.getDate() === day;
-
-      if (!valid) {
-        return {
-          valid: false,
-          text: "날짜 확인 필요"
-        };
-      }
-
-      return {
-        valid: true,
-
-        text:
-          `${year}.${String(month).padStart(2, "0")}.${String(day).padStart(2, "0")}`
-      };
-    }
-
-    /* =========================================================
-       ESCAPE
-    ========================================================= */
-
-    function escapeHtml(
-      value
-    ) {
-      return String(
-        value ?? ""
-      )
-        .replaceAll(
-          "&",
-          "&amp;"
-        )
-        .replaceAll(
-          "<",
-          "&lt;"
-        )
-        .replaceAll(
-          ">",
-          "&gt;"
-        )
-        .replaceAll(
-          '"',
-          "&quot;"
-        )
-        .replaceAll(
-          "'",
-          "&#039;"
-        );
-    }
-
-    /* =========================================================
-       STATS
-    ========================================================= */
-
-    function updateStats(
-      data
-    ) {
-      totalCount.textContent =
-        data.length;
-
-      const vehicles =
-        new Set(
-          data
-            .map(
-              item =>
-                String(
-                  item.carnum ??
-                  ""
-                ).trim()
-            )
-            .filter(Boolean)
-        );
-
-      vehicleCount.textContent =
-        vehicles.size;
-
-      listCount.textContent =
-        data.length;
-    }
-
-    /* =========================================================
-       LIST
-    ========================================================= */
-
-    function renderList(
-      data
-    ) {
-      if (!data.length) {
-        recordList.innerHTML =
-          `
-            <div class="status">
-              검색 결과가 없습니다.
-            </div>
-          `;
-
-        listCount.textContent =
-          "0";
-
-        return;
-      }
-
-      listCount.textContent =
-        data.length;
-
-      recordList.innerHTML =
-        data
-          .map(
-            item => {
-              const date =
-                parseRecordDate(
-                  item.date
-                );
-
-              return `
-                <button
-                  type="button"
-                  class="record ${
-                    activeRecordIndex ===
-                    item.originalIndex
-                      ? "active"
-                      : ""
-                  }"
-                  data-index="${item.originalIndex}"
-                >
-
-                  <div class="record-top">
-
-                    <div class="record-car-number">
-                      ${escapeHtml(
-                        item.carnum
-                      )}
-                    </div>
-
-                    <div
-                      class="record-date ${
-                        date.valid
-                          ? ""
-                          : "invalid"
-                      }"
-                    >
-                      ${escapeHtml(
-                        date.text
-                      )}
-                    </div>
-
-                  </div>
-
-                  <div class="record-car">
-                    ${escapeHtml(
-                      item.car
-                    )}
-                  </div>
-
-                  <div class="record-reason">
-                    ${escapeHtml(
-                      item.reason
-                    )}
-                  </div>
-
-                </button>
-              `;
-            }
-          )
-          .join("");
-
-      recordList
-        .querySelectorAll(
-          ".record"
-        )
-        .forEach(
-          element => {
-            element.addEventListener(
-              "click",
-              () => {
-                selectRecord(
-                  Number(
-                    element.dataset.index
-                  )
-                );
-              }
-            );
-          }
-        );
-    }
-
-    /* =========================================================
-       INFO WINDOW
-    ========================================================= */
-
-    function createInfoWindowContent(
-      item
-    ) {
-      const date =
-        parseRecordDate(
-          item.date
-        );
-
-      return `
-        <div class="custom-info">
-
-          <div class="custom-info-title">
-            ${escapeHtml(
-              item.carnum
-            )}
-          </div>
-
-          <div class="custom-info-car">
-            ${escapeHtml(
-              item.car
-            )}
-          </div>
-
-          <div class="custom-info-date">
-            ${escapeHtml(
-              date.text
-            )}
-          </div>
-
-          <div class="custom-info-reason">
-            ${escapeHtml(
-              item.reason
-            )}
-          </div>
-
-        </div>
-      `;
-    }
-
-    function closeActiveInfoWindow() {
-      if (
-        activeInfoWindow
-      ) {
-        activeInfoWindow.close();
-
-        activeInfoWindow =
-          null;
-      }
-    }
-
-    /* =========================================================
-       OPEN MARKER INFO
-    ========================================================= */
-
-    function openMarkerInfo(
-      index,
-      marker,
-      infoWindow
-    ) {
-      if (!map || !marker) {
-        return;
-      }
-
-      const item =
-        records[index];
-
-      if (!item) {
-        return;
-      }
-
-      closeActiveInfoWindow();
-
-      activeRecordIndex =
-        index;
-
-      /*
-       * 리스트 활성화
-       */
-      document
-        .querySelectorAll(
-          ".record"
-        )
-        .forEach(
-          element => {
-            element.classList.toggle(
-              "active",
-              Number(
-                element.dataset.index
-              ) === index
-            );
-          }
-        );
-
-      const position =
-        new kakao.maps.LatLng(
-          Number(
-            item.latitude
-          ),
-          Number(
-            item.longitude
-          )
-        );
-
-      /*
-       * 모바일에서는 Sheet를 먼저 접는다.
-       * 단, 지도 중앙 위치 자체는 변경하지 않는다.
-       */
-      if (isMobile()) {
-        setSheetPosition(
-          "collapsed",
-          true
-        );
-      }
-
-      /*
-       * Level 4로 확대
-       */
-      map.setLevel(4);
-
-      /*
-       * 선택한 핀을 지도 정중앙으로 이동
-       */
-      map.panTo(
-        position
-      );
-
-      /*
-       * Kakao Maps의 이동/확대 애니메이션이
-       * 끝난 다음 InfoWindow를 연다.
-       *
-       * 모바일에서는 조금 더 충분히 기다린다.
-       */
-      setTimeout(
-        () => {
-          if (!map) {
-            return;
-          }
-
-          /*
-           * 다시 한 번 해당 위치를 중심으로
-           * 맞춰준다.
-           */
-          map.panTo(
-            position
-          );
-
-          setTimeout(
-            () => {
-              infoWindow.open(
-                map,
-                marker
-              );
-
-              activeInfoWindow =
-                infoWindow;
-            },
-            80
-          );
-        },
-        isMobile()
-          ? 350
-          : 150
-      );
-
-      /*
-       * 리스트 위치 이동
-       */
-      const selectedElement =
-        document.querySelector(
-          `.record[data-index="${index}"]`
-        );
-
-      if (
-        selectedElement
-      ) {
-        selectedElement.scrollIntoView(
-          {
-            behavior: "smooth",
-            block: "nearest"
-          }
-        );
-      }
-    }
-
-    /* =========================================================
-       CREATE MARKERS
-    ========================================================= */
-
-    function createMarkers(
-      data
-    ) {
-      if (
-        !map ||
-        !clusterer
-      ) {
-        return;
-      }
-
-      clusterer.clear();
-
-      markers.forEach(
-        marker => {
-          marker.setMap(null);
-        }
-      );
-
-      markers = [];
-
-      data.forEach(
-        item => {
-          const latitude =
-            Number(
-              item.latitude
-            );
-
-          const longitude =
-            Number(
-              item.longitude
-            );
-
-          if (
-            !Number.isFinite(
-              latitude
-            ) ||
-            !Number.isFinite(
-              longitude
-            )
-          ) {
-            return;
-          }
-
-          const position =
-            new kakao.maps.LatLng(
-              latitude,
-              longitude
-            );
-
-          const marker =
-            new kakao.maps.Marker(
-              {
-                position
-              }
-            );
-
-          const infoWindow =
-            new kakao.maps.InfoWindow(
-              {
-                content:
-                  createInfoWindowContent(
-                    item
-                  ),
-
-                removable: false
-              }
-            );
-
-          /*
-           * 중요:
-           *
-           * 클러스터러에 들어간 Marker도
-           * 개별 Marker click 이벤트를 유지한다.
-           */
-          kakao.maps.event.addListener(
-            marker,
-            "click",
-            () => {
-              openMarkerInfo(
-                item.originalIndex,
-                marker,
-                infoWindow
-              );
-            }
-          );
-
-          markers.push(
-            marker
-          );
-        }
-      );
-
-      clusterer.addMarkers(
-        markers
-      );
-    }
-
-    /* =========================================================
-       SELECT RECORD
-    ========================================================= */
-
-    function selectRecord(
-      index
-    ) {
-      const target =
-        records[index];
-
-      if (!target) {
-        return;
-      }
-
-      const markerIndex =
-        markers.findIndex(
-          marker => {
-            const position =
-              marker.getPosition();
-
-            return (
-              Math.abs(
-                position.getLat() -
-                Number(
-                  target.latitude
-                )
-              ) <
-                0.000000001 &&
-              Math.abs(
-                position.getLng() -
-                Number(
-                  target.longitude
-                )
-              ) <
-                0.000000001
-            );
-          }
-        );
-
-      if (
-        markerIndex < 0
-      ) {
-        return;
-      }
-
-      const marker =
-        markers[markerIndex];
-
-      const infoWindow =
-        new kakao.maps.InfoWindow(
-          {
-            content:
-              createInfoWindowContent(
-                target
-              ),
-
-            removable: false
-          }
-        );
-
-      openMarkerInfo(
-        index,
-        marker,
-        infoWindow
-      );
-    }
-
-    /* =========================================================
-       FIT MAP
-    ========================================================= */
-
-    function fitMap() {
-      if (
-        !map ||
-        !records.length
-      ) {
-        return;
-      }
-
-      const bounds =
-        new kakao.maps.LatLngBounds();
-
-      let count = 0;
-
-      records.forEach(
-        item => {
-          const lat =
-            Number(
-              item.latitude
-            );
-
-          const lng =
-            Number(
-              item.longitude
-            );
-
-          if (
-            Number.isFinite(lat) &&
-            Number.isFinite(lng)
-          ) {
-            bounds.extend(
-              new kakao.maps.LatLng(
-                lat,
-                lng
-              )
-            );
-
-            count++;
-          }
-        }
-      );
-
-      if (count > 0) {
-        map.setBounds(
-          bounds,
-          50,
-          50,
-          50,
-          50
-        );
-      }
-    }
-
-    fitButton.addEventListener(
-      "click",
-      () => {
-        closeActiveInfoWindow();
-
-        activeRecordIndex =
-          -1;
-
-        document
-          .querySelectorAll(
-            ".record"
-          )
-          .forEach(
-            element => {
-              element.classList.remove(
-                "active"
-              );
-            }
-          );
-
-        fitMap();
-      }
-    );
-
-    /* =========================================================
-       SEARCH
-    ========================================================= */
-
-    function filterRecords(
-      keyword
-    ) {
-      const normalized =
-        String(
-          keyword ?? ""
-        )
-          .trim()
-          .toLowerCase();
-
-      if (!normalized) {
-        return records;
-      }
-
-      return records.filter(
-        item => {
-          return [
-            item.carnum,
-            item.car,
-            item.date,
-            item.reason
-          ].some(
-            value =>
-              String(
-                value ?? ""
-              )
-                .toLowerCase()
-                .includes(
-                  normalized
-                )
-          );
-        }
-      );
-    }
-
-    searchInput.addEventListener(
-      "input",
       event => {
-        const filtered =
-          filterRecords(
-            event.target.value
-          );
+        if (!isMobile()) {
+          return;
+        }
 
-        activeRecordIndex =
-          -1;
+        isDraggingSheet = true;
 
-        closeActiveInfoWindow();
+        dragStartY =
+          event.touches[0].clientY;
 
-        renderList(
-          filtered
+        dragStartTranslate =
+          getCurrentTranslateY();
+
+        sidebar.classList.add(
+          "sheet-dragging"
         );
-
-        createMarkers(
-          filtered
-        );
+      },
+      {
+        passive: true
       }
     );
 
-    /* =========================================================
-       LOAD DATA
-    ========================================================= */
-
-    async function loadData() {
-      try {
-        const response =
-          await fetch(
-            "./list.json"
-          );
-
-        if (!response.ok) {
-          throw new Error(
-            `HTTP ${response.status}`
-          );
-        }
-
-        const json =
-          await response.json();
-
+    sheetHandle.addEventListener(
+      "touchmove",
+      event => {
         if (
-          !Array.isArray(json)
+          !isDraggingSheet ||
+          !isMobile()
         ) {
-          throw new Error(
-            "list.json 형식이 배열이 아닙니다."
-          );
+          return;
         }
 
-        records =
-          json
-            .map(
-              (item, index) => ({
-                ...item,
-                originalIndex:
-                  index
-              })
+        const currentY =
+          event.touches[0].clientY;
+
+        const delta =
+          currentY - dragStartY;
+
+        const positions =
+          getSheetTranslateValues();
+
+        if (!positions) {
+          return;
+        }
+
+        const min =
+          positions.expanded;
+
+        const max =
+          positions.collapsed;
+
+        const next =
+          Math.min(
+            max,
+            Math.max(
+              min,
+              dragStartTranslate + delta
             )
-            .filter(
-              item =>
-                Number.isFinite(
-                  Number(
-                    item.latitude
-                  )
-                ) &&
-                Number.isFinite(
-                  Number(
-                    item.longitude
-                  )
-                )
-            );
+          );
 
-        updateStats(
-          records
-        );
-
-        renderList(
-          records
-        );
-
-        createMarkers(
-          records
-        );
-
-        fitMap();
-
-      } catch (error) {
-        console.error(
-          error
-        );
-
-        recordList.innerHTML =
-          `
-            <div class="status error">
-              데이터를 불러오지 못했습니다.<br>
-              list.json 파일을 확인해주세요.
-            </div>
-          `;
+        applySheetDrag(next);
+      },
+      {
+        passive: true
       }
-    }
+    );
 
-    /* =========================================================
-       MAP INIT
-    ========================================================= */
+    sheetHandle.addEventListener(
+      "touchend",
+      finishSheetDrag,
+      {
+        passive: true
+      }
+    );
 
-    function initMap() {
-      const container =
-        document.getElementById(
-          "map"
-        );
-
-      map =
-        new kakao.maps.Map(
-          container,
-          {
-            center:
-              new kakao.maps.LatLng(
-                37.5665,
-                126.978
-              ),
-
-            level: 8
-          }
-        );
-
-      /*
-       * Zoom Control
-       */
-      const zoomControl =
-        new kakao.maps.ZoomControl();
-
-      map.addControl(
-        zoomControl,
-        kakao.maps.ControlPosition
-          .RIGHT
-      );
-
-      /*
-       * Marker Clusterer
-       */
-      clusterer =
-        new kakao.maps.MarkerClusterer(
-          {
-            map,
-
-            averageCenter: true,
-
-            minLevel: 6,
-
-            /*
-             * 클러스터를 클릭했을 때
-             * 개별 마커 위치로 확대
-             */
-            disableClickZoom: false
-          }
-        );
-
-      loadData();
-    }
+    sheetHandle.addEventListener(
+      "touchcancel",
+      finishSheetDrag,
+      {
+        passive: true
+      }
+    );
 
     /* =========================================================
        RESIZE
     ========================================================= */
 
+    let resizeTimer = null;
+
     window.addEventListener(
       "resize",
       () => {
-        if (isMobile()) {
-          setSheetPosition(
-            sheetState.current,
-            false
-          );
-        }
+        clearTimeout(resizeTimer);
 
-        if (map) {
-          map.relayout();
-        }
+        resizeTimer = setTimeout(() => {
+          if (!map) {
+            return;
+          }
+
+          if (!isMobile()) {
+            sidebar.classList.remove(
+              "sheet-middle",
+              "sheet-expanded",
+              "sheet-dragging"
+            );
+
+            sidebar.style.transform = "";
+          }
+
+          kakao.maps.event.trigger(
+            map,
+            "resize"
+          );
+        }, 120);
       }
     );
 
@@ -2518,36 +1666,24 @@
     window.addEventListener(
       "load",
       () => {
-        if (isMobile()) {
-          setSheetPosition(
-            "collapsed",
-            false
-          );
-        }
-
         if (
-          typeof kakao ===
-            "undefined" ||
+          typeof kakao === "undefined" ||
           !kakao.maps
         ) {
-          recordList.innerHTML =
-            `
-              <div class="status error">
-                Kakao Maps SDK를 불러오지 못했습니다.
-              </div>
-            `;
+          recordList.innerHTML = `
+            <div class="error">
+              Kakao Map SDK를 불러오지 못했습니다.
+            </div>
+          `;
 
           return;
         }
 
-        kakao.maps.load(
-          () => {
-            initMap();
-          }
-        );
+        kakao.maps.load(() => {
+          initMap();
+        });
       }
     );
   </script>
-
 </body>
 </html>
