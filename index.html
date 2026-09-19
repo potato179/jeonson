@@ -690,6 +690,12 @@
     ========================================================= */
 
     @media (max-width: 800px) {
+      /*
+       * 핵심 수정:
+       *
+       * Sidebar 전체가 지도 위의 터치를
+       * 무조건 가로채지 않도록 한다.
+       */
       .sidebar {
         top: auto;
         right: 0;
@@ -700,6 +706,8 @@
 
         height:
           var(--sheet-expanded);
+
+        display: flex;
 
         border-top:
           1px solid
@@ -738,6 +746,23 @@
           );
 
         will-change: transform;
+
+        /*
+         * 지도 터치가 Bottom Sheet의
+         * 빈 영역에 막히지 않도록 한다.
+         */
+        pointer-events: none;
+      }
+
+      /*
+       * 실제 Bottom Sheet UI만 터치를 받는다.
+       */
+      .sidebar-handle-area,
+      .sidebar-header,
+      .stats,
+      .list-header,
+      .list {
+        pointer-events: auto;
       }
 
       .sidebar.dragging {
@@ -868,13 +893,21 @@
 </head>
 
 <body>
+
   <div id="app">
 
-    <!-- MAP -->
+    <!-- =====================================================
+         MAP
+    ====================================================== -->
+
     <div id="map"></div>
 
-    <!-- MAP ACTIONS -->
+    <!-- =====================================================
+         MAP ACTIONS
+    ====================================================== -->
+
     <div class="map-actions">
+
       <button
         type="button"
         class="map-button"
@@ -896,15 +929,20 @@
           <path d="M8 21H5a2 2 0 0 1-2-2v-3" />
         </svg>
       </button>
+
     </div>
 
-    <!-- SIDEBAR -->
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
     <aside
       class="sidebar"
       id="sidebar"
     >
 
       <!-- MOBILE HANDLE -->
+
       <div
         class="sidebar-handle-area"
         id="sheetHandle"
@@ -913,6 +951,7 @@
       </div>
 
       <!-- HEADER -->
+
       <div class="sidebar-header">
 
         <div class="brand">
@@ -936,6 +975,7 @@
         </div>
 
         <!-- SEARCH -->
+
         <div class="search-wrap">
 
           <svg
@@ -970,6 +1010,7 @@
       </div>
 
       <!-- STATS -->
+
       <div class="stats">
 
         <div class="stat">
@@ -1005,6 +1046,7 @@
       </div>
 
       <!-- LIST HEADER -->
+
       <div class="list-header">
 
         <div class="list-title">
@@ -1021,6 +1063,7 @@
       </div>
 
       <!-- LIST -->
+
       <div
         class="list"
         id="recordList"
@@ -1031,9 +1074,13 @@
       </div>
 
     </aside>
+
   </div>
 
-  <!-- KAKAO MAP -->
+  <!-- =======================================================
+       KAKAO MAP
+  ======================================================== -->
+
   <script
     src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=7f26ddb0373cd3b598ff54652cbbdc24&libraries=clusterer"
   ></script>
@@ -1339,10 +1386,6 @@
         return;
       }
 
-      /*
-       * 리스트 내부에서는 Bottom Sheet가
-       * 터치를 가로채지 않도록 한다.
-       */
       if (
         event.target.closest(
           ".list"
@@ -1827,92 +1870,6 @@
     }
 
     /* =========================================================
-       MOBILE MARKER POSITION
-    ========================================================= */
-
-    function panToMarkerForMobile(
-      position
-    ) {
-      if (!map) {
-        return;
-      }
-
-      const mapNode =
-        document.getElementById(
-          "map"
-        );
-
-      if (!mapNode) {
-        map.panTo(position);
-        return;
-      }
-
-      const mapHeight =
-        mapNode
-          .getBoundingClientRect()
-          .height;
-
-      /*
-       * 마커를 화면 상단 약 27% 지점에 배치한다.
-       */
-      const targetRatio =
-        0.27;
-
-      const targetY =
-        mapHeight *
-        targetRatio;
-
-      const centerY =
-        mapHeight / 2;
-
-      const projection =
-        map.getProjection();
-
-      if (!projection) {
-        map.panTo(position);
-        return;
-      }
-
-      const center =
-        map.getCenter();
-
-      const centerPoint =
-        projection.pointFromCoords(
-          center
-        );
-
-      const markerPoint =
-        projection.pointFromCoords(
-          position
-        );
-
-      const markerScreenY =
-        markerPoint.y -
-        centerPoint.y +
-        centerY;
-
-      const deltaY =
-        markerScreenY -
-        targetY;
-
-      const newCenterPoint =
-        new kakao.maps.Point(
-          centerPoint.x,
-          centerPoint.y +
-            deltaY
-        );
-
-      const newCenter =
-        projection.coordsFromPoint(
-          newCenterPoint
-        );
-
-      map.panTo(
-        newCenter
-      );
-    }
-
-    /* =========================================================
        OPEN MARKER INFO
     ========================================================= */
 
@@ -1932,9 +1889,6 @@
         return;
       }
 
-      /*
-       * 기존 팝업 제거
-       */
       closeActiveInfoWindow();
 
       activeRecordIndex =
@@ -1969,45 +1923,26 @@
         );
 
       /*
-       * 핵심:
-       *
-       * 선택된 위치를 Level 4로 확대한다.
-       *
-       * Kakao Maps는 숫자가 작을수록
-       * 더 확대된 상태다.
+       * Level 4 확대
        */
       map.setLevel(4);
 
-      if (isMobile()) {
-
-        /*
-         * Bottom Sheet를 접는다.
-         */
-        setSheetPosition(
-          "collapsed",
-          true
-        );
-
-        /*
-         * 핀이 팝업과 함께 보이도록
-         * 화면 위쪽으로 이동한다.
-         */
-        panToMarkerForMobile(
-          position
-        );
-
-      } else {
-
-        /*
-         * 데스크톱
-         */
-        map.panTo(
-          position
-        );
-      }
+      /*
+       * 핵심 수정:
+       *
+       * 기존에는 모바일에서
+       * panToMarkerForMobile()을 사용해서
+       * 핀을 화면 상단 27% 지점으로 이동시켰다.
+       *
+       * 이제 모바일도 일반 panTo()를 사용한다.
+       * 따라서 선택한 핀이 지도 화면의 정중앙으로 온다.
+       */
+      map.panTo(
+        position
+      );
 
       /*
-       * 확대/이동 이후 InfoWindow 표시
+       * 지도 이동 후 InfoWindow 표시
        */
       setTimeout(
         () => {
@@ -2024,13 +1959,12 @@
             infoWindow;
         },
         isMobile()
-          ? 250
+          ? 300
           : 150
       );
 
       /*
-       * 선택된 리스트 항목으로
-       * 스크롤
+       * 선택된 리스트 항목으로 스크롤
        */
       const selectedElement =
         document.querySelector(
@@ -2125,8 +2059,7 @@
             item.originalIndex;
 
           /*
-           * 지도에서 핀을 직접 클릭해도
-           * 동일하게 확대 + 팝업 표시
+           * 핀 클릭
            */
           kakao.maps.event.addListener(
             marker,
@@ -2211,10 +2144,6 @@
           }
         );
 
-      /*
-       * 확대 / 이동 / 팝업은
-       * openMarkerInfo에서 통합 처리
-       */
       openMarkerInfo(
         index,
         marker,
@@ -2371,7 +2300,7 @@
     );
 
     /* =========================================================
-       LOAD JSON
+       LOAD DATA
     ========================================================= */
 
     async function loadData() {
@@ -2409,8 +2338,7 @@
           );
 
         /*
-         * 좌표가 유효한 데이터만
-         * 지도에 표시
+         * 좌표가 유효한 데이터만 표시
          */
         records =
           records.filter(
@@ -2481,7 +2409,7 @@
         );
 
       /*
-       * Kakao Zoom Control
+       * Zoom Control
        */
       const zoomControl =
         new kakao.maps.ZoomControl();
@@ -2512,7 +2440,7 @@
     }
 
     /* =========================================================
-       WINDOW
+       RESIZE
     ========================================================= */
 
     window.addEventListener(
@@ -2563,5 +2491,6 @@
       }
     );
   </script>
+
 </body>
 </html>
