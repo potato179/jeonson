@@ -1423,25 +1423,7 @@
         level 5보다 더 확대하지 않는다.
       */
 
-      const currentLevel =
-        map.getLevel();
-
-      const targetLevel =
-        Math.max(
-          5,
-          currentLevel - 3
-        );
-
-      /*
-        지도 중심 이동 + 확대
-
-        지도 자체의 panTo / setLevel만 사용하므로
-        페이지의 scroll 위치에는 영향을 주지 않는다.
-      */
-
-      map.setLevel(
-        targetLevel
-      );
+      map.setLevel(4);
 
       map.panTo(
         marker.getPosition()
