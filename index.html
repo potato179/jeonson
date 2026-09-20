@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
@@ -24,7 +25,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #111;
+      background: #0f1115;
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -53,9 +54,9 @@
       overflow: hidden;
     }
 
-    /* =========================
+    /* =========================================================
        MAP
-    ========================= */
+    ========================================================= */
 
     #map {
       position: absolute;
@@ -65,32 +66,42 @@
       background: #ddd;
     }
 
-    /* =========================
+    /* =========================================================
        DESKTOP SIDEBAR
-    ========================= */
+    ========================================================= */
 
     #sidebar {
       position: absolute;
       z-index: 20;
       top: 0;
       left: 0;
+
       width: 390px;
       height: 100%;
-      background: rgba(18, 18, 18, 0.96);
-      color: #fff;
+
       display: flex;
       flex-direction: column;
-      box-shadow: 8px 0 30px rgba(0, 0, 0, 0.25);
+
+      color: #f5f7fa;
+      background: rgba(15, 17, 21, 0.97);
+
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+
+      box-shadow:
+        8px 0 30px rgba(0, 0, 0, 0.22);
+
       overflow: hidden;
     }
 
     .sidebar-header {
       flex: 0 0 auto;
       padding: 22px 22px 18px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+      border-bottom: 1px solid #252931;
     }
 
     .brand {
+      color: #ffffff;
       font-size: 25px;
       font-weight: 900;
       letter-spacing: -1.2px;
@@ -98,104 +109,165 @@
 
     .subtitle {
       margin-top: 5px;
-      color: #999;
+
+      color: #858b96;
       font-size: 12px;
       font-weight: 600;
+      letter-spacing: -0.2px;
     }
 
     .stats {
       display: flex;
-      gap: 10px;
+      gap: 9px;
       margin-top: 18px;
     }
 
     .stat {
       flex: 1;
       min-width: 0;
+
       padding: 11px 13px;
-      border-radius: 12px;
-      background: #202020;
+
+      background: #191c22;
+      border: 1px solid #282c34;
+      border-radius: 11px;
     }
 
     .stat-label {
-      color: #888;
+      color: #777e89;
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 800;
+      letter-spacing: 0.3px;
     }
 
     .stat-value {
       margin-top: 3px;
+
+      color: #f4f6f8;
       font-size: 19px;
       font-weight: 900;
     }
 
     .search-wrap {
-      padding: 13px 22px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex: 0 0 auto;
+      padding: 13px 18px;
+
+      background: #111318;
+      border-bottom: 1px solid #252931;
     }
 
-    #search {
+    #search,
+    #mobileSearch {
       width: 100%;
       height: 42px;
+
       padding: 0 14px;
-      border: 0;
+
       outline: none;
+      border: 1px solid #30343d;
       border-radius: 10px;
-      color: #fff;
-      background: #252525;
+
+      color: #f4f6f8;
+      background: #1a1d23;
+
       font-size: 13px;
+
+      transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
     }
 
-    #search::placeholder {
-      color: #777;
+    #search:focus,
+    #mobileSearch:focus {
+      border-color: #e66a3c;
+      background: #1d2027;
+    }
+
+    #search::placeholder,
+    #mobileSearch::placeholder {
+      color: #6f7580;
     }
 
     #list {
       flex: 1 1 auto;
       min-height: 0;
+
       overflow-y: auto;
       overflow-x: hidden;
+
       overscroll-behavior: contain;
       -webkit-overflow-scrolling: touch;
+
+      padding: 6px 0;
     }
+
+    /* =========================================================
+       RECORD CARD
+    ========================================================= */
 
     .record {
       position: relative;
-      padding: 15px 18px 15px 22px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+      margin: 5px 10px;
+      padding: 14px 14px 13px;
+
+      background: #191c22;
+      border: 1px solid #292d35;
+      border-radius: 10px;
+
       cursor: pointer;
-      transition: background 0.15s;
+
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
     }
 
     .record:hover {
-      background: rgba(255, 255, 255, 0.05);
+      background: #1d2026;
+      border-color: #373c46;
+    }
+
+    .record:active {
+      transform: scale(0.992);
     }
 
     .record.active {
-      background: rgba(255, 78, 54, 0.12);
+      background: #211e1c;
+      border-color: #b85b38;
     }
 
     .record.active::before {
       content: "";
+
       position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
+      left: -1px;
+      top: 10px;
+      bottom: 10px;
+
       width: 3px;
-      background: #ff543f;
+
+      border-radius: 0 3px 3px 0;
+
+      background: #e66a3c;
     }
 
     .record-top {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 10px;
+
+      gap: 12px;
     }
 
     .record-car {
       min-width: 0;
+
+      color: #f1f3f5;
       font-size: 14px;
       font-weight: 800;
+      line-height: 1.35;
+
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -203,45 +275,84 @@
 
     .record-date {
       flex: 0 0 auto;
-      color: #888;
+
+      padding-top: 1px;
+
+      color: #8e949e;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.1px;
     }
 
     .record-bottom {
-      margin-top: 6px;
       display: flex;
       align-items: center;
+
+      margin-top: 9px;
       gap: 7px;
+
+      min-width: 0;
     }
 
     .record-carnum {
-      color: #bbb;
-      font-size: 11px;
+      flex: 0 0 auto;
+
+      padding: 4px 7px;
+
+      color: #bfc4cc;
+      background: #22262d;
+
+      border: 1px solid #30343c;
+      border-radius: 5px;
+
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
     }
 
     .record-reason {
-      color: #ff765f;
+      min-width: 0;
+
+      color: #aeb4bd;
       font-size: 10px;
-      font-weight: 700;
+      font-weight: 600;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .record.active .record-carnum {
+      color: #f0c2ad;
+      background: #2a211d;
+      border-color: #593a2f;
+    }
+
+    .record.active .record-reason {
+      color: #e89a78;
     }
 
     .empty {
-      padding: 40px 20px;
+      padding: 45px 20px;
+
+      color: #717782;
       text-align: center;
-      color: #777;
+
       font-size: 13px;
+      line-height: 1.6;
     }
 
-    /* =========================
-       MAP UI
-    ========================= */
+    /* =========================================================
+       MAP BUTTON
+    ========================================================= */
 
     .map-tools {
       position: absolute;
       z-index: 10;
+
       top: 18px;
       right: 18px;
+
       display: flex;
       gap: 7px;
     }
@@ -249,69 +360,89 @@
     .map-btn {
       height: 38px;
       padding: 0 13px;
-      border: 0;
-      border-radius: 10px;
-      background: rgba(20, 20, 20, 0.9);
-      color: #fff;
+
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 9px;
+
+      color: #f7f8fa;
+      background: rgba(17, 19, 23, 0.92);
+
       cursor: pointer;
+
       font-size: 11px;
       font-weight: 800;
+
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+      transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
     }
 
     .map-btn:hover {
-      background: #292929;
+      background: #20242b;
+      border-color: rgba(255, 255, 255, 0.18);
     }
 
-    /* =========================
+    /* =========================================================
        INFO WINDOW
-    ========================= */
+    ========================================================= */
 
     .info-window {
       min-width: 190px;
+
       padding: 12px 14px;
+
       color: #111;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.22);
+      background: #ffffff;
+
+      border-radius: 11px;
+
+      box-shadow:
+        0 5px 25px rgba(0, 0, 0, 0.22);
     }
 
     .info-title {
+      color: #15171a;
       font-size: 14px;
       font-weight: 900;
     }
 
     .info-date {
       margin-top: 4px;
-      color: #777;
+
+      color: #73777d;
       font-size: 11px;
     }
 
     .info-reason {
       margin-top: 8px;
-      color: #ff4935;
+
+      color: #d9572c;
       font-size: 11px;
       font-weight: 800;
     }
 
-    /* =========================
+    /* =========================================================
        MOBILE SHEET
-    ========================= */
+    ========================================================= */
 
     #mobileSheet {
       display: none;
     }
 
-    /* =========================
+    /* =========================================================
        MOBILE
-    ========================= */
+    ========================================================= */
 
     @media (max-width: 700px) {
       html,
       body {
         width: 100%;
         height: 100%;
+
         overflow: hidden !important;
+
         position: fixed;
         inset: 0;
       }
@@ -319,12 +450,17 @@
       #app {
         position: fixed;
         inset: 0;
+
+        width: 100%;
+        height: 100%;
+
         overflow: hidden;
       }
 
       #map {
         position: absolute;
         inset: 0;
+
         width: 100%;
         height: 100%;
       }
@@ -341,26 +477,41 @@
       .map-btn {
         height: 36px;
         padding: 0 11px;
+
         font-size: 10px;
       }
 
+      /* =====================================================
+         MOBILE SHEET
+      ===================================================== */
+
       #mobileSheet {
         display: flex;
+
         position: fixed;
         z-index: 100;
+
         left: 0;
         right: 0;
         bottom: 0;
 
         width: 100%;
         height: 100%;
+
         pointer-events: none;
 
         flex-direction: column;
         justify-content: flex-end;
 
-        transform: translate3d(0, calc(100% - 105px), 0);
-        transition: transform 0.28s ease;
+        transform:
+          translate3d(
+            0,
+            calc(100% - 105px),
+            0
+          );
+
+        transition:
+          transform 0.28s ease;
 
         will-change: transform;
       }
@@ -377,19 +528,24 @@
         display: flex;
         flex-direction: column;
 
-        background: rgba(18, 18, 18, 0.97);
+        background: rgba(15, 17, 21, 0.98);
+
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-bottom: 0;
+
         border-radius: 18px 18px 0 0;
 
         overflow: hidden;
+
         pointer-events: auto;
 
         box-shadow:
-          0 -8px 35px rgba(0, 0, 0, 0.3),
-          0 -1px 0 rgba(255, 255, 255, 0.06);
+          0 -8px 35px rgba(0, 0, 0, 0.3);
       }
 
       .sheet-handle-area {
         flex: 0 0 auto;
+
         height: 32px;
 
         display: flex;
@@ -407,16 +563,21 @@
       .sheet-handle {
         width: 42px;
         height: 4px;
+
         border-radius: 999px;
-        background: #555;
+
+        background: #555b65;
       }
 
       .mobile-header {
         flex: 0 0 auto;
+
         padding: 0 17px 12px;
       }
 
       .mobile-brand {
+        color: #ffffff;
+
         font-size: 18px;
         font-weight: 900;
         letter-spacing: -0.8px;
@@ -424,30 +585,23 @@
 
       .mobile-subtitle {
         margin-top: 3px;
-        color: #777;
+
+        color: #7d838d;
+
         font-size: 10px;
         font-weight: 600;
       }
 
       .mobile-search {
         flex: 0 0 auto;
-        padding: 0 14px 12px;
+
+        padding: 0 14px 10px;
       }
 
       #mobileSearch {
-        width: 100%;
         height: 39px;
-        padding: 0 13px;
-        border: 0;
-        outline: none;
-        border-radius: 10px;
-        color: #fff;
-        background: #252525;
-        font-size: 12px;
-      }
 
-      #mobileSearch::placeholder {
-        color: #777;
+        font-size: 12px;
       }
 
       .mobile-list {
@@ -460,28 +614,37 @@
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
 
-        padding-bottom: env(safe-area-inset-bottom);
+        padding: 2px 4px
+          calc(10px + env(safe-area-inset-bottom));
       }
 
       .mobile-list .record {
-        padding: 14px 17px;
+        margin: 5px 6px;
+
+        padding: 13px 13px 12px;
+
+        border-radius: 10px;
+      }
+
+      .mobile-list .record-car {
+        font-size: 13px;
+      }
+
+      .mobile-list .record-date {
+        font-size: 10px;
+      }
+
+      .mobile-list .record-carnum {
+        font-size: 9px;
+      }
+
+      .mobile-list .record-reason {
+        font-size: 9px;
       }
 
       .mobile-list .record:last-child {
-        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        margin-bottom: 5px;
       }
-
-      /* 모바일에서는 통계 영역을 표시하지 않음 */
-      .mobile-stats {
-        display: none;
-      }
-
-      /*
-        중요:
-        핀 클릭 시 list item으로 scrollIntoView 하지 않는다.
-        따라서 핀을 반복해서 눌러도 페이지 / 리스트 스크롤 위치가
-        강제로 변경되지 않는다.
-      */
     }
 
     @media (min-width: 701px) {
@@ -498,25 +661,54 @@
     <div id="map"></div>
 
     <div class="map-tools">
-      <button class="map-btn" id="fitBtn">전체보기</button>
+      <button class="map-btn" id="fitBtn">
+        전체보기
+      </button>
     </div>
 
-    <!-- DESKTOP -->
+    <!-- =====================================================
+         DESKTOP SIDEBAR
+    ====================================================== -->
+
     <aside id="sidebar">
+
       <div class="sidebar-header">
-        <div class="brand">🤪 전손맵</div>
-        <div class="subtitle">다음은 너다!!! -사고차주 일동-</div>
+        <div class="brand">
+          🤪 전손맵
+        </div>
+
+        <div class="subtitle">
+          다음은 너다!!! -사고차주 일동-
+        </div>
 
         <div class="stats">
+
           <div class="stat">
-            <div class="stat-label">RECORDS</div>
-            <div class="stat-value" id="recordCount">0</div>
+            <div class="stat-label">
+              RECORDS
+            </div>
+
+            <div
+              class="stat-value"
+              id="recordCount"
+            >
+              0
+            </div>
           </div>
 
           <div class="stat">
-            <div class="stat-label">VEHICLES</div>
-            <div class="stat-value" id="vehicleCount">0</div>
+            <div class="stat-label">
+              VEHICLES
+            </div>
+
+            <div
+              class="stat-value"
+              id="vehicleCount"
+            >
+              0
+            </div>
           </div>
+
         </div>
       </div>
 
@@ -530,18 +722,29 @@
       </div>
 
       <div id="list"></div>
+
     </aside>
 
-    <!-- MOBILE -->
+    <!-- =====================================================
+         MOBILE SHEET
+    ====================================================== -->
+
     <section id="mobileSheet">
+
       <div class="sheet-inner">
 
-        <div class="sheet-handle-area" id="sheetHandle">
+        <div
+          class="sheet-handle-area"
+          id="sheetHandle"
+        >
           <div class="sheet-handle"></div>
         </div>
 
         <div class="mobile-header">
-          <div class="mobile-brand">🤪 전손맵</div>
+          <div class="mobile-brand">
+            🤪 전손맵
+          </div>
+
           <div class="mobile-subtitle">
             다음은 너다!!! -사고차주 일동-
           </div>
@@ -556,15 +759,20 @@
           />
         </div>
 
-        <div class="mobile-list" id="mobileList"></div>
+        <div
+          class="mobile-list"
+          id="mobileList"
+        ></div>
 
       </div>
+
     </section>
 
   </div>
 
   <script>
     let map;
+
     let allRecords = [];
     let filteredRecords = [];
 
@@ -576,20 +784,27 @@
 
     let mobileSheetPosition = "collapsed";
 
-    const mobileSheet = document.getElementById("mobileSheet");
-    const mobileList = document.getElementById("mobileList");
-    const sheetHandle = document.getElementById("sheetHandle");
+    const mobileSheet =
+      document.getElementById("mobileSheet");
 
-    /* =========================
+    const mobileList =
+      document.getElementById("mobileList");
+
+    const sheetHandle =
+      document.getElementById("sheetHandle");
+
+    /* =========================================================
        BASIC
-    ========================= */
+    ========================================================= */
 
     function isMobile() {
       return window.innerWidth <= 700;
     }
 
     function formatDate(value) {
-      if (!value) return "";
+      if (!value) {
+        return "";
+      }
 
       const str = String(value);
 
@@ -597,7 +812,11 @@
         return str;
       }
 
-      return `20${str.slice(0, 2)}.${str.slice(2, 4)}.${str.slice(4, 6)}`;
+      return (
+        `20${str.slice(0, 2)}.` +
+        `${str.slice(2, 4)}.` +
+        `${str.slice(4, 6)}`
+      );
     }
 
     function escapeHtml(value) {
@@ -610,86 +829,129 @@
     }
 
     function normalize(value) {
-      return String(value ?? "").toLowerCase().replace(/\s+/g, "");
+      return String(value ?? "")
+        .toLowerCase()
+        .replace(/\s+/g, "");
     }
 
-    /* =========================
-       KAKAO MAP
-    ========================= */
+    /* =========================================================
+       MAP
+    ========================================================= */
 
     function initMap() {
-      const container = document.getElementById("map");
+      const container =
+        document.getElementById("map");
 
-      map = new kakao.maps.Map(container, {
-        center: new kakao.maps.LatLng(37.5665, 126.9780),
-        level: 12
-      });
+      map = new kakao.maps.Map(
+        container,
+        {
+          center:
+            new kakao.maps.LatLng(
+              37.5665,
+              126.9780
+            ),
 
-      kakao.maps.event.addListener(map, "click", function () {
-        if (selectedInfoWindow) {
-          selectedInfoWindow.close();
-          selectedInfoWindow = null;
+          level: 12
         }
+      );
 
-        selectedRecordId = null;
-        updateActiveRecord();
-      });
+      kakao.maps.event.addListener(
+        map,
+        "click",
+        function () {
+          if (selectedInfoWindow) {
+            selectedInfoWindow.close();
+            selectedInfoWindow = null;
+          }
 
-      window.addEventListener("resize", function () {
-        if (!map) return;
+          selectedRecordId = null;
 
-        map.relayout();
+          updateActiveRecord();
+        }
+      );
 
-        /*
-          relayout 이후 지도 중심을 강제로 바꾸지 않는다.
-          특히 모바일 핀 클릭과 관련된 페이지 스크롤에는
-          영향을 주지 않도록 한다.
-        */
-      });
+      window.addEventListener(
+        "resize",
+        function () {
+          if (!map) {
+            return;
+          }
+
+          map.relayout();
+        }
+      );
     }
 
-    /* =========================
+    /* =========================================================
        DATA
-    ========================= */
+    ========================================================= */
 
     async function loadData() {
       try {
-        const response = await fetch("./list.json", {
-          cache: "no-store"
-        });
+        const response =
+          await fetch(
+            "./list.json",
+            {
+              cache: "no-store"
+            }
+          );
 
         if (!response.ok) {
-          throw new Error("list.json을 불러오지 못했습니다.");
+          throw new Error(
+            "list.json을 불러오지 못했습니다."
+          );
         }
 
-        const data = await response.json();
+        const data =
+          await response.json();
 
         if (!Array.isArray(data)) {
-          throw new Error("list.json 형식이 올바르지 않습니다.");
+          throw new Error(
+            "list.json 형식이 올바르지 않습니다."
+          );
         }
 
         /*
-          정렬 전에 원본 index를 recordId로 고정한다.
-          이후 날짜순으로 정렬되어도 마커와 리스트의 연결은 유지된다.
+          정렬 전에 recordId를 부여한다.
         */
-        allRecords = data.map((item, index) => ({
-          ...item,
-          recordId: index
-        }));
 
-        allRecords.sort((a, b) => {
-          return String(b.date ?? "").localeCompare(
-            String(a.date ?? "")
+        allRecords =
+          data.map(
+            (item, index) => ({
+              ...item,
+              recordId: index
+            })
           );
-        });
+
+        /*
+          날짜 최신순
+        */
+
+        allRecords.sort(
+          (a, b) => {
+            return String(
+              b.date ?? ""
+            ).localeCompare(
+              String(
+                a.date ?? ""
+              )
+            );
+          }
+        );
 
         recordById.clear();
 
-        allRecords.forEach(record => {
-          recordById.set(record.recordId, record);
-        });
+        allRecords.forEach(
+          record => {
+            recordById.set(
+              record.recordId,
+              record
+            );
+          }
+        );
 
-        filteredRecords = [...allRecords];
+        filteredRecords =
+          [...allRecords];
 
         updateStats();
         renderList();
@@ -699,244 +961,379 @@
       } catch (error) {
         console.error(error);
 
-        document.getElementById("list").innerHTML =
-          `<div class="empty">데이터를 불러오지 못했습니다.</div>`;
+        document.getElementById(
+          "list"
+        ).innerHTML =
+          `<div class="empty">
+            데이터를 불러오지 못했습니다.
+          </div>`;
 
         mobileList.innerHTML =
-          `<div class="empty">데이터를 불러오지 못했습니다.</div>`;
+          `<div class="empty">
+            데이터를 불러오지 못했습니다.
+          </div>`;
       }
     }
 
-    /* =========================
+    /* =========================================================
        STATS
-    ========================= */
+    ========================================================= */
 
     function updateStats() {
-      const records = allRecords.length;
+      const records =
+        allRecords.length;
 
-      const vehicles = new Set(
-        allRecords.map(record => record.carnum)
-      ).size;
+      const vehicles =
+        new Set(
+          allRecords.map(
+            record =>
+              record.carnum
+          )
+        ).size;
 
-      document.getElementById("recordCount").textContent = records;
-      document.getElementById("vehicleCount").textContent = vehicles;
+      document.getElementById(
+        "recordCount"
+      ).textContent = records;
+
+      document.getElementById(
+        "vehicleCount"
+      ).textContent = vehicles;
     }
 
-    /* =========================
-       LIST
-    ========================= */
+    /* =========================================================
+       RECORD
+    ========================================================= */
 
-    function createRecordElement(record) {
-      const element = document.createElement("div");
+    function createRecordElement(
+      record
+    ) {
+      const element =
+        document.createElement(
+          "div"
+        );
 
-      element.className = "record";
-      element.dataset.recordId = record.recordId;
+      element.className =
+        "record";
+
+      element.dataset.recordId =
+        record.recordId;
 
       element.innerHTML = `
         <div class="record-top">
+
           <div class="record-car">
-            ${escapeHtml(record.car || "차량 정보 없음")}
+            ${escapeHtml(
+              record.car ||
+              "차량 정보 없음"
+            )}
           </div>
 
           <div class="record-date">
-            ${escapeHtml(formatDate(record.date))}
+            ${escapeHtml(
+              formatDate(
+                record.date
+              )
+            )}
           </div>
+
         </div>
 
         <div class="record-bottom">
+
           <div class="record-carnum">
-            ${escapeHtml(record.carnum || "-")}
+            ${escapeHtml(
+              record.carnum ||
+              "-"
+            )}
           </div>
 
           ${
             record.reason
-              ? `<div class="record-reason">
-                  ${escapeHtml(record.reason)}
-                </div>`
+              ? `
+                <div class="record-reason">
+                  ${escapeHtml(
+                    record.reason
+                  )}
+                </div>
+              `
               : ""
           }
+
         </div>
       `;
 
-      element.addEventListener("click", function () {
-        const id = Number(this.dataset.recordId);
-        selectRecord(id);
-      });
+      element.addEventListener(
+        "click",
+        function () {
+          const id =
+            Number(
+              this.dataset.recordId
+            );
+
+          selectRecord(id);
+        }
+      );
 
       return element;
     }
 
     function renderList() {
-      const desktopFragment = document.createDocumentFragment();
-      const mobileFragment = document.createDocumentFragment();
+      const desktopList =
+        document.getElementById(
+          "list"
+        );
 
-      if (filteredRecords.length === 0) {
-        document.getElementById("list").innerHTML =
-          `<div class="empty">검색 결과가 없습니다.</div>`;
+      if (
+        filteredRecords.length === 0
+      ) {
+        desktopList.innerHTML =
+          `<div class="empty">
+            검색 결과가 없습니다.
+          </div>`;
 
         mobileList.innerHTML =
-          `<div class="empty">검색 결과가 없습니다.</div>`;
+          `<div class="empty">
+            검색 결과가 없습니다.
+          </div>`;
 
         return;
       }
 
-      filteredRecords.forEach(record => {
-        desktopFragment.appendChild(
-          createRecordElement(record)
-        );
+      const desktopFragment =
+        document.createDocumentFragment();
 
-        mobileFragment.appendChild(
-          createRecordElement(record)
-        );
-      });
+      const mobileFragment =
+        document.createDocumentFragment();
 
-      const desktopList = document.getElementById("list");
+      filteredRecords.forEach(
+        record => {
+          desktopFragment.appendChild(
+            createRecordElement(
+              record
+            )
+          );
+
+          mobileFragment.appendChild(
+            createRecordElement(
+              record
+            )
+          );
+        }
+      );
 
       desktopList.innerHTML = "";
-      desktopList.appendChild(desktopFragment);
+
+      desktopList.appendChild(
+        desktopFragment
+      );
 
       mobileList.innerHTML = "";
-      mobileList.appendChild(mobileFragment);
+
+      mobileList.appendChild(
+        mobileFragment
+      );
 
       updateActiveRecord();
     }
 
     function updateActiveRecord() {
-      document.querySelectorAll(".record").forEach(element => {
-        const id = Number(element.dataset.recordId);
+      document
+        .querySelectorAll(
+          ".record"
+        )
+        .forEach(
+          element => {
+            const id =
+              Number(
+                element.dataset.recordId
+              );
 
-        element.classList.toggle(
-          "active",
-          id === selectedRecordId
+            element.classList.toggle(
+              "active",
+              id === selectedRecordId
+            );
+          }
         );
-      });
     }
 
-    /* =========================
+    /* =========================================================
        SEARCH
-    ========================= */
+    ========================================================= */
 
-    function filterRecords(keyword) {
-      const query = normalize(keyword);
+    function filterRecords(
+      keyword
+    ) {
+      const query =
+        normalize(keyword);
 
       if (!query) {
-        filteredRecords = [...allRecords];
+        filteredRecords =
+          [...allRecords];
       } else {
-        filteredRecords = allRecords.filter(record => {
-          return [
-            record.carnum,
-            record.car,
-            record.date,
-            record.reason
-          ]
-            .map(normalize)
-            .some(value => value.includes(query));
-        });
+        filteredRecords =
+          allRecords.filter(
+            record => {
+              return [
+                record.carnum,
+                record.car,
+                record.date,
+                record.reason
+              ]
+                .map(normalize)
+                .some(
+                  value =>
+                    value.includes(
+                      query
+                    )
+                );
+            }
+          );
       }
 
-      /*
-        allRecords 자체가 이미 날짜 내림차순이므로
-        filter 이후에도 동일한 순서를 유지한다.
-      */
       renderList();
     }
 
-    document.getElementById("search").addEventListener(
-      "input",
-      function () {
-        filterRecords(this.value);
-      }
-    );
+    document
+      .getElementById("search")
+      .addEventListener(
+        "input",
+        function () {
+          filterRecords(
+            this.value
+          );
+        }
+      );
 
-    document.getElementById("mobileSearch").addEventListener(
-      "input",
-      function () {
-        filterRecords(this.value);
-      }
-    );
+    document
+      .getElementById(
+        "mobileSearch"
+      )
+      .addEventListener(
+        "input",
+        function () {
+          filterRecords(
+            this.value
+          );
+        }
+      );
 
-    /* =========================
+    /* =========================================================
        MARKERS
-    ========================= */
+    ========================================================= */
 
     function renderMarkers() {
-      markerByRecordId.forEach(marker => {
-        marker.setMap(null);
-      });
+      markerByRecordId.forEach(
+        marker => {
+          marker.setMap(null);
+        }
+      );
 
       markerByRecordId.clear();
 
-      allRecords.forEach(record => {
-        const lat = Number(record.latitude);
-        const lng = Number(record.longitude);
+      allRecords.forEach(
+        record => {
+          const lat =
+            Number(
+              record.latitude
+            );
 
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-          return;
-        }
+          const lng =
+            Number(
+              record.longitude
+            );
 
-        const position = new kakao.maps.LatLng(lat, lng);
-
-        const marker = new kakao.maps.Marker({
-          position,
-          map
-        });
-
-        markerByRecordId.set(
-          record.recordId,
-          marker
-        );
-
-        kakao.maps.event.addListener(
-          marker,
-          "click",
-          function () {
-            /*
-              ★ 매우 중요 ★
-
-              핀 클릭에서는:
-              - bottom sheet 이동 X
-              - scrollIntoView X
-              - window.scrollTo X
-              - document 스크롤 변경 X
-
-              사용자가 현재 보고 있던 하단 시트 위치를 그대로 유지한다.
-            */
-            openMarkerInfo(record.recordId, false);
+          if (
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lng)
+          ) {
+            return;
           }
-        );
-      });
+
+          const position =
+            new kakao.maps.LatLng(
+              lat,
+              lng
+            );
+
+          const marker =
+            new kakao.maps.Marker({
+              position,
+              map
+            });
+
+          markerByRecordId.set(
+            record.recordId,
+            marker
+          );
+
+          kakao.maps.event.addListener(
+            marker,
+            "click",
+            function () {
+              /*
+                핀 클릭에서는
+                하단 리스트 위치를 변경하지 않는다.
+              */
+
+              openMarkerInfo(
+                record.recordId,
+                false
+              );
+            }
+          );
+        }
+      );
     }
 
-    /* =========================
+    /* =========================================================
        INFO WINDOW
-    ========================= */
+    ========================================================= */
 
-    function createInfoWindow(record) {
+    function createInfoWindow(
+      record
+    ) {
       const content = `
         <div class="info-window">
+
           <div class="info-title">
-            ${escapeHtml(record.car || "차량")}
+            ${escapeHtml(
+              record.car ||
+              "차량"
+            )}
           </div>
 
           <div class="info-date">
-            ${escapeHtml(formatDate(record.date))}
+            ${escapeHtml(
+              formatDate(
+                record.date
+              )
+            )}
           </div>
 
           ${
             record.carnum
-              ? `<div class="info-date">
-                  ${escapeHtml(record.carnum)}
-                </div>`
+              ? `
+                <div class="info-date">
+                  ${escapeHtml(
+                    record.carnum
+                  )}
+                </div>
+              `
               : ""
           }
 
           ${
             record.reason
-              ? `<div class="info-reason">
-                  ${escapeHtml(record.reason)}
-                </div>`
+              ? `
+                <div class="info-reason">
+                  ${escapeHtml(
+                    record.reason
+                  )}
+                </div>
+              `
               : ""
           }
+
         </div>
       `;
 
@@ -946,147 +1343,256 @@
       });
     }
 
-    function openMarkerInfo(recordId, fromList = false) {
-      const record = recordById.get(recordId);
-      const marker = markerByRecordId.get(recordId);
+    /* =========================================================
+       MARKER OPEN
+    ========================================================= */
 
-      if (!record || !marker) {
+    function openMarkerInfo(
+      recordId,
+      fromList = false
+    ) {
+      const record =
+        recordById.get(
+          recordId
+        );
+
+      const marker =
+        markerByRecordId.get(
+          recordId
+        );
+
+      if (
+        !record ||
+        !marker
+      ) {
         return;
       }
 
-      selectedRecordId = recordId;
+      selectedRecordId =
+        recordId;
+
       updateActiveRecord();
 
       /*
-        리스트에서 클릭한 경우에만 모바일 시트를 접는다.
+        리스트에서 선택했을 때만
+        모바일 시트를 접는다.
 
-        핀을 클릭한 경우에는 절대로 sheet 위치를 변경하지 않는다.
+        핀 클릭은 현재 시트 위치를 그대로 유지한다.
       */
-      if (isMobile() && fromList) {
-        setSheetPosition("collapsed", true);
+
+      if (
+        isMobile() &&
+        fromList
+      ) {
+        setSheetPosition(
+          "collapsed",
+          true
+        );
       }
 
-      if (selectedInfoWindow) {
+      if (
+        selectedInfoWindow
+      ) {
         selectedInfoWindow.close();
-        selectedInfoWindow = null;
+
+        selectedInfoWindow =
+          null;
       }
 
-      const infoWindow = createInfoWindow(record);
+      const infoWindow =
+        createInfoWindow(
+          record
+        );
 
-      selectedInfoWindow = infoWindow;
+      selectedInfoWindow =
+        infoWindow;
 
-      infoWindow.open(map, marker);
+      infoWindow.open(
+        map,
+        marker
+      );
 
       /*
-        지도 중심 이동은 지도 내부에서만 처리한다.
-        페이지 전체의 scrollTop / scrollIntoView에는 접근하지 않는다.
+        =====================================================
+        핀 클릭 시 지도 자동 확대
+        =====================================================
+
+        Kakao Maps level은 숫자가 작을수록 확대된 상태다.
+
+        현재 level보다 3단계 정도 확대하되,
+        level 5보다 더 확대하지 않는다.
       */
-      map.panTo(marker.getPosition());
+
+      const currentLevel =
+        map.getLevel();
+
+      const targetLevel =
+        Math.max(
+          5,
+          currentLevel - 3
+        );
+
+      /*
+        지도 중심 이동 + 확대
+
+        지도 자체의 panTo / setLevel만 사용하므로
+        페이지의 scroll 위치에는 영향을 주지 않는다.
+      */
+
+      map.setLevel(
+        targetLevel
+      );
+
+      map.panTo(
+        marker.getPosition()
+      );
     }
 
-    /* =========================
-       RECORD SELECT
-    ========================= */
-
-    function selectRecord(recordId) {
-      openMarkerInfo(recordId, true);
+    function selectRecord(
+      recordId
+    ) {
+      openMarkerInfo(
+        recordId,
+        true
+      );
     }
 
-    /* =========================
-       MAP FIT
-    ========================= */
+    /* =========================================================
+       FIT MAP
+    ========================================================= */
 
     function fitMap() {
-      const bounds = new kakao.maps.LatLngBounds();
+      const bounds =
+        new kakao.maps.LatLngBounds();
 
       let count = 0;
 
-      allRecords.forEach(record => {
-        const lat = Number(record.latitude);
-        const lng = Number(record.longitude);
+      allRecords.forEach(
+        record => {
+          const lat =
+            Number(
+              record.latitude
+            );
 
-        if (
-          !Number.isFinite(lat) ||
-          !Number.isFinite(lng)
-        ) {
-          return;
+          const lng =
+            Number(
+              record.longitude
+            );
+
+          if (
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lng)
+          ) {
+            return;
+          }
+
+          bounds.extend(
+            new kakao.maps.LatLng(
+              lat,
+              lng
+            )
+          );
+
+          count++;
         }
-
-        bounds.extend(
-          new kakao.maps.LatLng(lat, lng)
-        );
-
-        count++;
-      });
+      );
 
       if (count === 0) {
         return;
       }
 
-      map.setBounds(bounds);
+      map.setBounds(
+        bounds
+      );
     }
 
-    document.getElementById("fitBtn").addEventListener(
-      "click",
-      function () {
-        fitMap();
-      }
-    );
+    document
+      .getElementById(
+        "fitBtn"
+      )
+      .addEventListener(
+        "click",
+        function () {
+          fitMap();
+        }
+      );
 
-    /* =========================
+    /* =========================================================
        MOBILE SHEET
-    ========================= */
+    ========================================================= */
 
-    function getSheetTranslate(position) {
-      const height = window.innerHeight;
+    function getSheetTranslate(
+      position
+    ) {
+      const height =
+        window.innerHeight;
 
-      if (position === "expanded") {
+      if (
+        position ===
+        "expanded"
+      ) {
         return 0;
       }
 
-      if (position === "middle") {
+      if (
+        position ===
+        "middle"
+      ) {
         return Math.max(
           0,
-          height - Math.min(height * 0.52, 520)
+          height -
+            Math.min(
+              height * 0.52,
+              520
+            )
         );
       }
 
-      /*
-        collapsed
-        화면 하단에 약 105px만 노출
-      */
       return Math.max(
         0,
         height - 105
       );
     }
 
-    function setSheetPosition(position, animate = true) {
+    function setSheetPosition(
+      position,
+      animate = true
+    ) {
       if (!isMobile()) {
         return;
       }
 
-      mobileSheetPosition = position;
+      mobileSheetPosition =
+        position;
 
       if (animate) {
-        mobileSheet.classList.remove("dragging");
+        mobileSheet.classList.remove(
+          "dragging"
+        );
       } else {
-        mobileSheet.classList.add("dragging");
+        mobileSheet.classList.add(
+          "dragging"
+        );
       }
 
-      const translate = getSheetTranslate(position);
+      const translate =
+        getSheetTranslate(
+          position
+        );
 
       /*
-        transform만 변경한다.
-        문서의 scrollHeight에는 영향을 주지 않는다.
+        transform만 변경.
+        document의 scrollHeight에는
+        영향을 주지 않는다.
       */
+
       mobileSheet.style.transform =
         `translate3d(0, ${translate}px, 0)`;
     }
 
-    /* =========================
+    /* =========================================================
        SHEET DRAG
-    ========================= */
+    ========================================================= */
 
     let dragging = false;
     let dragStartY = 0;
@@ -1094,28 +1600,54 @@
     let currentTranslate = 0;
 
     function getCurrentTranslate() {
-      const matrix = window.getComputedStyle(
-        mobileSheet
-      ).transform;
+      const matrix =
+        window.getComputedStyle(
+          mobileSheet
+        ).transform;
 
-      if (!matrix || matrix === "none") {
+      if (
+        !matrix ||
+        matrix === "none"
+      ) {
         return getSheetTranslate(
           mobileSheetPosition
         );
       }
 
-      const values = matrix
-        .replace("matrix3d(", "")
-        .replace("matrix(", "")
-        .replace(")", "")
-        .split(",");
+      const values =
+        matrix
+          .replace(
+            "matrix3d(",
+            ""
+          )
+          .replace(
+            "matrix(",
+            ""
+          )
+          .replace(
+            ")",
+            ""
+          )
+          .split(",");
 
-      if (values.length === 16) {
-        return Number(values[13]) || 0;
+      if (
+        values.length === 16
+      ) {
+        return (
+          Number(
+            values[13]
+          ) || 0
+        );
       }
 
-      if (values.length === 6) {
-        return Number(values[5]) || 0;
+      if (
+        values.length === 6
+      ) {
+        return (
+          Number(
+            values[5]
+          ) || 0
+        );
       }
 
       return getSheetTranslate(
@@ -1123,38 +1655,61 @@
       );
     }
 
-    function onDragStart(clientY) {
+    function onDragStart(
+      clientY
+    ) {
       if (!isMobile()) {
         return;
       }
 
       dragging = true;
 
-      mobileSheet.classList.add("dragging");
+      mobileSheet.classList.add(
+        "dragging"
+      );
 
-      dragStartY = clientY;
-      dragStartTranslate = getCurrentTranslate();
-      currentTranslate = dragStartTranslate;
+      dragStartY =
+        clientY;
+
+      dragStartTranslate =
+        getCurrentTranslate();
+
+      currentTranslate =
+        dragStartTranslate;
     }
 
-    function onDragMove(clientY) {
+    function onDragMove(
+      clientY
+    ) {
       if (!dragging) {
         return;
       }
 
-      const delta = clientY - dragStartY;
+      const delta =
+        clientY -
+        dragStartY;
 
-      let next = dragStartTranslate + delta;
+      let next =
+        dragStartTranslate +
+        delta;
 
       const min = 0;
-      const max = window.innerHeight - 105;
 
-      next = Math.max(
-        min,
-        Math.min(max, next)
-      );
+      const max =
+        window.innerHeight -
+        105;
 
-      currentTranslate = next;
+      next =
+        Math.max(
+          min,
+          Math.min(
+            max,
+            next
+          )
+        );
+
+      currentTranslate =
+        next;
 
       mobileSheet.style.transform =
         `translate3d(0, ${next}px, 0)`;
@@ -1167,48 +1722,79 @@
 
       dragging = false;
 
-      mobileSheet.classList.remove("dragging");
-
-      const height = window.innerHeight;
+      mobileSheet.classList.remove(
+        "dragging"
+      );
 
       const positions = [
         {
           name: "expanded",
-          value: getSheetTranslate("expanded")
+          value:
+            getSheetTranslate(
+              "expanded"
+            )
         },
+
         {
           name: "middle",
-          value: getSheetTranslate("middle")
+          value:
+            getSheetTranslate(
+              "middle"
+            )
         },
+
         {
           name: "collapsed",
-          value: getSheetTranslate("collapsed")
+          value:
+            getSheetTranslate(
+              "collapsed"
+            )
         }
       ];
 
-      let nearest = positions[0];
+      let nearest =
+        positions[0];
 
-      positions.forEach(position => {
-        if (
-          Math.abs(position.value - currentTranslate) <
-          Math.abs(nearest.value - currentTranslate)
-        ) {
-          nearest = position;
+      positions.forEach(
+        position => {
+          if (
+            Math.abs(
+              position.value -
+                currentTranslate
+            ) <
+            Math.abs(
+              nearest.value -
+                currentTranslate
+            )
+          ) {
+            nearest =
+              position;
+          }
         }
-      });
+      );
 
-      setSheetPosition(nearest.name, true);
+      setSheetPosition(
+        nearest.name,
+        true
+      );
     }
+
+    /* =========================================================
+       TOUCH
+    ========================================================= */
 
     sheetHandle.addEventListener(
       "touchstart",
       function (event) {
-        if (!event.touches.length) {
+        if (
+          !event.touches.length
+        ) {
           return;
         }
 
         onDragStart(
-          event.touches[0].clientY
+          event.touches[0]
+            .clientY
         );
       },
       {
@@ -1219,7 +1805,9 @@
     sheetHandle.addEventListener(
       "touchmove",
       function (event) {
-        if (!event.touches.length) {
+        if (
+          !event.touches.length
+        ) {
           return;
         }
 
@@ -1230,7 +1818,8 @@
         event.preventDefault();
 
         onDragMove(
-          event.touches[0].clientY
+          event.touches[0]
+            .clientY
         );
       },
       {
@@ -1248,29 +1837,38 @@
       }
     );
 
-    /* 마우스 드래그도 지원 */
+    /* =========================================================
+       MOUSE DRAG
+    ========================================================= */
+
     sheetHandle.addEventListener(
       "mousedown",
       function (event) {
-        onDragStart(event.clientY);
+        onDragStart(
+          event.clientY
+        );
 
-        const move = e => {
-          onDragMove(e.clientY);
-        };
+        const move =
+          e => {
+            onDragMove(
+              e.clientY
+            );
+          };
 
-        const up = () => {
-          onDragEnd();
+        const up =
+          () => {
+            onDragEnd();
 
-          document.removeEventListener(
-            "mousemove",
-            move
-          );
+            document.removeEventListener(
+              "mousemove",
+              move
+            );
 
-          document.removeEventListener(
-            "mouseup",
-            up
-          );
-        };
+            document.removeEventListener(
+              "mouseup",
+              up
+            );
+          };
 
         document.addEventListener(
           "mousemove",
@@ -1284,9 +1882,9 @@
       }
     );
 
-    /* =========================
-       MOBILE INITIAL POSITION
-    ========================= */
+    /* =========================================================
+       INITIAL MOBILE SHEET
+    ========================================================= */
 
     function initializeMobileSheet() {
       if (isMobile()) {
@@ -1295,7 +1893,8 @@
           false
         );
       } else {
-        mobileSheet.style.transform = "";
+        mobileSheet.style.transform =
+          "";
       }
     }
 
@@ -1311,26 +1910,20 @@
       }
     );
 
-    /* =========================
+    /* =========================================================
        PREVENT DOCUMENT SCROLL
-    ========================= */
-
-    /*
-      모바일에서 브라우저가 document 자체를 스크롤하지 못하게 한다.
-
-      리스트 영역은 자체 overflow-y: auto로 스크롤하고,
-      bottom sheet 역시 transform으로 움직인다.
-
-      따라서 핀을 아무리 반복해서 클릭해도
-      document의 scrollHeight가 증가하거나
-      페이지 자체가 위로 밀리는 현상을 막는다.
-    */
+    ========================================================= */
 
     window.addEventListener(
       "scroll",
       function () {
-        if (window.scrollY !== 0) {
-          window.scrollTo(0, 0);
+        if (
+          window.scrollY !== 0
+        ) {
+          window.scrollTo(
+            0,
+            0
+          );
         }
       },
       {
@@ -1338,9 +1931,9 @@
       }
     );
 
-    /* =========================
+    /* =========================================================
        START
-    ========================= */
+    ========================================================= */
 
     initMap();
 
