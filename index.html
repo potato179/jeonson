@@ -252,6 +252,12 @@
       background: #e66a3c;
     }
 
+    /*
+      상단:
+      차번호를 가장 강조하고
+      날짜는 오른쪽에 배치
+    */
+
     .record-top {
       display: flex;
       align-items: flex-start;
@@ -260,12 +266,51 @@
       gap: 12px;
     }
 
-    .record-car {
+    /*
+      차 번호 - 메인 정보
+    */
+
+    .record-carnum {
       min-width: 0;
 
       color: #f1f3f5;
-      font-size: 14px;
-      font-weight: 800;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -0.2px;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /*
+      날짜
+    */
+
+    .record-date {
+      flex: 0 0 auto;
+
+      padding-top: 2px;
+
+      color: #8e949e;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1px;
+    }
+
+    /*
+      차종명 - 차번호 아래의 보조 정보
+    */
+
+    .record-car {
+      min-width: 0;
+
+      margin-top: 5px;
+
+      color: #aeb4bd;
+      font-size: 11px;
+      font-weight: 600;
       line-height: 1.35;
 
       white-space: nowrap;
@@ -273,16 +318,9 @@
       text-overflow: ellipsis;
     }
 
-    .record-date {
-      flex: 0 0 auto;
-
-      padding-top: 1px;
-
-      color: #8e949e;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1px;
-    }
+    /*
+      사고 사유
+    */
 
     .record-bottom {
       display: flex;
@@ -294,12 +332,12 @@
       min-width: 0;
     }
 
-    .record-carnum {
-      flex: 0 0 auto;
+    .record-reason {
+      min-width: 0;
 
       padding: 4px 7px;
 
-      color: #bfc4cc;
+      color: #aeb4bd;
       background: #22262d;
 
       border: 1px solid #30343c;
@@ -307,15 +345,7 @@
 
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: 0.2px;
-    }
-
-    .record-reason {
-      min-width: 0;
-
-      color: #aeb4bd;
-      font-size: 10px;
-      font-weight: 600;
+      line-height: 1.2;
 
       white-space: nowrap;
       overflow: hidden;
@@ -323,13 +353,17 @@
     }
 
     .record.active .record-carnum {
-      color: #f0c2ad;
-      background: #2a211d;
-      border-color: #593a2f;
+      color: #f0a17e;
+    }
+
+    .record.active .record-car {
+      color: #c5c9cf;
     }
 
     .record.active .record-reason {
       color: #e89a78;
+      background: #2a211d;
+      border-color: #593a2f;
     }
 
     .empty {
@@ -372,7 +406,8 @@
       font-size: 11px;
       font-weight: 800;
 
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.2);
 
       transition:
         background 0.15s ease,
@@ -614,7 +649,8 @@
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
 
-        padding: 2px 4px
+        padding:
+          2px 4px
           calc(10px + env(safe-area-inset-bottom));
       }
 
@@ -626,16 +662,16 @@
         border-radius: 10px;
       }
 
+      .mobile-list .record-carnum {
+        font-size: 15px;
+      }
+
       .mobile-list .record-car {
-        font-size: 13px;
+        font-size: 10px;
       }
 
       .mobile-list .record-date {
         font-size: 10px;
-      }
-
-      .mobile-list .record-carnum {
-        font-size: 9px;
       }
 
       .mobile-list .record-reason {
@@ -661,7 +697,10 @@
     <div id="map"></div>
 
     <div class="map-tools">
-      <button class="map-btn" id="fitBtn">
+      <button
+        class="map-btn"
+        id="fitBtn"
+      >
         전체보기
       </button>
     </div>
@@ -673,6 +712,7 @@
     <aside id="sidebar">
 
       <div class="sidebar-header">
+
         <div class="brand">
           🤪 전손맵
         </div>
@@ -710,15 +750,18 @@
           </div>
 
         </div>
+
       </div>
 
       <div class="search-wrap">
+
         <input
           id="search"
           type="search"
           placeholder="차량번호, 차종, 사고사유 검색"
           autocomplete="off"
         />
+
       </div>
 
       <div id="list"></div>
@@ -741,6 +784,7 @@
         </div>
 
         <div class="mobile-header">
+
           <div class="mobile-brand">
             🤪 전손맵
           </div>
@@ -748,15 +792,18 @@
           <div class="mobile-subtitle">
             다음은 너다!!! -사고차주 일동-
           </div>
+
         </div>
 
         <div class="mobile-search">
+
           <input
             id="mobileSearch"
             type="search"
             placeholder="차량번호, 차종, 사고사유 검색"
             autocomplete="off"
           />
+
         </div>
 
         <div
@@ -785,13 +832,19 @@
     let mobileSheetPosition = "collapsed";
 
     const mobileSheet =
-      document.getElementById("mobileSheet");
+      document.getElementById(
+        "mobileSheet"
+      );
 
     const mobileList =
-      document.getElementById("mobileList");
+      document.getElementById(
+        "mobileList"
+      );
 
     const sheetHandle =
-      document.getElementById("sheetHandle");
+      document.getElementById(
+        "sheetHandle"
+      );
 
     /* =========================================================
        BASIC
@@ -821,17 +874,35 @@
 
     function escapeHtml(value) {
       return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
+        );
     }
 
     function normalize(value) {
       return String(value ?? "")
         .toLowerCase()
-        .replace(/\s+/g, "");
+        .replace(
+          /\s+/g,
+          ""
+        );
     }
 
     /* =========================================================
@@ -840,31 +911,39 @@
 
     function initMap() {
       const container =
-        document.getElementById("map");
+        document.getElementById(
+          "map"
+        );
 
-      map = new kakao.maps.Map(
-        container,
-        {
-          center:
-            new kakao.maps.LatLng(
-              37.5665,
-              126.9780
-            ),
+      map =
+        new kakao.maps.Map(
+          container,
+          {
+            center:
+              new kakao.maps.LatLng(
+                37.5665,
+                126.9780
+              ),
 
-          level: 12
-        }
-      );
+            level: 12
+          }
+        );
 
       kakao.maps.event.addListener(
         map,
         "click",
         function () {
-          if (selectedInfoWindow) {
+          if (
+            selectedInfoWindow
+          ) {
             selectedInfoWindow.close();
-            selectedInfoWindow = null;
+
+            selectedInfoWindow =
+              null;
           }
 
-          selectedRecordId = null;
+          selectedRecordId =
+            null;
 
           updateActiveRecord();
         }
@@ -911,10 +990,6 @@
           );
         }
 
-        /*
-          정렬 전에 recordId를 부여한다.
-        */
-
         allRecords =
           data.map(
             (item, index) => ({
@@ -924,7 +999,7 @@
           );
 
         /*
-          날짜 최신순
+          날짜 내림차순
         */
 
         allRecords.sort(
@@ -993,15 +1068,17 @@
 
       document.getElementById(
         "recordCount"
-      ).textContent = records;
+      ).textContent =
+        records;
 
       document.getElementById(
         "vehicleCount"
-      ).textContent = vehicles;
+      ).textContent =
+        vehicles;
     }
 
     /* =========================================================
-       RECORD
+       RECORD CARD
     ========================================================= */
 
     function createRecordElement(
@@ -1018,13 +1095,22 @@
       element.dataset.recordId =
         record.recordId;
 
+      /*
+        정보 순서
+
+        1. 차 번호 - 메인
+        2. 날짜 - 우측
+        3. 차종명 - 보조
+        4. 사고 사유 - 하단
+      */
+
       element.innerHTML = `
         <div class="record-top">
 
-          <div class="record-car">
+          <div class="record-carnum">
             ${escapeHtml(
-              record.car ||
-              "차량 정보 없음"
+              record.carnum ||
+              "-"
             )}
           </div>
 
@@ -1038,28 +1124,28 @@
 
         </div>
 
-        <div class="record-bottom">
+        <div class="record-car">
+          ${escapeHtml(
+            record.car ||
+            "차량 정보 없음"
+          )}
+        </div>
 
-          <div class="record-carnum">
-            ${escapeHtml(
-              record.carnum ||
-              "-"
-            )}
-          </div>
+        ${
+          record.reason
+            ? `
+              <div class="record-bottom">
 
-          ${
-            record.reason
-              ? `
                 <div class="record-reason">
                   ${escapeHtml(
                     record.reason
                   )}
                 </div>
-              `
-              : ""
-          }
 
-        </div>
+              </div>
+            `
+            : ""
+        }
       `;
 
       element.addEventListener(
@@ -1121,13 +1207,15 @@
         }
       );
 
-      desktopList.innerHTML = "";
+      desktopList.innerHTML =
+        "";
 
       desktopList.appendChild(
         desktopFragment
       );
 
-      mobileList.innerHTML = "";
+      mobileList.innerHTML =
+        "";
 
       mobileList.appendChild(
         mobileFragment
@@ -1150,7 +1238,8 @@
 
             element.classList.toggle(
               "active",
-              id === selectedRecordId
+              id ===
+                selectedRecordId
             );
           }
         );
@@ -1179,7 +1268,9 @@
                 record.date,
                 record.reason
               ]
-                .map(normalize)
+                .map(
+                  normalize
+                )
                 .some(
                   value =>
                     value.includes(
@@ -1194,7 +1285,9 @@
     }
 
     document
-      .getElementById("search")
+      .getElementById(
+        "search"
+      )
       .addEventListener(
         "input",
         function () {
@@ -1224,7 +1317,9 @@
     function renderMarkers() {
       markerByRecordId.forEach(
         marker => {
-          marker.setMap(null);
+          marker.setMap(
+            null
+          );
         }
       );
 
@@ -1243,8 +1338,12 @@
             );
 
           if (
-            !Number.isFinite(lat) ||
-            !Number.isFinite(lng)
+            !Number.isFinite(
+              lat
+            ) ||
+            !Number.isFinite(
+              lng
+            )
           ) {
             return;
           }
@@ -1297,10 +1396,23 @@
 
           <div class="info-title">
             ${escapeHtml(
+              record.carnum ||
               record.car ||
               "차량"
             )}
           </div>
+
+          ${
+            record.car
+              ? `
+                <div class="info-date">
+                  ${escapeHtml(
+                    record.car
+                  )}
+                </div>
+              `
+              : ""
+          }
 
           <div class="info-date">
             ${escapeHtml(
@@ -1309,18 +1421,6 @@
               )
             )}
           </div>
-
-          ${
-            record.carnum
-              ? `
-                <div class="info-date">
-                  ${escapeHtml(
-                    record.carnum
-                  )}
-                </div>
-              `
-              : ""
-          }
 
           ${
             record.reason
@@ -1344,7 +1444,7 @@
     }
 
     /* =========================================================
-       MARKER OPEN
+       OPEN MARKER
     ========================================================= */
 
     function openMarkerInfo(
@@ -1374,10 +1474,11 @@
       updateActiveRecord();
 
       /*
-        리스트에서 선택했을 때만
-        모바일 시트를 접는다.
+        리스트 클릭일 때만
+        모바일 하단 시트를 접는다.
 
-        핀 클릭은 현재 시트 위치를 그대로 유지한다.
+        핀 클릭은 현재 시트 위치를
+        그대로 유지한다.
       */
 
       if (
@@ -1413,14 +1514,9 @@
       );
 
       /*
-        =====================================================
-        핀 클릭 시 지도 자동 확대
-        =====================================================
+        사용자가 지정한 확대 방식
 
-        Kakao Maps level은 숫자가 작을수록 확대된 상태다.
-
-        현재 level보다 3단계 정도 확대하되,
-        level 5보다 더 확대하지 않는다.
+        핀 클릭 시 항상 level 4로 확대
       */
 
       map.setLevel(4);
@@ -1462,8 +1558,12 @@
             );
 
           if (
-            !Number.isFinite(lat) ||
-            !Number.isFinite(lng)
+            !Number.isFinite(
+              lat
+            ) ||
+            !Number.isFinite(
+              lng
+            )
           ) {
             return;
           }
@@ -1561,12 +1661,6 @@
         getSheetTranslate(
           position
         );
-
-      /*
-        transform만 변경.
-        document의 scrollHeight에는
-        영향을 주지 않는다.
-      */
 
       mobileSheet.style.transform =
         `translate3d(0, ${translate}px, 0)`;
